@@ -2,11 +2,11 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-import {firebaseConfig} from './firebase-secure';
+import {firebaseSecure} from './firebase-secure';
 
 export const environment = {
   production: false,
-  firebase: firebaseConfig,
+  firebase: firebaseSecure,
 };
 
 /*
@@ -17,3 +17,4 @@ export const environment = {
  * on performance if an error is thrown.
  */
 // import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+

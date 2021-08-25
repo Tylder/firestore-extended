@@ -3,23 +3,23 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "firebase-extended": {
+    "firestore-extended": {
       "projectType": "library",
-      "root": "projects/firebase-extended",
-      "sourceRoot": "projects/firebase-extended/src",
+      "root": "projects/firestore-extended",
+      "sourceRoot": "projects/firestore-extended/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "project": "projects/firebase-extended/ng-package.json"
+            "project": "projects/firestore-extended/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "projects/firebase-extended/tsconfig.lib.prod.json"
+              "tsConfig": "projects/firestore-extended/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "projects/firebase-extended/tsconfig.lib.json"
+              "tsConfig": "projects/firestore-extended/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -27,9 +27,9 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/firebase-extended/src/test.ts",
-            "tsConfig": "projects/firebase-extended/tsconfig.spec.json",
-            "karmaConfig": "projects/firebase-extended/karma.conf.js"
+            "main": "projects/firestore-extended/src/test.ts",
+            "tsConfig": "projects/firestore-extended/tsconfig.spec.json",
+            "karmaConfig": "projects/firestore-extended/karma.conf.js"
           }
         }
       }
@@ -133,5 +133,5 @@
       }
     }
   },
-  "defaultProject": "firebase-extended"
+  "defaultProject": "firestore-extended"
 }

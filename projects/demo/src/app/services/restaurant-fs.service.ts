@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {RestaurantItem, ReviewItem} from '../models/restaurant';
-import {combineLatest, forkJoin, Observable, of} from 'rxjs';
+import {RestaurantItem} from '../models/restaurant';
+import {forkJoin, Observable} from 'rxjs';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import CollectionReference = firebase.firestore.CollectionReference;
@@ -9,8 +9,8 @@ import {environment} from '../../environments/environment';
 import {DragAndDropItem} from '../models/groupItem';
 import {mockDragAndDropItems} from '../mock/mockItems';
 import {take, tap} from 'rxjs/operators';
-import {SubCollectionQuery, SubCollectionWriter} from 'firebase-extended';
-
+import {SubCollectionQuery, SubCollectionWriter, RxFirestoreExtended, combineLatestToObject} from 'firestore-extended';
+import {firestoreEmulatorPort} from '../../environments/firebase-secure';
 
 const restaurantSubCollectionWriters: SubCollectionWriter[] = [
   { name: 'address' },
@@ -92,7 +92,7 @@ export class RestaurantFsService {
       b: this.rxFireExt.listenForCollection$(collectionB),
     }).pipe(
       // take(1),
-      tap(d => {
+      tap((d) => {
         console.log(d.a)
       })
     )

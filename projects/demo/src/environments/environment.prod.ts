@@ -1,6 +1,6 @@
-import {firebaseConfig} from './firebase-secure';
+import {firebaseSecure} from './firebase-secure';
 
 export const environment = {
   production: true,
-  firebase: firebaseConfig,
+  firebase: firebaseSecure,
 };

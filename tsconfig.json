@@ -15,9 +15,9 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "paths": {
-      "firebase-extended": [
-        "dist/firebase-extended",
-        "dist/firebase-extended/firebase-extended"
+      "firestore-extended": [
+        "dist/firestore-extended",
+        "dist/firestore-extended/firestore-extended"
       ]
     },
     "target": "es2017",

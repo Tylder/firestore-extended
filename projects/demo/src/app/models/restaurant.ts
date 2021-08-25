@@ -1,6 +1,6 @@
-import {FirestoreItem} from '../../../../rxfire-extended/src/lib/models/firestoreItem';
+import {FirestoreItem} from 'firestore-extended';
 
-export interface RestaurantItem extends FirestoreItem{
+export interface RestaurantItem extends FirestoreItem {
   name: string;
   category: string;
   averageReviewScore: number;
