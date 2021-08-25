@@ -1,27 +1,75 @@
-# RxfireExtended
+# Firestore Extended (web and node.js)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.0.1.
+Simplify the work with complex and deep objects while retaining all the great benefits from Firebase Firestore.
 
-## Development server
+```bash
+ng add @angular/fire
+npm install --save angularfirestore-deep
+```
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Firestore splits its data up into collections and documents which is what allows it to be scalable and fast.
 
-## Code scaffolding
+The issues that this can cause is that the best way to store your data might not be the best way to work with and display that data.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+It can also be more difficult to figure out how to store your data in a way that is not only cheap in terms of reads but also cheap in terms of performance/speed.
 
-## Build
+AngularFireStore-Deep is meant to help developers solve these issues.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Documentation and Examples
+[Documentation](https://angularfirestore-deep.web.app/docs/)
+<br>
+[Github](https://github.com/Tylder/angularfirestore-deep/tree/master/projects/angularfirestore-deep) 
 
-## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+> [Introduction](https://angularfirestore-deep.web.app/docs/additional-documentation/introduction.html)
+> 
+>
+> #### Actions 
+> [Read](https://angularfirestore-deep.web.app/docs/additional-documentation/actions/read.html)
+> <br>
+> [Write](https://angularfirestore-deep.web.app/docs/additional-documentation/actions/write.html)
+> <br>
+> [Update](https://angularfirestore-deep.web.app/docs/additional-documentation/actions/update.html)
+> <br>
+> [Delete](https://angularfirestore-deep.web.app/docs/additional-documentation/actions/delete.html)
+> <br>
+> [Edit Id](https://angularfirestore-deep.web.app/docs/additional-documentation/actions/edit-id.html)
 
-## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+### Demo
+You can find a simple demo in projects/demo.
 
-## Further help
+It can be run locally if you provide your own firebaseConfig in the environment file or you can find a running demo here: 
+<br>
+[Demo](https://angularfirestore-deep.web.app/demo/)
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+> Steps to run locally:
+> <ol>
+>    <li>Clone this repo</li>
+>    <li>Setup a firebase project and place the config 'firebaseConfig' here: projects/demo/src/environments/firebase-secure.ts and export it.</li>
+>    <li>Run the following commands:</li>
+> </ol>
+>
+
+```bash
+npm install
+npm run start
+```
+
+## Using the library
+
+Use the library in any Angular application:
+
+```ts
+  ngFirestoreDeep: AngularFirestoreDeep;  //  AngularFirestoreDeep variable
+
+  constructor(private ngFireStore: AngularFirestore) {
+    this.ngFirestoreDeep = new AngularFirestoreDeep(ngFireStore);  //  initialize AngularFireStoreDeep with AngularFirestore
+  }
+```
+
+See the [Documentation](https://angularfirestore-deep.web.app/docs/) for much more information. 
+
+## License
+
+MIT © [Daniel Lofgren](mailto:lofgrendaniel@hotmail.com)

@@ -15,9 +15,9 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "paths": {
-      "rxfire-extended": [
-        "dist/rxfire-extended/rxfire-extended",
-        "dist/rxfire-extended"
+      "firebase-extended": [
+        "dist/firebase-extended",
+        "dist/firebase-extended/firebase-extended"
       ]
     },
     "target": "es2017",

@@ -3,23 +3,23 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "rxfire-extended": {
+    "firebase-extended": {
       "projectType": "library",
-      "root": "projects/rxfire-extended",
-      "sourceRoot": "projects/rxfire-extended/src",
+      "root": "projects/firebase-extended",
+      "sourceRoot": "projects/firebase-extended/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "project": "projects/rxfire-extended/ng-package.json"
+            "project": "projects/firebase-extended/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "projects/rxfire-extended/tsconfig.lib.prod.json"
+              "tsConfig": "projects/firebase-extended/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "projects/rxfire-extended/tsconfig.lib.json"
+              "tsConfig": "projects/firebase-extended/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -27,9 +27,9 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/rxfire-extended/src/test.ts",
-            "tsConfig": "projects/rxfire-extended/tsconfig.spec.json",
-            "karmaConfig": "projects/rxfire-extended/karma.conf.js"
+            "main": "projects/firebase-extended/src/test.ts",
+            "tsConfig": "projects/firebase-extended/tsconfig.spec.json",
+            "karmaConfig": "projects/firebase-extended/karma.conf.js"
           }
         }
       }
@@ -133,5 +133,5 @@
       }
     }
   },
-  "defaultProject": "rxfire-extended"
+  "defaultProject": "firebase-extended"
 }

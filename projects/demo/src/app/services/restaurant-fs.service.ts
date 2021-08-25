@@ -1,19 +1,15 @@
 import {Injectable} from '@angular/core';
 import {RestaurantItem, ReviewItem} from '../models/restaurant';
 import {combineLatest, forkJoin, Observable, of} from 'rxjs';
-import {SubCollectionWriter} from '../../../../rxfire-extended/src/lib/sub-collection-writer';
-import {SubCollectionQuery} from '../../../../rxfire-extended/src/lib/sub-collection-query';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import CollectionReference = firebase.firestore.CollectionReference;
 import DocumentReference = firebase.firestore.DocumentReference;
 import {environment} from '../../environments/environment';
-import {RxFirestoreExtended} from '../../../../rxfire-extended/src/lib/rxfirestore-extended';
-import {firestoreEmulatorPort} from '../../../../rxfire-extended/src/lib/test/config';
 import {DragAndDropItem} from '../models/groupItem';
 import {mockDragAndDropItems} from '../mock/mockItems';
 import {take, tap} from 'rxjs/operators';
-import {combineLatestToObject} from '../../../../rxfire-extended/src/lib/combine-latest-to-object';
+import {SubCollectionQuery, SubCollectionWriter} from 'firebase-extended';
 
 
 const restaurantSubCollectionWriters: SubCollectionWriter[] = [

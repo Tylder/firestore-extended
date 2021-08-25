@@ -1,13 +1,18 @@
 {
-  "name": "rxfire-extended",
+  "name": "firebase-extended",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "emulators": "firebase emulators:start",
-    "test": "firebase emulators:exec --project=rxfire-extended \"ng test\""
+    "test": "firebase emulators:exec --project=firebase-extended \"ng test\"",
+    "copy:readme": "cp ./README.md ./projects/firebase-extended",
+    "doc": "npm run --prefix ./projects/firebase-extended/ doc",
+    "build": "npm run build:lib && build:demo && npm run doc",
+    "build:lib": "npm run copy:readme && ng build firebase-extended --prod",
+    "build:demo": "ng build demo --prod --base-href /demo/",
+    "publish": "npm run publish:lib && publish:demo"
   },
   "private": true,
   "dependencies": {

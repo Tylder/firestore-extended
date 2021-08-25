@@ -1,0 +1,12 @@
+{
+  "name": "firebase-extended",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "firebase": ">=8.6.1",
+    "rxfire": ">=4.0.0",
+    "rxjs": ">=6.6.0"
+  },
+  "dependencies": {
+    "tslib": "^2.1.0"
+  }
+}
