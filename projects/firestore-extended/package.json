@@ -1,0 +1,37 @@
+{
+  "name": "firestore-extended",
+  "version": "0.0.3",
+  "scripts": {
+    "doc": "npx compodoc -p tsconfig.doc.json --includes additional-docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tylder/firestore-extended.git"
+  },
+  "homepage": "https://github.com/Tylder/firestore-extended.git",
+  "author": {
+    "name": "Daniel Lofgren",
+    "email": "lofgrendaniel@hotmail.com"
+  },
+  "keywords": [
+    "angular",
+    "angularfire",
+    "rxfire",
+    "firebase",
+    "firestore",
+    "wrapper",
+    "deep",
+    "extension",
+    "extended",
+    "helper"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "firebase": ">=8.6.1",
+    "rxfire": ">=4.0.0",
+    "rxjs": ">=6.6.0"
+  },
+  "dependencies": {
+    "tslib": "^2.1.0"
+  }
+}

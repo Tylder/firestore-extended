@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Introduction",
+    "file": "intro.md"
+  },
+  {
+    "title": "Actions",
+    "file": "actions.md",
+    "children": [
+      {
+        "title": "Read",
+        "file": "actions/read.md"
+      },
+      {
+        "title": "Write",
+        "file": "actions/write.md"
+      },
+      {
+        "title": "Update",
+        "file": "actions/update.md"
+      },
+      {
+        "title": "Delete",
+        "file": "actions/delete.md"
+      },
+      {
+        "title": "Edit Id",
+        "file": "actions/edit_id.md"
+      }
+    ]
+  }
+]

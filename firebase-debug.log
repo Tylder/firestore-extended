@@ -1,0 +1,67 @@
+[debug] [2021-08-31T00:16:06.276Z] ----------------------------------------------------------------------
+[debug] [2021-08-31T00:16:06.278Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\anon\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start
+[debug] [2021-08-31T00:16:06.278Z] CLI Version:   9.16.0
+[debug] [2021-08-31T00:16:06.278Z] Platform:      win32
+[debug] [2021-08-31T00:16:06.279Z] Node Version:  v16.2.0
+[debug] [2021-08-31T00:16:06.280Z] Time:          Tue Aug 31 2021 09:16:06 GMT+0900 (Japan Standard Time)
+[debug] [2021-08-31T00:16:06.280Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2021-08-31T00:16:06.338Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2021-08-31T00:16:06.339Z] > authorizing via signed-in user (daniel.lofgren87@gmail.com)
+[info] i  emulators: Starting emulators: firestore, hosting, storage {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: firestore, hosting, storage"}}
+[debug] [2021-08-31T00:16:06.361Z] [hub] writing locator at C:\Users\anon\AppData\Local\Temp\hub-angularfire-wrappers-demo.json
+[info] i  firestore: downloading cloud-firestore-emulator-v1.13.1.jar... {"metadata":{"emulator":{"name":"firestore"},"message":"downloading cloud-firestore-emulator-v1.13.1.jar..."}}
+[debug] [2021-08-31T00:16:06.686Z] >>> [apiv2][query] GET https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-firestore-emulator-v1.13.1.jar 
+[debug] [2021-08-31T00:16:08.555Z] <<< [apiv2][status] GET https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-firestore-emulator-v1.13.1.jar 200
+[debug] [2021-08-31T00:16:08.555Z] <<< [apiv2][body] GET https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-firestore-emulator-v1.13.1.jar [stream]
+[info] i  firestore: Removing outdated emulator files: cloud-firestore-emulator-v1.11.15.jar {"metadata":{"emulator":{"name":"firestore"},"message":"Removing outdated emulator files: cloud-firestore-emulator-v1.11.15.jar"}}
+[debug] [2021-08-31T00:16:46.718Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: projectId"}}
+[debug] [2021-08-31T00:16:46.718Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2021-08-31T00:16:46.719Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","C:\\Users\\anon\\.cache\\firebase\\emulators\\cloud-firestore-emulator-v1.13.1.jar","--host","localhost","--port",8080,"--rules","C:\\Programming\\web\\ng\\libraries\\firestore-extended\\firestore.rules"],"optionalArgs":["port","webchannel_port","host","rules","functions_emulator","seed_from_export"],"joinArgs":false} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\anon\\\\.cache\\\\firebase\\\\emulators\\\\cloud-firestore-emulator-v1.13.1.jar\",\"--host\",\"localhost\",\"--port\",8080,\"--rules\",\"C:\\\\Programming\\\\web\\\\ng\\\\libraries\\\\firestore-extended\\\\firestore.rules\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"functions_emulator\",\"seed_from_export\"],\"joinArgs\":false}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[debug] [2021-08-31T00:16:48.756Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"storage"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2021-08-31T00:16:49.030Z] Temp file directory for storage emulator: C:\Users\anon\AppData\Local\Temp/firebase/storage/blobs {"metadata":{"emulator":{"name":"storage"},"message":"Temp file directory for storage emulator: C:\\Users\\anon\\AppData\\Local\\Temp/firebase/storage/blobs"}}
+[debug] [2021-08-31T00:16:49.896Z] > refreshing access token with scopes: []
+[debug] [2021-08-31T00:16:49.897Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2021-08-31T00:16:51.138Z] <<< HTTP RESPONSE 200 {"pragma":"no-cache","date":"Tue, 31 Aug 2021 00:16:50 GMT","cache-control":"no-cache, no-store, max-age=0, must-revalidate","expires":"Mon, 01 Jan 1990 00:00:00 GMT","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2021-08-31T00:16:51.149Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/angularfire-wrappers-demo/sites 
+[debug] [2021-08-31T00:16:53.659Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/angularfire-wrappers-demo/sites 200
+[debug] [2021-08-31T00:16:53.660Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/angularfire-wrappers-demo/sites {"sites":[{"name":"projects/988359508518/sites/angularfire-wrappers-demo","defaultUrl":"https://angularfire-wrappers-demo.web.app","appId":"1:988359508518:web:08b23bdf2235ed6c041ce7","type":"DEFAULT_SITE"},{"name":"projects/988359508518/sites/angularfirestore-deep","defaultUrl":"https://angularfirestore-deep.web.app","appId":"1:988359508518:web:02d2276da0bf1aab041ce7","type":"USER_SITE"},{"name":"projects/988359508518/sites/rxfire-extended","defaultUrl":"https://rxfire-extended.web.app","appId":"1:988359508518:web:1f6a8c85a140c18b041ce7","type":"USER_SITE"}]}
+[debug] [2021-08-31T00:16:53.660Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/angularfire-wrappers-demo/webApps/1:988359508518:web:08b23bdf2235ed6c041ce7/config [none]
+[debug] [2021-08-31T00:16:56.307Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/angularfire-wrappers-demo/webApps/1:988359508518:web:08b23bdf2235ed6c041ce7/config 200
+[debug] [2021-08-31T00:16:56.308Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/angularfire-wrappers-demo/webApps/1:988359508518:web:08b23bdf2235ed6c041ce7/config {"projectId":"angularfire-wrappers-demo","appId":"1:988359508518:web:08b23bdf2235ed6c041ce7","storageBucket":"angularfire-wrappers-demo.appspot.com","locationId":"us-west2","apiKey":"AIzaSyC-yb-1BbamtnSVYC7bSmPkcYkPp3g6owg","authDomain":"angularfire-wrappers-demo.firebaseapp.com","messagingSenderId":"988359508518"}
+[info] i  hosting: Serving hosting files from: ./dist {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1m./dist\u001b[22m"}}
+[info] +  hosting: Local server: http://localhost:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://localhost:5000\u001b[22m\u001b[24m"}}
+[info] i  ui: downloading ui-v1.6.0.zip... {"metadata":{"emulator":{"name":"ui"},"message":"downloading ui-v1.6.0.zip..."}}
+[debug] [2021-08-31T00:16:56.347Z] >>> [apiv2][query] GET https://storage.googleapis.com/firebase-preview-drop/emulator/ui-v1.6.0.zip 
+[debug] [2021-08-31T00:16:58.138Z] <<< [apiv2][status] GET https://storage.googleapis.com/firebase-preview-drop/emulator/ui-v1.6.0.zip 200
+[debug] [2021-08-31T00:16:58.138Z] <<< [apiv2][body] GET https://storage.googleapis.com/firebase-preview-drop/emulator/ui-v1.6.0.zip [stream]
+[info] i  ui: Removing outdated emulator files: ui-v1.5.0 {"metadata":{"emulator":{"name":"ui"},"message":"Removing outdated emulator files: ui-v1.5.0"}}
+[info] i  ui: Removing outdated emulator files: ui-v1.5.0.zip {"metadata":{"emulator":{"name":"ui"},"message":"Removing outdated emulator files: ui-v1.5.0.zip"}}
+[debug] [2021-08-31T00:17:02.478Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2021-08-31T00:17:02.478Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2021-08-31T00:17:02.478Z] Starting Emulator UI with command {"binary":"node","args":["C:\\Users\\anon\\.cache\\firebase\\emulators\\ui-v1.6.0\\server.bundle.js"],"optionalArgs":[],"joinArgs":false} {"metadata":{"emulator":{"name":"ui"},"message":"Starting Emulator UI with command {\"binary\":\"node\",\"args\":[\"C:\\\\Users\\\\anon\\\\.cache\\\\firebase\\\\emulators\\\\ui-v1.6.0\\\\server.bundle.js\"],\"optionalArgs\":[],\"joinArgs\":false}"}}
+[info] i  ui: Emulator UI logging to ui-debug.log {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI logging to \u001b[1mui-debug.log\u001b[22m"}}
+[debug] [2021-08-31T00:17:02.607Z] Web / API server started at localhost:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at localhost:4000\n"}}
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://localhost:4000                │
+└─────────────────────────────────────────────────────────────┘
+
+┌───────────┬────────────────┬─────────────────────────────────┐
+│ Emulator  │ Host:Port      │ View in Emulator UI             │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Firestore │ localhost:8080 │ http://localhost:4000/firestore │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Hosting   │ localhost:5000 │ n/a                             │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Storage   │ localhost:9199 │ http://localhost:4000/storage   │
+└───────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub running at localhost:4400
+  Other reserved ports: 4500
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 

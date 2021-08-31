@@ -8,9 +8,10 @@
     "emulators": "firebase emulators:start",
     "test": "firebase emulators:exec --project=firestore-extended \"ng test\"",
     "copy:readme": "cp ./README.md ./projects/firestore-extended",
+    "copy:license": "cp ./LICENSE.md ./projects/firestore-extended",
     "doc": "npm run --prefix ./projects/firestore-extended/ doc",
-    "build": "npm run build:lib && build:demo && npm run doc",
-    "build:lib": "npm run copy:readme && ng build firestore-extended",
+    "build": "npm run build:lib && npm run build:demo && npm run doc",
+    "build:lib": "npm run copy:readme && npm run copy:license && ng build --prod firestore-extended ",
     "build:demo": "ng build demo --base-href /demo/",
     "publish": "npm run publish:lib && publish:demo"
   },
@@ -35,6 +36,7 @@
     "@angular-devkit/build-angular": "~12.0.5",
     "@angular/cli": "~12.0.1",
     "@angular/compiler-cli": "~12.0.1",
+    "@compodoc/compodoc": "^1.1.11",
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.11.1",
     "angular-cli-ghpages": "^1.0.0-rc.2",
@@ -45,6 +47,7 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
     "ng-packagr": "^12.0.0",
+    "source-map-explorer": "^2.5.2",
     "tslint": "^6.1.3",
     "typescript": "~4.2.3"
   }
