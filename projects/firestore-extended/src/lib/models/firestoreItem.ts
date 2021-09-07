@@ -60,11 +60,13 @@ export interface FirestoreMetadataWithIndex<T> extends FirestoreMetadata<T> {
   index: number;
 }
 
-
+export interface FirestoreItemWIndex extends FirestoreItem {
+  firestoreMetadata?: FirestoreMetadataWithIndex<this>;
+}
 /**
  * Used to save the storagePath of items in Firebase Storage
  */
-export interface StorageItem<T> extends FirestoreMetadata<T> {
+export interface StorageItem {
   /** the Firebase storage path */
   storagePath: string;
 }
@@ -72,7 +74,7 @@ export interface StorageItem<T> extends FirestoreMetadata<T> {
 /**
  * Firestore data for image stored on Firebase Storage
  */
-export interface ImageItem<T> extends StorageItem<T>  {
+export interface ImageItem  {
   /** The title of the image */
   title: string;
   /** Filename including extension */
