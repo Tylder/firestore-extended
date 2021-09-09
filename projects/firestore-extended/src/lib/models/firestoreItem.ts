@@ -71,10 +71,8 @@ export interface StorageItem {
   storagePath: string;
 }
 
-/**
- * Firestore data for image stored on Firebase Storage
- */
-export interface ImageItem  {
+/** Firestore data for image stored on Firebase Storage */
+export interface ImageItem extends StorageItem {
   /** The title of the image */
   title: string;
   /** Filename including extension */
