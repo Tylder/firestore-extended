@@ -2,16 +2,11 @@
 
 Simplify the work with complex and deep objects while retaining all the great benefits from Firebase Firestore.
 
-## RxFire
+## Install
 ```bash
 npm install rxfire firebase rxjs firestore-extended --save
 ```
 
-## AngularFire
-```bash
-ng add @angular/fire@next
-npm install firebase rxjs firestore-extended --save
-```
 
 Firestore splits its data up into collections and documents which is what allows it to be scalable and fast.
 

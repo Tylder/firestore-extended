@@ -24,51 +24,7 @@ export class AppComponent {
   mockRestaurants: RestaurantItem[] = mockDeepItems;  // list of mock restaurants
   selectedMockRestaurant: RestaurantItem | undefined;
 
-  constructor(private restaurantFsService: RestaurantFsService) {
-    //
-    // this.restaurantFsService.listenForRestaurantById$('test')
-    //   .subscribe(d => console.log(d));
-
-    // this.restaurantFsService.addRestaurant$(this.mockRestaurants[0]).subscribe()
-
-
-    // this.restaurantFsService.listenForRestaurants$()
-    //   .subscribe(d => console.log(d));
-
-    // /* listen for restaurants and keep them in this.restaurants$ */
-    // this.restaurantFsService.listenForRestaurants$().pipe(
-    //   tap(restaurants => console.log(restaurants)),
-    // ).subscribe((restaurants: RestaurantItem[]) => this.restaurants$.next(restaurants));
-
-    // /* listen for selectedRestaurant$ and update selectedRestaurantFull$ if changed */
-    // this.selectedRestaurant$.pipe(
-    //   switchMap((restaurant: RestaurantItem) => {
-    //     if (restaurant != null) {
-    //       return this.restaurantFsService.listenForRestaurantById$(restaurant.id);
-    //     }
-    //     else {
-    //       return of(null);
-    //     }
-    //   }),
-    // ).subscribe((restaurantFull: RestaurantItem) => this.selectedRestaurantFull$.next(restaurantFull));
-    //
-    // /* set selectedRestaurant$ to null if not in firestore, meaning it has been deleted or had its id changed */
-    // this.restaurants$.pipe(
-    //   map((restaurants: RestaurantItem[]) => restaurants.map(rest => rest.id)),
-    //   switchMap((restaurantIds: string[]) => {
-    //     return this.selectedRestaurantFull$.pipe(
-    //       take(1),
-    //       filter(selectedRestaurant => selectedRestaurant != null),
-    //       map((selectedRestaurant: RestaurantItem) => selectedRestaurant.id),
-    //       tap(selectedRestaurantId => {
-    //         if (restaurantIds.findIndex(id => id === selectedRestaurantId) === -1) { // selected restaurant id not in restaurants
-    //           this.selectedRestaurant$.next(null);
-    //         }
-    //       })
-    //     );
-    //   }),
-    // ).subscribe();
-  }
+  constructor(private restaurantFsService: RestaurantFsService) {}
 
   add() {
     this.mockRestaurants.forEach(res => {

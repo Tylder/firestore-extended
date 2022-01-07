@@ -12,7 +12,8 @@ export * from './lib/rxfirestore-extended';
 export * from './lib/rxfirestore-extended-wrapper';
 export * from './lib/rxjs-ops/combine-latest-to-object';
 
-export * from './lib/config';
-export * from './lib/ngx-firestore-extended.module';
-export * from './lib/ngx-firestore-extended.service';
+export * from './lib/ngx/config';
+export * from './lib/ngx/ngx-firebase.module';
+export * from './lib/ngx/ngx-firebase.service';
+export * from './lib/ngx/ngx-firestore-extended.service';
 

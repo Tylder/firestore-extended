@@ -2,16 +2,20 @@ import {Inject, Injectable, Optional} from '@angular/core';
 
 import firebase from 'firebase/app';
 import {FirebaseConfig, FIRESTORE_USE_EMULATOR, FirestoreEmulatorConfig} from './config';
-import {RxFirestoreExtended} from './rxfirestore-extended';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class NgxFirestoreExtendedService {
 
+export class NgxFirebaseService {
+  /**
+   * Service that holds the Firebase App
+   * Inject this service into any other service that requires the Firebase App
+   *
+   * For example NgxFireStoreExtendedService injects this service
+   */
   public app: firebase.app.App;
-  public fireExt: RxFirestoreExtended;
 
   constructor(@Optional() config?: FirebaseConfig,
               @Optional() @Inject(FIRESTORE_USE_EMULATOR) public emulatorConfig?: FirestoreEmulatorConfig) {
@@ -30,7 +34,5 @@ export class NgxFirestoreExtendedService {
     if (emulatorConfig) {
       this.app.firestore().useEmulator(emulatorConfig.host, emulatorConfig.port);
     }
-
-    this.fireExt = new RxFirestoreExtended(this.app);
   }
 }
