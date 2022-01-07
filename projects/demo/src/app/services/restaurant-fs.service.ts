@@ -45,11 +45,11 @@ const restaurantSubCollectionQueries: SubCollectionQuery[] = [
 })
 export class RestaurantFsService {
   app: firebase.app.App;
-  rxFireExt: RxFirestoreExtended;  //  RxfirestoreExtended variable
+  rxFireExt: RxFirestoreExtended;  //  RxfirestoreExtended
   restaurantCollectionRef: CollectionReference<any>;
 
   constructor() {
-    this.app = firebase.initializeApp(environment.firebase);
+    this.app = firebase.initializeApp(environment.firebase); // only call this once per application
     this.app.firestore().useEmulator('localhost', firestoreEmulatorPort);
     this.rxFireExt = new RxFirestoreExtended(this.app);  //  initialize RxFireStoreExtended with firestore
     this.restaurantCollectionRef = this.app.firestore().collection('test'); // AngularFirestoreCollectionRef to restaurants
