@@ -1,6 +1,6 @@
 import {FirestoreItem} from '../../models/firestoreItem';
 
-export interface RestaurantItem extends FirestoreItem{
+export interface RestaurantItem extends FirestoreItem {
   name: string;
   category: string;
   averageReviewScore: number;

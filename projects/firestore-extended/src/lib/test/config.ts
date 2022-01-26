@@ -1,4 +1,4 @@
-import firebaseConfig from '../../../../../firebase.json'
+import firebaseConfig from '../../../../../firebase.json';
 
 export default {
   apiKey: 'AIzaSyC-yb-1BbamtnSVYC7bSmPkcYkPp3g6owg',

@@ -1,6 +1,6 @@
 # Delete
 
-#### For a working demo checkout: [Demo](../../../demo), or [Code](https://github.com/Tylder/angularfirestore-deep)
+#### For a working demo checkout: [Demo](../../../demo_), or [Code](https://github.com/Tylder/angularfirestore-deep)
 
 #### Method Documentation
 
@@ -11,15 +11,15 @@
 - [deleteMultipleByPaths$](../../classes/AngularFirestoreDeep.html#deleteMultipleByPaths$)
 - [deleteMultipleDeep$](../../classes/AngularFirestoreDeep.html#deleteMultipleDeep$)
 
-Firestore does not provide a way to delete a document which then deletes any other child documents in child colletions.
-The only way to make sure all child documents are deleted is to delete each individually.
+Firestore does not provide a way to delete a document which then deletes any other child documents in child colletions. The only way to make
+sure all child documents are deleted is to delete each individually.
 
 If wish to benefit from using child collections and documents then this quickly becomes a very repetitive issue.
 
 AngularFireStore-Deep handles that by using [SubCollectionQuery](../../classes/SubCollectionQuery.html)
 
+##### Delete Document
 
-#####  Delete Document 
 and documents in sub collections as specified in restaurantSubCollectionQueries, see below for definition.
 
 ```typescript
@@ -29,17 +29,16 @@ deleteRestaurantById$(restaurantId: string): Observable<RestaurantItem> {
 }
 ```
 
-#####  Delete all documents in collection 
+##### Delete all documents in collection
+
 and documents in sub collections as specified in restaurantSubCollectionQueries, see below for definition.
 
 1. Listens to all restaurants in collection.
 2. Since we only want to get the restaurants once and not continuously listen for updates we do a take(1)
-3. Map the list of restaurants to a list of AngularFirestoreDocuments.
-   This is why we add this data to the FirestoreItem when we listen for a document.
-   It makes any future operations on a document so much faster and cheaper since we already have its path and reference saved.
-4. switchMap to deleteMultipleDeep -> works the same as deleteMultipleDeep except we can give it a list of AngularFirestoreDocuments
-   and it deletes them all asynchronously.
-
+3. Map the list of restaurants to a list of AngularFirestoreDocuments. This is why we add this data to the FirestoreItem when we listen for
+   a document. It makes any future operations on a document so much faster and cheaper since we already have its path and reference saved.
+4. switchMap to deleteMultipleDeep -> works the same as deleteMultipleDeep except we can give it a list of AngularFirestoreDocuments and it
+   deletes them all asynchronously.
 
 ```typescript
 deleteAllRestaurants$(): Observable<any> {
@@ -52,8 +51,7 @@ deleteAllRestaurants$(): Observable<any> {
 }   
 ```
 
-
-#####  Sub Collection Queries used in the examples.
+##### Sub Collection Queries used in the examples.
 
 [SubCollectionQuery documentation](../../interfaces/SubCollectionQuery.html)
 
@@ -74,6 +72,7 @@ const restaurantSubCollectionQueries: SubCollectionQuery[] = [
 ```
 
 ##### Models used in the examples.
+
 Notice that they extend [FirestoreItem](../../interfaces/FirestoreItem.html)
 
 ```typescript

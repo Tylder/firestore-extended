@@ -1,6 +1,6 @@
 # Update
 
-#### For a working demo checkout: [Demo](../../../demo), or [Code](https://github.com/Tylder/angularfirestore-deep)
+#### For a working demo checkout: [Demo](../../../demo_), or [Code](https://github.com/Tylder/angularfirestore-deep)
 
 #### Method Documentation
 
@@ -9,8 +9,8 @@
 - [updateMultiple$](../../classes/AngularFirestoreDeep.html#updateMultiple$)
 - [updateMultipleByPaths$](../../classes/AngularFirestoreDeep.html#updateMultipleByPaths$)
 
-Works basically the same as [adding documents](write.html) in that the data can be split up into child collections and documents
-if specified in the SubCollectionWriters.
+Works basically the same as [adding documents](write.html) in that the data can be split up into child collections and documents if
+specified in the SubCollectionWriters.
 
 ##### Update Document
 
@@ -20,7 +20,7 @@ editRestaurant$(restaurant: RestaurantItem, data: object): Observable<any> {
 }
 ```
 
-#####  Sub Collection Writers used in the examples.
+##### Sub Collection Writers used in the examples.
 
 [SubCollectionWriter documentation](../../interfaces/SubCollectionWriter.html)
 
@@ -51,6 +51,7 @@ const restaurantSubCollectionQueries: SubCollectionQuery[] = [
 ```
 
 ##### Models used in the examples.
+
 Notice that they extend [FirestoreItem](../../interfaces/FirestoreItem.html)
 
 ```typescript

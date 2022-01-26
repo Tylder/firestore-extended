@@ -68,7 +68,7 @@
  *  But it would also slow it down as explained above.
  *  Splitting your data up in to sub collections allows you to asynchronously read/write those collections at the same time.
  *
- *  So if you compare one large document and a small document with 4 subcollections of about equal size.
+ *  So if you compare one large document and a small document with 4 subCollections of about equal size.
  *  It would require 5 firestore reads instead of 1 if each sub collection contains 1 document.
  *  But the speed could also potentially be 5X faster since all those parts are read at the same time.
  *
@@ -110,11 +110,12 @@ export interface SubCollectionWriter {
   docId?: string;
 
   /** each collection can contain other sub collections, unless a docId is given in which case subCollectionWriters
-   * cannot be used and an error will be thrown */
+   * cannot be used and an error will be thrown
+   */
   subCollections?: SubCollectionWriter[]; // sub/sub collections
 
   // /** if true then the next level subCollectionWriters will be placed at the same level as this with a reference back
-  //  * to the linked data, good for secure subcols
+  //  * to the linked data, good for secure subCols
   //  */
   // isFlat?: boolean;
 }

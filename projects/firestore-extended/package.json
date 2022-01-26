@@ -1,6 +1,6 @@
 {
   "name": "firestore-extended",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "scripts": {
     "doc": "npx compodoc -p tsconfig.doc.json --includes additional-docs"
   },
@@ -27,11 +27,10 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "firebase": ">=8.6.1",
-    "rxfire": ">=4.0.0",
-    "rxjs": ">=6.6.0"
+    "firebase": "^9.6.1",
+    "rxjs": "~7.4.0"
   },
   "dependencies": {
-    "tslib": "^2.1.0"
+    "tslib": "^2.3.0"
   }
 }

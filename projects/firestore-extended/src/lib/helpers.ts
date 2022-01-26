@@ -1,22 +1,36 @@
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import DocumentReference = firebase.firestore.DocumentReference;
-import CollectionReference = firebase.firestore.CollectionReference;
+import {
+  collection,
+  CollectionReference,
+  doc,
+  DocumentData,
+  DocumentReference,
+  Firestore,
+  Timestamp as FirebaseTimestamp
+} from 'firebase/firestore';
 
 /** Helper method to get reference from path, the path can be either to a Document or Collection */
-export function getRefFromPath<A>(path: string, fbApp: firebase.app.App): DocumentReference<A> | CollectionReference<A> {
+export function getRefFromPath<A>(path: string, firestore: Firestore): DocumentReference<A> | CollectionReference<A> {
   const pathSegmentAmount: number = path.split('/').length;
   if (pathSegmentAmount % 2 === 0) { // even number means doc
-    return fbApp.firestore().doc(path) as DocumentReference<A>;
+    return doc(firestore, path) as DocumentReference<A>;
   } else { // odd meaning collection
-    return fbApp.firestore().collection(path) as CollectionReference<A>;
+    return collection(firestore, path) as CollectionReference<A>;
   }
+}
+
+export function getSubCollection<T extends DocumentData, A extends DocumentData>(docRef: DocumentReference<T>, collectionName: string): CollectionReference<A> {
+  const collectionPath: string = docRef.path.concat('/', collectionName);
+  return collection(docRef.firestore, collectionPath) as CollectionReference<A>;
+}
+
+export function getDocRefWithId<T extends DocumentData>(collectionRef: CollectionReference<T>, id: string): DocumentReference<T> {
+  return doc(collectionRef.firestore, collectionRef.path, id) as DocumentReference<T>;
 }
 
 /**
  * Add data to object inplace
- * @param item
- * @param dataToAdd
+ * @param item item to add to
+ * @param dataToAdd data to add
  * @param inplace if true the data is added inplace, if false a copy is used
  */
 export function addDataToItem<A extends { [field: string]: any }>(
@@ -24,11 +38,11 @@ export function addDataToItem<A extends { [field: string]: any }>(
 
   if (inplace) {
     Object.entries(dataToAdd).forEach(([k, v]) => {
-      (item as { [field: string]: any })[k] = v
-    })
-    return item
+      (item as { [field: string]: any })[k] = v;
+    });
+    return item;
   } else {
-    return {...item, ...dataToAdd}
+    return {...item, ...dataToAdd};
   }
 }
 
@@ -36,7 +50,7 @@ export function addDataToItem<A extends { [field: string]: any }>(
  * Add createdDate to the object inplace, if createdDate already exists then we do not overwrite it
  *
  * @param item item where the createdData will be added
- * @param createdDate
+ * @param createdDate optional, will use new Date() if none given
  * @param inplace if true the data is added inplace, if false a copy is used
  */
 export function addCreatedDate<A>(item: A, inplace = false, createdDate: Date = new Date()): A {
@@ -45,30 +59,30 @@ export function addCreatedDate<A>(item: A, inplace = false, createdDate: Date = 
     return item;
   }
 
-  return addDataToItem(item, {createdDate}, inplace)
+  return addDataToItem(item, {createdDate}, inplace);
 }
 
 /**
  * Add modifiedDate to the object
  *
  * @param item item where the modifiedDate will be added
- * @param modifiedDate
+ * @param modifiedDate optional, will use new Date() if none given
  * @param inplace if true the data is added inplace, if false a copy is used
  */
 export function addModifiedDate<A>(item: A, inplace = false, modifiedDate: Date = new Date()): A {
-  return addDataToItem(item, {modifiedDate}, inplace)
+  return addDataToItem(item, {modifiedDate}, inplace);
 }
 
 /**
  * Add createdBy to the object inplace
  *
- * @param item
+ * @param item item to add to
  * @param createdBy profile, user or any type of data
  * @param inplace if true the data is added inplace, if false a copy is used
  */
 export function addCreatedBy<A>(item: A, createdBy: { [field: string]: any }, inplace = false): A {
 
-  return addDataToItem(item, {createdBy}, inplace)
+  return addDataToItem(item, {createdBy}, inplace);
 }
 
 
@@ -84,11 +98,11 @@ export function addCreatedBy<A>(item: A, createdBy: { [field: string]: any }, in
 
 export function convertTimestampToDate<A extends { createdDate?: any, modifiedDate?: any }>(item: A): A {
   if (item.hasOwnProperty('createdDate')) {
-    item.createdDate = item.createdDate as firebase.firestore.Timestamp;
+    item.createdDate = item.createdDate as FirebaseTimestamp;
     item.createdDate = item.createdDate.toDate();
   }
   if (item.hasOwnProperty('modifiedDate')) {
-    item.modifiedDate = item.modifiedDate as firebase.firestore.Timestamp;
+    item.modifiedDate = item.modifiedDate as FirebaseTimestamp;
     item.modifiedDate = item.modifiedDate.toDate();
   }
 

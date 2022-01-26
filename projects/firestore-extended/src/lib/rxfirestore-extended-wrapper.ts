@@ -1,59 +1,73 @@
-import firebase from 'firebase';
-import {from, Observable} from 'rxjs';
-import {doc} from 'rxfire/firestore';
-import CollectionReference = firebase.firestore.CollectionReference;
-import DocumentReference = firebase.firestore.DocumentReference;
-import DocumentSnapshot = firebase.firestore.DocumentSnapshot;
-import {FirestoreWrapper} from './interfaces';
-import SetOptions = firebase.firestore.SetOptions;
-import {take} from 'rxjs/operators';
-import {collection} from 'rxfire/firestore';
-import QueryDocumentSnapshot = firebase.firestore.QueryDocumentSnapshot;
-
-export class RxFirestoreWrapper implements FirestoreWrapper {
-
-  constructor(public fbApp: firebase.app.App) {}
-
-  // doc
-  public doc(docRef: DocumentReference): Observable<DocumentSnapshot> {
-    return doc(docRef);
-  }
-
-  // public set<A>(docRef: DocumentReference, data: Partial<A>, options?: SetOptions): Observable<DocumentReference<A>> {
-  public set<A>(docRef: DocumentReference, data: A, options?: SetOptions): Observable<void> {
-
-    if (options) {
-      return from( docRef.set(data, options) ).pipe(
-        take(1)
-      );
-    } else {
-      return from( docRef.set(data) ).pipe(
-        take(1)
-      );
-    }
-  }
-
-  delete<A>(docRef: firebase.firestore.DocumentReference): Observable<void> {
-    return from ( docRef.delete() ).pipe(
-      take(1)
-    );
-  }
-
-  update<A>(docRef: firebase.firestore.DocumentReference, data: firebase.firestore.UpdateData, options?: firebase.firestore.SetOptions): Observable<void> {
-    return from ( docRef.update(data) ).pipe(
-      take(1)
-    );
-  }
-
-  public collection(collectionRef: CollectionReference): Observable<QueryDocumentSnapshot[]> {
-    return collection(collectionRef);
-  }
-
-  public add<T>(collectionRef: CollectionReference<T>, data: T): Observable<DocumentReference<T>> {
-    return from( collectionRef.add(data) ).pipe(
-      take(1)
-    );
-  }
-
-
-}
+// import {from, Observable} from 'rxjs';
+// import {collection, doc} from 'rxfire/firestore';
+// import {BaseFirestoreWrapper} from './interfaces';
+// import {take} from 'rxjs/operators';
+// import {FirebaseApp} from 'firebase/app';
+// import {
+//   addDoc,
+//   CollectionReference,
+//   deleteDoc,
+//   DocumentData,
+//   DocumentReference,
+//   DocumentSnapshot,
+//   Firestore,
+//   getFirestore,
+//   Query,
+//   QueryDocumentSnapshot,
+//   setDoc,
+//   SetOptions,
+//   UpdateData,
+//   updateDoc
+// } from 'firebase/firestore';
+//
+// export class RxFirestoreWrapper implements BaseFirestoreWrapper {
+//
+//   constructor(public firebaseApp: FirebaseApp) {
+//   }
+//
+//   get firestore(): Firestore {
+//     return getFirestore(this.firebaseApp);
+//   }
+//
+//   // doc
+//   public doc<T = DocumentData>(docRef: DocumentReference<T>): Observable<DocumentSnapshot<T>> {
+//     return doc(docRef) as Observable<DocumentSnapshot<T>>;
+//   }
+//
+//   public set<A>(docRef: DocumentReference<A>, data: A, options?: SetOptions): Observable<void> {
+//
+//     if (options) {
+//       return from(setDoc(docRef, data, options)).pipe(
+//         take(1)
+//       );
+//     } else {
+//       return from(setDoc(docRef, data)).pipe(
+//         take(1)
+//       );
+//     }
+//   }
+//
+//   delete<T>(docRef: DocumentReference<T>): Observable<void> {
+//     return from(deleteDoc(docRef)).pipe(
+//       take(1)
+//     );
+//   }
+//
+//   update<T>(docRef: DocumentReference<T>, data: UpdateData<Partial<T>>, options?: SetOptions): Observable<void> {
+//     return from(updateDoc<Partial<T>>(docRef, data)).pipe(
+//       take(1)
+//     );
+//   }
+//
+//   public collection<T>(collectionRef: Query<T>): Observable<QueryDocumentSnapshot<T>[]> {
+//     return collection(collectionRef);
+//   }
+//
+//   public add<T>(collectionRef: CollectionReference<T>, data: T): Observable<DocumentReference<T>> {
+//     return from(addDoc(collectionRef, data)).pipe(
+//       take(1)
+//     );
+//   }
+//
+//
+// }

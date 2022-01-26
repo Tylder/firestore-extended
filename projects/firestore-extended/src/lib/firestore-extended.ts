@@ -1,22 +1,47 @@
 import {combineLatest, forkJoin, from, Observable, of} from 'rxjs';
 
 import {catchError, filter, map, mergeMap, switchMap, take, tap} from 'rxjs/operators';
+import {
+  collection,
+  CollectionReference,
+  DocumentData,
+  DocumentReference,
+  DocumentSnapshot,
+  endAt,
+  endBefore,
+  FieldPath,
+  Firestore,
+  getDocs,
+  limit,
+  limitToLast,
+  orderBy,
+  OrderByDirection,
+  query,
+  Query,
+  QueryConstraint,
+  QuerySnapshot,
+  startAfter,
+  startAt,
+  where,
+  WhereFilterOp,
+  writeBatch,
+  WriteBatch
+} from 'firebase/firestore';
 
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-
-import {addCreatedDate, addDataToItem, addModifiedDate, convertTimestampToDate, getRefFromPath} from './helpers';
+import {
+  addCreatedDate,
+  addDataToItem,
+  addModifiedDate,
+  convertTimestampToDate,
+  getDocRefWithId,
+  getRefFromPath,
+  getSubCollection
+} from './helpers';
 import {SubCollectionQuery} from './sub-collection-query';
-import {FirebaseErrorExt, FirestoreWrapper} from './interfaces';
+import {BaseFirestoreWrapper, FirestoreErrorExt} from './interfaces';
 import {FireItem, FirestoreItem, FirestoreMetadata} from './models/firestoreItem';
 import {SubCollectionWriter} from './sub-collection-writer';
-import DocumentSnapshot = firebase.firestore.DocumentSnapshot;
-import CollectionReference = firebase.firestore.CollectionReference;
-import DocumentReference = firebase.firestore.DocumentReference;
-import DocumentData = firebase.firestore.DocumentData;
-import QueryDocumentSnapshot = firebase.firestore.QueryDocumentSnapshot;
-import WriteBatch = firebase.firestore.WriteBatch;
-import { moveItemInArray, transferArrayItem } from './drag-utils';
+import {moveItemInArray, transferArrayItem} from './drag-utils';
 
 /**
  * Action to be taken by listener if the document does not exist.
@@ -40,9 +65,8 @@ interface CurrentDocSubCollectionSplit {
   /** contains the document that is considered the current */
   currentDoc: FireItem<{}>;
   /** sub collections of current document */
-  subCollections: {[index: string]: any};
+  subCollections: { [index: string]: any };
 }
-
 
 
 /**
@@ -59,7 +83,11 @@ export class FirestoreExtended {
    * @param fs Firestore wrapper Firestore extended can be used by many Firestore implementations
    * @param defaultDocId The default name given to a subCollection document when no name is given
    */
-  constructor(private fs: FirestoreWrapper, public defaultDocId: string = 'data') {
+  constructor(private fs: BaseFirestoreWrapper, public defaultDocId: string = 'data') {
+  }
+
+  get firestore(): Firestore {
+    return this.fs.firestore;
   }
 
   /* ----------  LISTEN -------------- */
@@ -131,28 +159,32 @@ export class FirestoreExtended {
    *        );
    *    }
    *
-   * @param collectionRef the collectionRef which will be listened to
+   * @param _query the collectionRef which will be listened to
    * @param subCollectionQueries
    * @param documentChangeTypes list of DocumentChangeType that will be listened to, if null listen to all
    */
   public listenForCollection$<T = FirestoreItem | DocumentData>(
-    collectionRef: CollectionReference<T>,
+    _query: Query<T>,
     subCollectionQueries: SubCollectionQuery[] = []): Observable<Array<FireItem<T>>> {
     /**
      * Returns an observable that will emit whenever the ref changes in any way.
      * Also adds the id and ref to the object.
      */
-    return this.listenForCollectionSimple$<T>(collectionRef).pipe(
+    return this.listenForCollectionSimple$<T>(_query).pipe(
       mergeMap((items: FireItem<{}>[]) => {
 
-        if (items == null || items.length === 0) { return of([]); }
-        if (subCollectionQueries.length <= 0) { return of(items); }
+        if (items == null || items.length === 0) {
+          return of([]);
+        }
+        if (subCollectionQueries.length <= 0) {
+          return of(items);
+        }
 
         const collectionListeners: Array<Observable<any>> = [];
 
         items.forEach(item => {
 
-          const collectionListener = this.listenForCollectionsDeep(item, subCollectionQueries)
+          const collectionListener = this.listenForCollectionsDeep(item, subCollectionQueries);
 
           collectionListeners.push(collectionListener);
         });
@@ -160,7 +192,7 @@ export class FirestoreExtended {
         /* Finally return the combined collection listeners */
         return combineLatest(collectionListeners);
       })
-    )
+    );
   }
 
   /**
@@ -171,15 +203,18 @@ export class FirestoreExtended {
     collectionKey: string,
     orderKey?: string): Observable<any> {
 
-    const collectionRef = getRefFromPath(collectionPath, this.fs.fbApp) as CollectionReference;
+    // const collectionRef = getRefFromPath(collectionPath, this.fs.firestore) as CollectionReference<T>;
+    const collectionQuery = new QueryContainer<T>(getRefFromPath(collectionPath, this.fs.firestore) as CollectionReference<T>);
     if (orderKey != null) {
-      collectionRef.orderBy(orderKey);
+      collectionQuery.orderBy(orderKey);
     }
 
-    return this.listenForCollectionSimple$<T>(collectionRef).pipe(
+    return this.listenForCollectionSimple$<T>(collectionQuery.query).pipe(
       mergeMap((items: FireItem<T>[]) => {
 
-        if (items.length <= 0) { return of([]); } // TODO  perhaps make this throw an error so that we can skip it
+        if (items.length <= 0) {
+          return of([]);
+        } // TODO  perhaps make this throw an error so that we can skip it
 
         // if (items.length <= 0) { throwError('No more '); }
 
@@ -187,13 +222,16 @@ export class FirestoreExtended {
 
         for (const item of items) {
 
-
-          const nextLevelPath = item.firestoreMetadata.ref.collection(collectionKey).path;  // one level deeper
+          // const nextLevelPath = item.firestoreMetadata.ref.collection(collectionKey).path;  // one level deeper
+          const nextLevelPath = item.firestoreMetadata.ref.path.concat('/', collectionKey);  // one level deeper
 
           const nextLevelItems$ = this.listenForCollectionRecursively$(nextLevelPath, collectionKey, orderKey).pipe(
             map((nextLevelItems: Array<FireItem<T>>) => {
-              if (nextLevelItems.length > 0) { return {...item, [collectionKey]: nextLevelItems } as FireItem<T>; }
-              else {  return {...item} as FireItem<T>; }  // dont include an empty array
+              if (nextLevelItems.length > 0) {
+                return {...item, [collectionKey]: nextLevelItems} as FireItem<T>;
+              } else {
+                return {...item} as FireItem<T>;
+              }  // dont include an empty array
             }),
           );
           nextLevelObs.push(nextLevelItems$);
@@ -203,7 +241,6 @@ export class FirestoreExtended {
           tap(val => console.log(val))
         );
       }),
-
     );
   }
 
@@ -226,21 +263,21 @@ export class FirestoreExtended {
     docId?: string): Observable<FireItem<T>> {
 
     if (Array.isArray(data) && docId && subCollectionWriters.length > 0) {
-      const error: FirebaseErrorExt = {
-        name: 'FirebaseErrorExt',
-        code: 'firestoreExt/invalid-sub-collection-writers',
+      const error: FirestoreErrorExt = {
+        name: 'firestoreExt/invalid-sub-collection-writers',
+        code: 'unknown',
         message: 'Cannot have both docId and subCollectionWriters at the same time when data is an array',
         stack: '',
         data,
         subCollectionWriters,
         docId
-      }
+      };
 
       throw error;
     }
 
-    let currentDoc
-    let subCollections: { [index: string]: any; }  = {};
+    let currentDoc;
+    let subCollections: { [index: string]: any; } = {};
 
     /* if the data is an array and a docId is given the entire array will be saved in a single document with that docId,
     * Each item in the array will be saved as a map with the key being the array index
@@ -255,7 +292,6 @@ export class FirestoreExtended {
     }
 
     return this.addSimple$<T>(currentDoc as T, collectionRef, isAddDates, docId).pipe(
-
       /* Add Sub/sub collections*/
       mergeMap((currentData: FireItem<T>) => {
 
@@ -270,8 +306,7 @@ export class FirestoreExtended {
             subDocId = subCollectionWriters.find(subColl => subColl.name === subCollectionKey)?.docId;
           }
 
-          const subCollectionRef: CollectionReference = currentData.firestoreMetadata.ref.collection(subCollectionKey);
-          // const subCollectionRef: CollectionReference = currentData.ref.collection(subCollectionKey);
+          const subCollectionRef: CollectionReference = getSubCollection(currentData.firestoreMetadata.ref, subCollectionKey);
 
           /* Handle array and object differently
           * For example if array and no docId is given it means we should save each entry as a separate doc.
@@ -332,10 +367,10 @@ export class FirestoreExtended {
             map((docDatas: Array<Map<string, []>>) => { /* List of sub docs*/
               const groupedData = {};
 
-              docDatas.forEach((doc: {[index: string]: any}) => { /* iterate over each doc */
+              docDatas.forEach((doc: { [indexKey: string]: any }) => { /* iterate over each doc */
 
-                const key = doc.key;
-                const value = doc.value;
+                const key = doc['key'];
+                const value = doc['value'];
 
                 /* if groupedData has the key already it means that the several docs have the same key..so an array */
                 // @ts-ignore
@@ -355,7 +390,7 @@ export class FirestoreExtended {
             // tap(groupedData => console.log(groupedData)),
 
             map((groupedData: T) => {
-              return {...currentData, ...groupedData } as T;
+              return {...currentData, ...groupedData} as T;
             }),
             // tap(d => console.log(d)),
           );
@@ -383,9 +418,9 @@ export class FirestoreExtended {
    * @param isAddModifiedDate if true the modifiedDate property is added/updated on the affected documents
    */
   public update$<A extends { [field: string]: any }>(data: Partial<A>,
-                                                    docRef: DocumentReference,
-                                                    subCollectionWriters: SubCollectionWriter[] = [],
-                                                    isAddModifiedDate: boolean = true): Observable<void> {
+                                                     docRef: DocumentReference,
+                                                     subCollectionWriters: SubCollectionWriter[] = [],
+                                                     isAddModifiedDate: boolean = true): Observable<void> {
 
     if (subCollectionWriters == null || subCollectionWriters.length === 0) {
       return this.updateSimple$(data, docRef, isAddModifiedDate); // no subCollectionWriters so just do a simple update
@@ -403,7 +438,8 @@ export class FirestoreExtended {
    * @param isAddModifiedDate if true the modifiedDate is added/updated
    */
   public updateMultiple$<A>(docRefs: DocumentReference[], data: A, isAddModifiedDate: boolean = true): Observable<void> {
-    const batch = this.fs.fbApp.firestore().batch();
+    // const batch = this.fs.firebaseApp.firestore().batch();
+    const batch: WriteBatch = writeBatch(this.fs.firestore);
 
     if (isAddModifiedDate) {
       data = addModifiedDate(data, false);
@@ -430,13 +466,13 @@ export class FirestoreExtended {
   public changeDocId$<T>(docRef: DocumentReference,
                          newId: string,
                          subCollectionQueries: SubCollectionQuery[] = [],
-                         subCollectionWriters? : SubCollectionWriter[]): Observable<FireItem<T>> {
+                         subCollectionWriters?: SubCollectionWriter[]): Observable<FireItem<T>> {
 
     if (subCollectionWriters == null) {
       subCollectionWriters = subCollectionQueries as SubCollectionWriter[];
     }
 
-    const collectionRef: CollectionReference = docRef.parent
+    const collectionRef: CollectionReference = docRef.parent;
 
     return this.listenForDoc$(docRef, subCollectionQueries).pipe(
       // @ts-ignore
@@ -473,21 +509,21 @@ export class FirestoreExtended {
    * @param toIndex
    * @param useCopy if true the given array will not be updated
    */
-  public moveItemInArray$<A extends {index: number}>(items: Array<FireItem<A>>,
-                                                     fromIndex: number,
-                                                     toIndex: number,
-                                                     useCopy = false): Observable<void> {
+  public moveItemInArray$<A extends { index: number }>(items: Array<FireItem<A>>,
+                                                       fromIndex: number,
+                                                       toIndex: number,
+                                                       useCopy = false): Observable<void> {
 
     if (fromIndex == null || toIndex == null || fromIndex === toIndex || items.length <= 0) { // we didnt really move anything
       return of();
     }
 
     if (items[0]?.firestoreMetadata == null) {
-      const error: FirebaseErrorExt = {
-        name: 'FirebaseErrorExt',
-        code: 'firestoreExt/unable-to-change-index-of-non-document',
+      const error: FirestoreErrorExt = {
+        name: 'firestoreExt/unable-to-change-index-of-non-document',
+        code: 'not-found',
         message: 'The array does not appear to be a firestore document or FireItem since it lacks firestoreMetadata',
-      }
+      };
       throw error;
     }
 
@@ -506,13 +542,13 @@ export class FirestoreExtended {
    * @param useCopy if true the given array will not be updated
    * @protected
    */
-  protected getBatchFromMoveItemInIndexedDocs<A extends {index: number}>(items: Array<FireItem<A>>,
-                                                                         fromIndex: number,
-                                                                         toIndex: number,
-                                                                         useCopy = false): firebase.firestore.WriteBatch {
+  protected getBatchFromMoveItemInIndexedDocs<A extends { index: number }>(items: Array<FireItem<A>>,
+                                                                           fromIndex: number,
+                                                                           toIndex: number,
+                                                                           useCopy = false): WriteBatch {
 
     const lowestIndex = Math.min(fromIndex, toIndex);
-    const batch = this.fs.fbApp.firestore().batch();
+    const batch: WriteBatch = writeBatch(this.fs.firestore);
 
     if (fromIndex == null || toIndex == null || fromIndex === toIndex) { // we didnt really move anything
       return batch;
@@ -535,7 +571,7 @@ export class FirestoreExtended {
       if (!useCopy) { // this is just so that the given array's index is also updated immediately
         item.index = i;
       }
-      const ref = getRefFromPath(item.firestoreMetadata.path, this.fs.fbApp) as DocumentReference;
+      const ref = getRefFromPath(item.firestoreMetadata.path, this.fs.firestore) as DocumentReference;
       batch.update(ref, {index: i});
       i++;
     }
@@ -548,11 +584,13 @@ export class FirestoreExtended {
    *
    * @param items array of FireItem<A> docs with index variables to be updated
    * @param indexToDelete
+   * @param subCollectionQueries
+   * @param useCopy
    */
-  public deleteIndexedItemInArray$<A extends {index: number}>(items: Array<FireItem<A>>,
-                                                              indexToDelete: number,
-                                                              subCollectionQueries: SubCollectionQuery[] = [],
-                                                              useCopy: boolean = false): Observable<void> {
+  public deleteIndexedItemInArray$<A extends { index: number }>(items: Array<FireItem<A>>,
+                                                                indexToDelete: number,
+                                                                subCollectionQueries: SubCollectionQuery[] = [],
+                                                                useCopy: boolean = false): Observable<void> {
 
     let usedItems: Array<FireItem<A>>;
 
@@ -568,7 +606,7 @@ export class FirestoreExtended {
     return this.getDeleteBatch$(itemToDelete.firestoreMetadata.ref, subCollectionQueries).pipe(
       map((batch) => {
         // sort and remove the item from the usedItems and then add the update index to the batch
-        usedItems.sort(item => item.index) // make sure array is sorted by index
+        usedItems.sort(item => item.index); // make sure array is sorted by index
         usedItems.splice(indexToDelete, 1);
 
         this.getBatchFromUpdateIndexFromListOfDocs<A>(usedItems, batch);
@@ -585,11 +623,13 @@ export class FirestoreExtended {
    *
    * @param items array of FireItem<A> docs with index variables to be updated
    * @param indicesToDelete
+   * @param subCollectionQueries
+   * @param useCopy
    */
-  public deleteIndexedItemsInArray$<A extends {index: number}>(items: Array<FireItem<A>>,
-                                                               indicesToDelete: number[],
-                                                               subCollectionQueries: SubCollectionQuery[] = [],
-                                                               useCopy: boolean = false): Observable<void> {
+  public deleteIndexedItemsInArray$<A extends { index: number }>(items: Array<FireItem<A>>,
+                                                                 indicesToDelete: number[],
+                                                                 subCollectionQueries: SubCollectionQuery[] = [],
+                                                                 useCopy: boolean = false): Observable<void> {
 
     let usedItems: Array<FireItem<A>>;
 
@@ -599,46 +639,47 @@ export class FirestoreExtended {
       usedItems = items;
     }
 
-    usedItems.sort(item => item.index) // make sure array is sorted by index
+    usedItems.sort(item => item.index); // make sure array is sorted by index
 
-    const itemsToDelete = usedItems.filter((item, i )=> {
-      return indicesToDelete.findIndex(_i => _i === i) !== -1
-    })
+    const itemsToDelete = usedItems.filter((item, i) => {
+      return indicesToDelete.findIndex(_i => _i === i) !== -1;
+    });
 
-    // iterate in revese so as to not change the indices,
-    // the indicies to delete must also be sorted
-    indicesToDelete.sort()
-    for (var i = indicesToDelete.length -1; i >= 0; i--)
-      usedItems.splice(indicesToDelete[i],1);
+    // iterate in reverse so as to not change the indices,
+    // the indices to delete must also be sorted
+    indicesToDelete.sort();
+    for (let i = indicesToDelete.length - 1; i >= 0; i--) {
+      usedItems.splice(indicesToDelete[i], 1);
+    }
 
     const docRefsObs$: Observable<DocumentReference[]>[] = [];
 
-    // get the docRefs for items to be deleted including the ones in the subcollections
+    // get the docRefs for items to be deleted including the ones in the subCollections
     itemsToDelete.forEach(itemToDelete => {
 
       const obs$ = this.getDocumentReferencesDeep$(itemToDelete.firestoreMetadata.ref, subCollectionQueries).pipe(
         take(1)
       );
       docRefsObs$.push(obs$);
-    })
+    });
 
 
     return forkJoin(docRefsObs$).pipe(
       take(1),
       map((listOfDocRefs) => {
         // concat all the separate docRefs lists into one array of docRefs
-        let docRefs: DocumentReference[] = []
+        let docRefs: DocumentReference[] = [];
 
         listOfDocRefs.forEach(refs => {
           docRefs = docRefs.concat(refs);
-        })
+        });
 
-        return docRefs
+        return docRefs;
       }),
       map((docRefs: DocumentReference<DocumentData>[]) => this.getDeleteMultipleSimpleBatch(docRefs)),
       map((batch: WriteBatch) => this.getBatchFromUpdateIndexFromListOfDocs<A>(usedItems, batch)),
       switchMap((batch) => this.batchCommit$(batch))
-    )
+    );
   }
 
   /**
@@ -647,15 +688,18 @@ export class FirestoreExtended {
    * Basically needs to be run after a delete
    *
    * @param items
+   * @param batch
    * @protected
    */
-  protected getBatchFromUpdateIndexFromListOfDocs<A extends {index: number}>(items: Array<FireItem<A>>,
-                                                                             batch: WriteBatch = this.fs.fbApp.firestore().batch()): WriteBatch {
+  protected getBatchFromUpdateIndexFromListOfDocs<A extends { index: number }>(
+    items: Array<FireItem<A>>,
+    batch: WriteBatch = writeBatch(this.fs.firestore)
+  ): WriteBatch {
 
     items.forEach((item, index) => {
       if (item.index !== index) {
         item.index = index; // this is just so that the given array's index is also updated immediately
-        const ref = getRefFromPath(item.firestoreMetadata.path, this.fs.fbApp) as DocumentReference;
+        const ref = getRefFromPath(item.firestoreMetadata.path, this.fs.firestore) as DocumentReference;
         batch.update(ref, {index});
       }
     });
@@ -663,24 +707,24 @@ export class FirestoreExtended {
     return batch;
   }
 
-  public transferItemInIndexedDocs<A extends {index: number, groupName: string}>(
+  public transferItemInIndexedDocs<A extends { index: number, groupName: string }>(
     previousArray: Array<FireItem<A>>,
     currentArray: Array<FireItem<A>>,
     previousIndex: number,
     currentIndex: number,
     currentArrayName: string,
-    additionalDataUpdateOnMovedItem?: {[key: string]: any},
+    additionalDataUpdateOnMovedItem?: { [key: string]: any },
     isUpdateModifiedDateOnMovedItem = true,
     useCopy = false): Observable<void> {
 
     const batch: WriteBatch = this.getBatchFromTransferItemInIndexedDocs(previousArray,
-                                                                         currentArray,
-                                                                         previousIndex,
-                                                                         currentIndex,
-                                                                         currentArrayName,
-                                                                         additionalDataUpdateOnMovedItem,
-                                                                         isUpdateModifiedDateOnMovedItem,
-                                                                         useCopy);
+      currentArray,
+      previousIndex,
+      currentIndex,
+      currentArrayName,
+      additionalDataUpdateOnMovedItem,
+      isUpdateModifiedDateOnMovedItem,
+      useCopy);
 
     return this.batchCommit$(batch);
   }
@@ -698,7 +742,7 @@ export class FirestoreExtended {
 
     if (subCollectionQueries == null || subCollectionQueries.length === 0) {
       // not deep so just do a normal doc delete
-      return this.fs.delete(docRef)
+      return this.fs.delete(docRef);
     }
 
     return this.getDocumentReferencesDeep$(docRef, subCollectionQueries).pipe(
@@ -711,18 +755,19 @@ export class FirestoreExtended {
   }
 
   /**
-   * Returns Writebatch that is set to delete Document and child documents of given docRef
+   * Returns WriteBatch that is set to delete Document and child documents of given docRef
    *
    * @param docRef DocumentReference that is to be deleted
    * @param subCollectionQueries if the document has child documents the subCollectionQueries are needed to locate them
+   * @param batch
    */
   public getDeleteBatch$(docRef: DocumentReference,
                          subCollectionQueries: SubCollectionQuery[] = [],
-                         batch: WriteBatch = this.fs.fbApp.firestore().batch()): Observable<WriteBatch> {
+                         batch: WriteBatch = writeBatch(this.fs.firestore)): Observable<WriteBatch> {
 
     if (subCollectionQueries == null || subCollectionQueries.length === 0) {
       // not deep so just do a normal doc delete
-      batch.delete(docRef)
+      batch.delete(docRef);
       return of(batch);
     }
 
@@ -734,7 +779,7 @@ export class FirestoreExtended {
 
   public deleteMultipleByPaths$(docPaths: string[]): Observable<any> {
     const docRefs: DocumentReference[] =
-      docPaths.map(path => getRefFromPath(path, this.fs.fbApp) as DocumentReference)
+      docPaths.map(path => getRefFromPath(path, this.fs.firestore) as DocumentReference);
 
     return this.deleteMultipleSimple$(docRefs);
   }
@@ -789,7 +834,7 @@ export class FirestoreExtended {
       switchMap(docRefs => this.deleteMultiple$(docRefs))
     ).pipe(
       take(1)
-    )
+    );
   }
 
 
@@ -801,7 +846,7 @@ export class FirestoreExtended {
    * @param subCollectionQueries if the document has child documents the subCollectionQueries are needed to locate them
    */
   public deleteDocByPath$(docPath: string, subCollectionQueries: SubCollectionQuery[] = []): Observable<any> {
-    const docRef = getRefFromPath(docPath, this.fs.fbApp) as DocumentReference;
+    const docRef = getRefFromPath(docPath, this.fs.firestore) as DocumentReference;
     return this.delete$(docRef, subCollectionQueries);
   }
 
@@ -864,9 +909,9 @@ export class FirestoreExtended {
         cleanDatas.push(
           this.removeDataExtrasRecursiveHelper(d, subCollectionWriters, additionalFieldsToRemove) as T
         );
-      })
+      });
 
-      return cleanDatas
+      return cleanDatas;
 
     } else {
       return this.removeDataExtrasRecursiveHelper(data, subCollectionWriters, additionalFieldsToRemove) as T;
@@ -889,37 +934,37 @@ export class FirestoreExtended {
                                    actionIfNotExist: DocNotExistAction = DocNotExistAction.RETURN_ALL_BUT_DATA
   ): Observable<FireItem<T>> {
 
-    return this.fs.doc(docRef).pipe(
+    return this.fs.listenForDoc(docRef).pipe(
       tap((snapshot: DocumentSnapshot) => {
-        if (!snapshot.exists && actionIfNotExist === DocNotExistAction.THROW_DOC_NOT_FOUND) {
-          const error: FirebaseErrorExt = {
+        if (!snapshot.exists() && actionIfNotExist === DocNotExistAction.THROW_DOC_NOT_FOUND) {
+          const error: FirestoreErrorExt = {
             name: 'FirebaseErrorExt',
-            code: 'firestoreExt/doc-not-found',
+            code: 'not-found',
             message: 'Document not found and actionIfNotExist is set to THROW_DOC_NOT_FOUND',
             docRef
-          }
+          };
           throw error;
         }
       }),
 
       filter((snapshot: DocumentSnapshot) => {
-        return !(snapshot.exists && actionIfNotExist === DocNotExistAction.FILTER);
+        return !(snapshot.exists() && actionIfNotExist === DocNotExistAction.FILTER);
       }),
 
       map((snapshot: DocumentSnapshot) => {
 
-        if (snapshot.exists || actionIfNotExist === DocNotExistAction.RETURN_ALL_BUT_DATA) {
+        if (snapshot.exists() || actionIfNotExist === DocNotExistAction.RETURN_ALL_BUT_DATA) {
           const data = snapshot.data() as T;
 
           const firestoreMetadata: FirestoreMetadata<T> = {
             id: snapshot.id,
             ref: snapshot.ref as DocumentReference<T>,
             path: docRef.path,
-            isExists: snapshot.exists,
+            isExists: snapshot.exists(),
             snapshotMetadata: snapshot.metadata
-          }
+          };
 
-          return { ...data, firestoreMetadata} as FireItem<T>;
+          return {...data, firestoreMetadata} as FireItem<T>;
 
         } else if (actionIfNotExist === DocNotExistAction.RETURN_NULL) { /* doc doesn't exist */
           return null;
@@ -940,24 +985,23 @@ export class FirestoreExtended {
    * Listens for single collection and returns an array of documents as FireItem<T>[]
    * Used internally, please use listenForCollection$() instead.
    *
-   * @param collectionRef the collectionRef which will be listened to
-   * @param documentChangeTypes list of DocumentChangeType that will be listened to, if null listen to all
+   * @param _query the Query which will be listened to
    * @protected
    */
-  protected listenForCollectionSimple$<T>(collectionRef: CollectionReference<any>): Observable<Array<FireItem<T>>> {
+  protected listenForCollectionSimple$<T>(_query: Query<T>): Observable<Array<FireItem<T>>> {
     /**
      * Returns an observable that will emit whenever the ref changes in any way.
      * Also adds the id and ref to the object.
      */
-    return this.fs.collection(collectionRef).pipe(
-      map((snaps: QueryDocumentSnapshot[]) => {
-        return snaps.map(snapshot => {
+    return this.fs.listenForCollection(_query).pipe(
+      map((snap: QuerySnapshot<T>) => {
+        return snap.docs.map(snapshot => {
           const data = snapshot.data() as T;
 
           const id = snapshot.id;
           const ref = snapshot.ref as DocumentReference<T>;
           const path = ref.path;
-          const snapshotMetadata = snapshot.metadata
+          const snapshotMetadata = snapshot.metadata;
 
           const firestoreMetadata: FirestoreMetadata<T> = {
             id,
@@ -965,13 +1009,13 @@ export class FirestoreExtended {
             ref,
             snapshotMetadata,
             isExists: true
-          }
+          };
 
-          return { ...data, firestoreMetadata} as FireItem<T>;
-        })
+          return {...data, firestoreMetadata} as FireItem<T>;
+        });
       }),
       map((datas: Array<FireItem<T>>) => datas.map(data => {
-        convertTimestampToDate(data)
+        convertTimestampToDate(data);
         return data;
       }))
     ) as Observable<Array<FireItem<T>>>;
@@ -984,29 +1028,34 @@ export class FirestoreExtended {
    *
    * @param item
    * @param subCollectionQueries
-   * @param documentChangeTypes
-   * @param actionIfNotExist
    * @protected
    */
   protected listenForCollectionsDeep<T>(
     item: FireItem<T>,
     subCollectionQueries: SubCollectionQuery[] = []): Observable<FireItem<T>[]> {
 
-    if (item == null) { return of([item]); }
-    if (subCollectionQueries.length <= 0) { return of([item]); }
+    if (item == null) {
+      return of([item]);
+    }
+    if (subCollectionQueries.length <= 0) {
+      return of([item]);
+    }
 
     const collectionListeners: Array<Observable<any>> = [];
 
     /* Iterate over each sub collection we have given and create collection listeners*/
     subCollectionQueries.forEach(subCollectionQuery => {
 
-      let collectionRef = item.firestoreMetadata.ref.collection(subCollectionQuery.name)
-      if (subCollectionQuery.queryFn) {
-        collectionRef = subCollectionQuery.queryFn(collectionRef) as CollectionReference;
+      const queryContainer = new QueryContainer(getSubCollection(item.firestoreMetadata.ref, subCollectionQuery.name));
+      if (subCollectionQuery.queryConstraints) {
+        queryContainer.queryConstraints = subCollectionQuery.queryConstraints;
+        // collectionRef = subCollectionQuery.queryFn(collectionRef) as CollectionReference;
       }
+      // if (subCollectionQuery.queryFn) {
+      //   collectionRef = subCollectionQuery.queryFn(collectionRef) as CollectionReference;
+      // }
 
-
-      const collectionListener = this.listenForCollectionSimple$(collectionRef).pipe(
+      const collectionListener = this.listenForCollectionSimple$(queryContainer.query).pipe(
         // filter(docs => docs.length > 0), // skip empty collections or if the subCollectionQuery doesnt exist
         /* Uncomment to see data on each update */
         // tap(d => console.log(d)),
@@ -1015,7 +1064,9 @@ export class FirestoreExtended {
         // @ts-ignore // TODO fix this so that I can remove the ts-ignore
         mergeMap((items: FireItem<{}>[]) => {
 
-          if (!subCollectionQuery.subCollections) { return of(items); }
+          if (!subCollectionQuery.subCollections) {
+            return of(items);
+          }
 
           const docListeners: Array<Observable<any>> = [];
 
@@ -1026,7 +1077,9 @@ export class FirestoreExtended {
             docListeners.push(subDocAndCollections$);
           });
 
-          if (docListeners.length <= 0) { return of([]); } /* subCollectionQuery is empty or doesnt exist */
+          if (docListeners.length <= 0) {
+            return of([]);
+          } /* subCollectionQuery is empty or doesnt exist */
 
           return combineLatest(docListeners).pipe(
             // tap(val => console.log(val))
@@ -1038,8 +1091,11 @@ export class FirestoreExtended {
         map((items: FireItem<{}>[]) => {
           const docId = subCollectionQuery.docId !== undefined ? subCollectionQuery.docId : this.defaultDocId;
 
-          if (items.length === 1 && items[0].firestoreMetadata.id === docId) { return {[subCollectionQuery.name]: items[0]}; }
-          else { return {[subCollectionQuery.name]: items}; }
+          if (items.length === 1 && items[0].firestoreMetadata.id === docId) {
+            return {[subCollectionQuery.name]: items[0]};
+          } else {
+            return {[subCollectionQuery.name]: items};
+          }
         }),
         // tap(d => console.log(d)),
       );
@@ -1050,13 +1106,13 @@ export class FirestoreExtended {
     /* Finally return the combined collection listeners*/
     // @ts-ignore
     return combineLatest(collectionListeners).pipe(
-      map((collectionDatas: {[collectionkName: string]: FireItem<FireItem<{}>>[]}[]) => {
-      // map((collectionDatas) => {
-        const datasMap: {[field: string]: any} = {};
+      map((collectionDatas: { [collectionKeyName: string]: FireItem<FireItem<{}>>[] }[]) => {
+        // map((collectionDatas) => {
+        const datasMap: { [field: string]: any } = {};
 
-        collectionDatas.forEach((collection) => {
+        collectionDatas.forEach((collectionData) => {
 
-          for (const [collectionName, items] of Object.entries(collection)) {
+          for (const [collectionName, items] of Object.entries(collectionData)) {
             datasMap[collectionName] = items;
           }
         });
@@ -1079,11 +1135,14 @@ export class FirestoreExtended {
 
     /* Listen for the docFs*/
     return this.listenForDocSimple$<T>(docRef, actionIfNotExist).pipe(
-
       mergeMap((item: FireItem<{}>) => {
 
-        if (item === null) { return of(item); }
-        if (subCollectionQueries.length <= 0) { return of(item); }
+        if (item === null) {
+          return of(item);
+        }
+        if (subCollectionQueries.length <= 0) {
+          return of(item);
+        }
 
         return this.listenForCollectionsDeep(item, subCollectionQueries);
       })
@@ -1110,13 +1169,17 @@ export class FirestoreExtended {
     let res$: Observable<any>;
 
     if (isAddDates) {
-      const date = new Date()
+      const date = new Date();
       data = addCreatedDate(data, false, date);
       data = addModifiedDate(data, false, date);
     }
 
-    if (id !== undefined) { res$ = this.fs.set(collectionRef.doc(id), data) }
-    else { res$ = this.fs.add<T>(collectionRef, data); }
+    if (id !== undefined) {
+      const docRef: DocumentReference = getDocRefWithId(collectionRef, id);
+      res$ = this.fs.set(docRef, data);
+    } else {
+      res$ = this.fs.add<T>(collectionRef, data);
+    }
 
     // if (Array.isArray(data) && isAddDates) {
     //   data = data.map(item => {
@@ -1134,26 +1197,26 @@ export class FirestoreExtended {
           const path = ref.path;
 
           const firestoreMetadata: FirestoreMetadata<T> = {
-            id : ref.id,
+            id: ref.id,
             path,
             ref,
             isExists: true
-          }
+          };
 
-          return { ...data, firestoreMetadata} as FireItem<T>;
+          return {...data, firestoreMetadata} as FireItem<T>;
 
         } else { // if id is defined it means we used docRef.set and ref is undefined
           const path = collectionRef.path + '/' + id;
-          const ref = getRefFromPath(path, this.fs.fbApp) as DocumentReference<T>
+          ref = getRefFromPath(path, this.fs.firestore) as DocumentReference<T>;
 
           const firestoreMetadata: FirestoreMetadata<T> = {
             id: id as string,
             ref,
             path,
             isExists: true
-          }
+          };
 
-          return { ...data, firestoreMetadata} as FireItem<T>;
+          return {...data, firestoreMetadata} as FireItem<T>;
         }
       }),
     );
@@ -1181,7 +1244,9 @@ export class FirestoreExtended {
                                        isAddModifiedDate: boolean = true,
                                        batch?: WriteBatch): WriteBatch {
 
-    if (batch === undefined) { batch = this.fs.fbApp.firestore().batch(); }
+    if (batch === undefined) {
+      batch = writeBatch(this.fs.firestore);
+    }
 
     if (isAddModifiedDate) {
       data = addModifiedDate(data, false);
@@ -1206,7 +1271,9 @@ export class FirestoreExtended {
 
       subDocId = subDocId !== undefined ? subDocId : this.defaultDocId; /* Set default if none given */
 
-      const subDocFs = docRef.collection(subCollectionKey).doc(subDocId);
+      // const subDocFs = docRef.collection(subCollectionKey).doc(subDocId);
+      const subCollection = getSubCollection(docRef, subCollectionKey);
+      const subDocFs = getDocRefWithId(subCollection, subDocId);
 
       batch = this.updateDeepToBatchHelper(subDocUpdateValue, subDocFs, subSubCollectionWriters, isAddModifiedDate, batch);
     }
@@ -1228,15 +1295,15 @@ export class FirestoreExtended {
    * @param useCopy
    * @protected
    */
-  protected getBatchFromTransferItemInIndexedDocs<A extends {index: number, groupName: string}>(
+  protected getBatchFromTransferItemInIndexedDocs<A extends { index: number, groupName: string }>(
     previousArray: Array<FireItem<A>>,
     currentArray: Array<FireItem<A>>,
     previousIndex: number,
     currentIndex: number,
     currentArrayName: string,
-    additionalDataUpdateOnMovedItem?: {[key: string]: any},
+    additionalDataUpdateOnMovedItem?: { [key: string]: any },
     isUpdateModifiedDateOnMovedItem = true,
-    useCopy = false): firebase.firestore.WriteBatch {
+    useCopy = false): WriteBatch {
 
     let usedPreviousArray: Array<FireItem<A>>;
     let usedCurrentArray: Array<FireItem<A>>;
@@ -1250,21 +1317,21 @@ export class FirestoreExtended {
 
     transferArrayItem(usedPreviousArray, usedCurrentArray, previousIndex, currentIndex);
 
-    const batch = this.fs.fbApp.firestore().batch();
+    const batch: WriteBatch = writeBatch(this.fs.firestore);
 
     if (additionalDataUpdateOnMovedItem !== undefined) {
-      let movedItem = usedCurrentArray[currentIndex];
+      const movedItem = usedCurrentArray[currentIndex];
       const movedItemRef = movedItem.firestoreMetadata.ref;
 
-      let data = {...additionalDataUpdateOnMovedItem, groupName: currentArrayName }
+      const data = {...additionalDataUpdateOnMovedItem, groupName: currentArrayName};
 
       if (!useCopy) {
         addDataToItem(movedItem, data, true);
       }
 
       if (isUpdateModifiedDateOnMovedItem) {
-        const date = new Date()
-        addModifiedDate(data, true, date)
+        const date = new Date();
+        addModifiedDate(data, true, date);
 
         if (!useCopy) {
           addModifiedDate(movedItem, true, date);
@@ -1276,6 +1343,7 @@ export class FirestoreExtended {
     const currentArraySliceToUpdate: Array<FireItem<A>> = usedCurrentArray.slice(currentIndex);
     let i = currentIndex;
     for (const item of currentArraySliceToUpdate) {
+      // @ts-ignore
       batch.update(item.firestoreMetadata.ref, {index: i});
 
       if (!useCopy) {
@@ -1288,6 +1356,7 @@ export class FirestoreExtended {
     const prevArraySliceToUpdate: Array<FireItem<A>> = usedPreviousArray.slice(previousIndex);
     i = previousIndex;
     for (const item of prevArraySliceToUpdate) {
+      // @ts-ignore
       batch.update(item.firestoreMetadata.ref, {index: i});
 
       if (!useCopy) {
@@ -1313,7 +1382,7 @@ export class FirestoreExtended {
     return this.batchCommit$(batch);
   }
 
-  protected getDeleteMultipleSimpleBatch(docRefs: DocumentReference[], batch: WriteBatch = this.fs.fbApp.firestore().batch()): WriteBatch {
+  protected getDeleteMultipleSimpleBatch(docRefs: DocumentReference[], batch: WriteBatch = writeBatch(this.fs.firestore)): WriteBatch {
 
     docRefs.forEach((docRef) => {
       batch.delete(docRef);
@@ -1401,7 +1470,7 @@ export class FirestoreExtended {
       // tap(pathList => console.log(pathList)),
       map((pathList: string[]) => {
         return pathList
-          .map(path => getRefFromPath(path, this.fs.fbApp) as DocumentReference);
+          .map(path => getRefFromPath(path, this.fs.firestore) as DocumentReference);
       }),
       // tap(item => console.log(item)),
     );
@@ -1430,9 +1499,9 @@ export class FirestoreExtended {
       }),
       map((pathList: string[]) => {
         return pathList
-          .map(path => getRefFromPath(path, this.fs.fbApp) as DocumentReference);
+          .map(path => getRefFromPath(path, this.fs.firestore) as DocumentReference);
       }),
-    )
+    );
   }
 
   /**
@@ -1448,7 +1517,7 @@ export class FirestoreExtended {
     subCollectionQueries: SubCollectionQuery[] = []): DocumentReference[] {
 
     const paths = this.getPathsFromItemDeepRecursiveHelper(item, subCollectionQueries);
-    return paths.map(path => getRefFromPath(path, this.fs.fbApp) as DocumentReference)
+    return paths.map(path => getRefFromPath(path, this.fs.firestore) as DocumentReference);
   }
 
   /**
@@ -1464,7 +1533,8 @@ export class FirestoreExtended {
     pathList.push(item.firestoreMetadata.path);
 
     subCollectionQueries.forEach(col => {
-      if (Array.isArray((item as DocumentData)[col.name]) && !col.docId) { /* property is array and not using docId so will contain multiple docs */
+      if (Array.isArray((item as DocumentData)[col.name]) && !col.docId) {
+        /* property is array and not using docId so will contain multiple docs */
 
         const items: FireItem<{}>[] = (item as DocumentData)[col.name];
         items.forEach(subItem => {
@@ -1504,11 +1574,11 @@ export class FirestoreExtended {
 
     /* Split data into current doc and sub collections */
     let currentDoc: { [index: string]: any; } = {};
-    const subCollections: { [index: string]: any; }  = {};
+    const subCollections: { [index: string]: any; } = {};
 
     /* Check if the key is in subCollections, if it is place it in subCollections else place it in currentDoc */
 
-   // not array so object
+    // not array so object
     for (const [key, value] of Object.entries(data)) {
       // console.log(key, value);
       if (subCollectionWriters && subCollectionWriters.length > 0) {
@@ -1519,8 +1589,7 @@ export class FirestoreExtended {
         } else {
           currentDoc[key] = value;
         }
-      }
-      else {
+      } else {
         currentDoc = data;
       }
     }
@@ -1540,9 +1609,117 @@ export class FirestoreExtended {
    *
    * This method turns it into an observable
    */
-  protected batchCommit$(batch: firebase.firestore.WriteBatch): Observable<void> {
-    return from( batch.commit() ).pipe(
-      take (1)
+  protected batchCommit$(batch: WriteBatch): Observable<void> {
+    return from(batch.commit()).pipe(
+      take(1)
     );
   }
+}
+
+
+/**
+ * Firebase version 9 changed the query syntax
+ * The new syntax broken the ability to chain queries like this:
+ *
+ * collectionRef.where('foo', '==', 123).limit(10)..returns the collection ref
+ *
+ * now instead you must write it like this, query(collectionRef, where('foo', '==', 123), limit(10))...returns a Query
+ *
+ * which is ugly and make you loose the information that was present in the collectionRef since a Query is returned instead,
+ * which holds less information than a CollectionReference.
+ *
+ * This Container is meant to allow you to chain queries, like before version 9 and also retain the information in
+ * the original CollectionReference
+ */
+export class QueryContainer<T> {
+
+  public queryConstraints: QueryConstraint[] = [];
+
+  constructor(public ref: CollectionReference<T>) {
+  }
+
+  /** factory method to create container from path */
+  static fromPath<T>(firestore: Firestore, path: string): QueryContainer<T> {
+    const ref = collection(firestore, path) as CollectionReference<T>;
+    return new this(ref);
+  }
+
+  /** Returns the query with all the query constraints */
+  get query(): Query<T> {
+    return query(this.ref, ...this.queryConstraints);
+  }
+
+  /** Calls the firebase getDocs() method and listens for the documents in the query. */
+  getDocs$(): Observable<QuerySnapshot<T>> {
+    return from(getDocs<T>(this.query));
+  }
+
+  where(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: unknown): QueryContainer<T> {
+    this.queryConstraints.push(where(fieldPath, opStr, value));
+    return this;
+  }
+
+  orderBy(fieldPath: string | FieldPath, directionStr?: OrderByDirection): QueryContainer<T> {
+    this.queryConstraints.push(orderBy(fieldPath, directionStr));
+    return this;
+  }
+
+  limit(_limit: number): QueryContainer<T> {
+    this.queryConstraints.push(limit(_limit));
+    return this;
+  }
+
+  limitToLast(_limit: number): QueryContainer<T> {
+    this.queryConstraints.push(limitToLast(_limit));
+    return this;
+  }
+
+  startAt(...fieldValues: unknown[]): QueryContainer<T>; // definition
+  startAt(snapshot?: DocumentSnapshot<unknown>): QueryContainer<T>; // definition
+
+  startAt(snapshot?: DocumentSnapshot<unknown>, ...fieldValues: unknown[]): QueryContainer<T> { // implementation
+    if (snapshot) {
+      this.queryConstraints.push(startAt(snapshot));
+    } else if (fieldValues) {
+      this.queryConstraints.push(startAt(...fieldValues));
+    }
+    return this;
+  }
+
+  startAfter(...fieldValues: unknown[]): QueryContainer<T>; // definition
+  startAfter(snapshot?: DocumentSnapshot<unknown>): QueryContainer<T>; // definition
+
+  startAfter(snapshot?: DocumentSnapshot<unknown>, ...fieldValues: unknown[]): QueryContainer<T> { // implementation
+    if (snapshot) {
+      this.queryConstraints.push(startAfter(snapshot));
+    } else if (fieldValues) {
+      this.queryConstraints.push(startAfter(...fieldValues));
+    }
+    return this;
+  }
+
+  endAt(...fieldValues: unknown[]): QueryContainer<T>; // definition
+  endAt(snapshot?: DocumentSnapshot<unknown>): QueryContainer<T>; // definition
+
+  endAt(snapshot?: DocumentSnapshot<unknown>, ...fieldValues: unknown[]): QueryContainer<T> { // implementation
+    if (snapshot) {
+      this.queryConstraints.push(endAt(snapshot));
+    } else if (fieldValues) {
+      this.queryConstraints.push(endAt(...fieldValues));
+    }
+    return this;
+  }
+
+  endBefore(...fieldValues: unknown[]): QueryContainer<T>; // definition
+  endBefore(snapshot?: DocumentSnapshot<unknown>): QueryContainer<T>; // definition
+
+  endBefore(snapshot?: DocumentSnapshot<unknown>, ...fieldValues: unknown[]): QueryContainer<T> { // implementation
+    if (snapshot) {
+      this.queryConstraints.push(endBefore(snapshot));
+    } else if (fieldValues) {
+      this.queryConstraints.push(endBefore(...fieldValues));
+    }
+    return this;
+  }
+
 }

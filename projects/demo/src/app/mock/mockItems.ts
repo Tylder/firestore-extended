@@ -4,18 +4,14 @@
 import {RestaurantItem} from '../models/restaurant';
 import {DragAndDropContainer, DragAndDropItem} from '../models/groupItem';
 
-export const mockSimpleItems = [
-  {
-   foo: 'bar',
-   thing: 123
-  },
-  {
-    bar: 'foo',
-    stuff: 321
-  }
-];
 
-export const mockDeepItems: RestaurantItem[] = [
+/**
+ * Mock Items used for demo
+ *
+ * The demo still uses firestore to store the data however.
+ */
+
+export const mockRestaurantItems: RestaurantItem[] = [
   {
     name: 'Tonys Pizzeria and Italian Food',
     category: 'italian',
@@ -27,37 +23,21 @@ export const mockDeepItems: RestaurantItem[] = [
     },
     dishes: [
       {
-        name: 'Margherita Pizza',
-        index: 2,
-        images: [
-          {url: 'example.jpg'},
-          {url: 'example2.jpg'}
-        ]
-      },
-      {
-        name: 'Pasta alla Carbonara',
-        index: 1,
-        images: [
-          {url: 'example.jpg'},
-          {url: 'example2.jpg'}
-        ]
-      },
-      {
-        name: 'Other kind of Pizza',
         index: 0,
+        name: 'Margherita Pizza',
         images: [
           {url: 'example.jpg'},
           {url: 'example2.jpg'}
         ]
       },
       {
-        name: 'Other kind of Pasta',
-        index: 3,
+        index: 1,
+        name: 'Pasta alla Carbonara',
         images: [
           {url: 'example.jpg'},
           {url: 'example2.jpg'}
         ]
-      },
+      }
     ],
     reviews: [
       {
@@ -84,16 +64,16 @@ export const mockDeepItems: RestaurantItem[] = [
     },
     dishes: [
       {
-        name: 'Caesar salad',
         index: 0,
+        name: 'Caesar salad',
         images: [
           {url: 'example.jpg'},
           {url: 'example2.jpg'}
         ]
       },
       {
-        name: 'Chicken Salad',
         index: 1,
+        name: 'Chicken Salad',
         images: [
           {url: 'example.jpg'},
           {url: 'example2.jpg'}
@@ -113,38 +93,37 @@ export const mockDeepItems: RestaurantItem[] = [
       },
     ]
   },
-
 ];
 
 export const mockDragAndDropItems: DragAndDropItem[] = [
   {
-    'index': 0,
-    'groupName': "A",
-    'data': "123"
+    index: 0,
+    groupName: 'A',
+    data: '123'
   },
   {
     index: 1,
-    groupName: "A",
-    data: "311"
+    groupName: 'A',
+    data: '311'
   },
   {
     index: 2,
-    groupName: "A",
-    data: "Abc"
+    groupName: 'A',
+    data: 'Abc'
   },
   {
     index: 0,
-    groupName: "B",
-    data: "sdsd"
+    groupName: 'B',
+    data: 'sdsd'
   },
   {
     index: 1,
-    groupName: "B",
-    data: "23s"
+    groupName: 'B',
+    data: '23s'
   }
-]
+];
 
 
 export const mockDragAndDropContainer: DragAndDropContainer = {
   items: mockDragAndDropItems
-}
+};

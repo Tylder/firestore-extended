@@ -1,5 +1,5 @@
-import {InjectionToken} from '@angular/core';
-import firebase from 'firebase/app';
+// import {InjectionToken} from '@angular/core';
+// import {FirebaseApp} from 'firebase/app';
 
 export class FirebaseConfig {
   [key: string]: any;
@@ -11,7 +11,7 @@ export interface FirestoreEmulatorConfig {
   port: number;
 }
 
-export const FIREBASE_APP = new InjectionToken<firebase.app.App>('firebase_app.config');
+// export const FIREBASE_APP = new InjectionToken<FirebaseApp>('firebase_app.config');
 
 export const FIRESTORE_USE_EMULATOR: FirestoreEmulatorConfig = {
   // useEmulator: false,

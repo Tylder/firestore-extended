@@ -1,19 +1,16 @@
 import {Observable} from 'rxjs';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import Timestamp = firebase.firestore.Timestamp;
-import DocumentReference = firebase.firestore.DocumentReference;
-import SnapshotMetadata = firebase.firestore.SnapshotMetadata;
-import DocumentData = firebase.firestore.DocumentData;
+
+import {DocumentData, DocumentReference, SnapshotMetadata, Timestamp as FirebaseTimestamp} from 'firebase/firestore';
 
 /** The object returned by most FirestoreExtended methods,
-* containing the database data and the additional data from FireStoreItem */
+ * containing the database data and the additional data from FireStoreItem
+ */
 export type FireItem<T = DocumentData> = T & {
   firestoreMetadata: FirestoreMetadata<T>;
 
-  modifiedDate?: Date | Timestamp;
-  createdDate?: Date | Timestamp;
-}
+  modifiedDate?: Date | FirebaseTimestamp;
+  createdDate?: Date | FirebaseTimestamp;
+};
 
 /**
  * Any data that will be saved as a doc to firestore should extend this interface.
@@ -21,9 +18,9 @@ export type FireItem<T = DocumentData> = T & {
 export interface FirestoreItem {
   firestoreMetadata?: FirestoreMetadata<this>;
   /** the Date when the document was created or last modified */
-  modifiedDate?: Date | Timestamp;
+  modifiedDate?: Date | FirebaseTimestamp;
   /** The Date when the document was created */
-  createdDate?: Date | Timestamp;
+  createdDate?: Date | FirebaseTimestamp;
 }
 
 /**
@@ -35,7 +32,7 @@ export interface FirestoreItem {
  */
 export interface FirestoreMetadata<T = DocumentData> {
 
-     /** The id of the Firestore document */
+  /** The id of the Firestore document */
   id: string;
   /** The path to the firestore document */
   path: string;
@@ -48,7 +45,7 @@ export interface FirestoreMetadata<T = DocumentData> {
    */
   isExists: boolean;
 
-  snapshotMetadata?: SnapshotMetadata
+  snapshotMetadata?: SnapshotMetadata;
 }
 
 
@@ -63,6 +60,7 @@ export interface FirestoreMetadataWithIndex<T> extends FirestoreMetadata<T> {
 export interface FirestoreItemWIndex extends FirestoreItem {
   firestoreMetadata?: FirestoreMetadataWithIndex<this>;
 }
+
 /**
  * Used to save the storagePath of items in Firebase Storage
  */

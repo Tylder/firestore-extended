@@ -1,55 +1,63 @@
-<div (click)="add()">ADD</div>
-<div (click)="delete()">DELETE</div>
-<div (click)="listen()">LISTEN</div>
+<!--<div (click)="addRestaurant()">ADD</div>-->
+<!--<div (click)="deleteRestaurant()">DELETE</div>-->
+<!--<div (click)="listen()">LISTEN</div>-->
 
-<!--<div class="main-container">-->
-<!--  <h1>AngularFirestore-Deep Demo</h1>-->
-<!--  <p class="highlight">The purpose of this 'demo' is to show common work flows and give examples on how to perform them.</p>-->
-<!--  <p class="highlight">In order to get the most out of this demo you should be checking out the code on github at the same time or even better-->
-<!--    run a local demo, that way you can play around with the code.</p>-->
+<div class="main-container">
+  <h1>Firestore-Extended Demo</h1>
+  <p class="highlight">The purpose of this 'demo' is to show common work flows and give examples on how to perform them.</p>
+  <p class="highlight">In order to get the most out of this demo you should be checking out the code on github at the same time or even
+    better
+    run a local demo, that way you can play around with the code.</p>
 
-<!--  <h2>Restaurants in firestore: </h2>-->
-<!--  <p class="highlight">These restaurants are saved on firestore, press 'Expand' to see the full restaurant object under 'Selected Restaurant'</p>-->
-<!--  <p class="highlight">Press 'Delete from firestore' to perform a delete of the restaurant docucument and all its child documents</p>-->
-<!--  <p class="highlight">Press 'Change id to random' to change the id of restaurant document</p>-->
-<!--  <p class="highlight">Press 'Delete All' to delete all restaurant documents and all their child documents</p>-->
+  <h2>Restaurants in firestore: </h2>
+  <p class="highlight">These restaurants are saved on firestore, press 'Expand' to see the full restaurant object under 'Selected
+    Restaurant'</p>
+  <p class="highlight">Press 'Delete from firestore' to perform a delete of the restaurant docucument and all its child documents</p>
+  <p class="highlight">Press 'Change id to random' to change the id of restaurant document</p>
+  <p class="highlight">Press 'Delete All' to delete all restaurant documents and all their child documents</p>
 
-<!--  <div *ngFor="let restaurant of restaurants$ | async" class="restaurant-container">-->
-<!--    <h3>{{restaurant?.name}}</h3>-->
-<!--    <p>id: {{restaurant?.id}}</p>-->
+  <div *ngFor="let restaurant of restaurants$ | async" class="restaurant-container">
+    <h3>{{restaurant.name}}</h3>
+    <p>id: {{restaurant.firestoreMetadata.id}}</p>
 
-<!--    <button class="button" *ngIf="(selectedRestaurant$ | async)?.id != restaurant.id" (click)="selectRestaurant(restaurant)">Expand</button>-->
-<!--    <button class="button" *ngIf="(selectedRestaurant$ | async)?.id == restaurant.id" (click)="selectRestaurant(null)">Compress</button>-->
-<!--    <button class="button" (click)="deleteRestaurant(restaurant)">Delete from firestore</button>-->
-<!--    <button class="button" (click)="changeIdOfRestaurantToRandom(restaurant)">Change id to random</button>-->
-<!--  </div>-->
+    <button class="button" *ngIf="(selectedRestaurant$ | async)?.firestoreMetadata?.id != restaurant.firestoreMetadata.id"
+            (click)="selectRestaurant(restaurant)">Expand
+    </button>
+    <button class="button" *ngIf="(selectedRestaurant$ | async)?.firestoreMetadata?.id == restaurant.firestoreMetadata.id"
+            (click)="selectRestaurant(null)">
+      Compress
+    </button>
+    <button class="button" (click)="deleteRestaurant(restaurant)">Delete from firestore</button>
+    <button class="button" (click)="changeIdOfRestaurantToRandom(restaurant)">Change id to random</button>
+  </div>
 
-<!--  <button class="button" style="margin-top: 10px" *ngIf="(restaurants$ | async)?.length > 0" (click)="deleteAllRestaurants()">Delete All</button>-->
+  <!--  <button class="button" style="margin-top: 10px" *ngIf="(restaurants$ | async)?.length > 0" (click)="deleteAllRestaurants()">Delete All-->
+  <!--  </button>-->
 
-<!--  <ng-container *ngIf="(selectedRestaurantFull$ | async) as fullRestaurant">-->
-<!--    <h2>Selected Restaurant:</h2>-->
-<!--    <app-restaurant [restaurant]="fullRestaurant"></app-restaurant>-->
-<!--  </ng-container>-->
+  <ng-container *ngIf="(selectedRestaurantFull$ | async) as fullRestaurant">
+    <h2>Selected Restaurant:</h2>
+    <app-restaurant [restaurant]="fullRestaurant"></app-restaurant>
+  </ng-container>
 
-<!--  <h2>Mock Restaurants</h2>-->
-<!--  <p class="highlight">Press 'Add to firestore' to add a mock restaurant to firestore using AngularFirestore-Deep</p>-->
-
-
-<!--  <div *ngFor="let restaurant of mockRestaurants" class="restaurant-container">-->
-<!--    <h3>{{restaurant?.name}}</h3>-->
-
-<!--    <button class="button" (click)="addRestaurant(restaurant)">Add to firestore</button>-->
-<!--  </div>-->
+  <h2>Mock Restaurants</h2>
+  <p class="highlight">Press 'Add to firestore' to add a mock restaurant to firestore using AngularFirestore-Deep</p>
 
 
-<!--  <h4>Daniel Lofgren MIT License</h4>-->
-<!--  <p>-->
-<!--    <a href="https://github.com/Tylder/angularfirestore-deep/tree/master/projects/angularfirestore-deep">Github</a>-->
-<!--  </p>-->
-<!--  <p>-->
-<!--    <a href="https://angularfirestore-deep.web.app/docs/">Documentation</a>-->
-<!--  </p>-->
+  <div *ngFor="let restaurant of mockRestaurants" class="restaurant-container">
+    <h3>{{restaurant?.name}}</h3>
 
-<!--</div>-->
+    <button class="button" (click)="addRestaurant(restaurant)">Add to firestore</button>
+  </div>
+
+
+  <h4>Daniel Lofgren MIT License</h4>
+  <p>
+    <a href="https://github.com/Tylder/firestore-deep/tree/master/projects/firestore-deep">Github</a>
+  </p>
+  <p>
+    <a href="https://angularfirestore-deep.web.app/docs/">Documentation</a>
+  </p>
+
+</div>
 
 

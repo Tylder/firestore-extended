@@ -1,174 +1,176 @@
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import {default as TEST_PROJECT} from './config';
+import {FirebaseApp, initializeApp} from 'firebase/app';
+import {default as TEST_PROJECT, firestoreEmulatorPort} from './config';
 import {createId} from './utils';
+import {addCreatedBy, addCreatedDate, addDataToItem, addModifiedDate, convertTimestampToDate, getRefFromPath} from '../helpers';
 import {
-  addCreatedBy,
-  addCreatedDate,
-  addDataToItem,
-  addModifiedDate,
-  convertTimestampToDate,
-  getRefFromPath
-} from '../helpers';
-import DocumentReference = firebase.firestore.DocumentReference;
-import CollectionReference = firebase.firestore.CollectionReference;
+  CollectionReference,
+  connectFirestoreEmulator,
+  DocumentReference,
+  Firestore,
+  getFirestore,
+  Timestamp as FirebaseTimestamp
+} from 'firebase/firestore';
 
 describe('Helpers', () => {
 
-  let app: firebase.app.App;
+  let app: FirebaseApp;
+  let firestore: Firestore;
 
   beforeEach(() => {
-    app = firebase.initializeApp(TEST_PROJECT, createId());
+    app = initializeApp(TEST_PROJECT, createId());
+    firestore = getFirestore(app);
+    connectFirestoreEmulator(firestore, 'localhost', firestoreEmulatorPort);
 
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
   });
 
   it('getRefFromPath document', () => {
-    const path = "test/123"
+    const path = 'test/123';
 
-    const ref = getRefFromPath(path, app);
+    const ref = getRefFromPath(path, firestore);
 
-    expect(ref).toBeTruthy()
-    expect(ref).toBeInstanceOf(DocumentReference)
+    expect(ref).toBeTruthy();
+    expect(ref).toBeInstanceOf(DocumentReference);
   });
 
   it('getRefFromPath collection', () => {
-    const path = "test"
+    const path = 'test';
 
-    const ref = getRefFromPath(path, app);
+    const ref = getRefFromPath(path, firestore);
 
-    expect(ref).toBeTruthy()
-    expect(ref).toBeInstanceOf(CollectionReference)
+    expect(ref).toBeTruthy();
+    expect(ref).toBeInstanceOf(CollectionReference);
   });
 
   it('addDataToItem inplace', () => {
-    let data: { [field: string]: any } = {test: 123}
+    const data: { [field: string]: any } = {test: 123};
 
     addDataToItem(data, {
       thing: 'foo'
     }, true);
 
-    expect(data).toBeTruthy()
-    expect(data.test).toEqual(123)
-    expect(data.thing).toBeTruthy()
-    expect(data.thing).toEqual('foo')
+    expect(data).toBeTruthy();
+    expect(data['test']).toEqual(123);
+    expect(data['thing']).toBeTruthy();
+    expect(data['thing']).toEqual('foo');
+
   });
 
 
   it('addDataToItem inplace false', () => {
-    let data: { [field: string]: any } = {test: 123}
+    let data: { [field: string]: any } = {test: 123};
 
     data = addDataToItem(data, {
       thing: 'foo'
     }, false);
 
-    expect(data).toBeTruthy()
-    expect(data.test).toEqual(123)
-    expect(data.thing).toBeTruthy()
-    expect(data.thing).toEqual('foo')
+    expect(data).toBeTruthy();
+    expect(data['test']).toEqual(123);
+    expect(data['thing']).toBeTruthy();
+    expect(data['thing']).toEqual('foo');
   });
 
   it('addCreatedDate no date given', () => {
-    let data: { [field: string]: any } = {test: 123}
+    const data: { [field: string]: any } = {test: 123};
 
-    addCreatedDate(data, true)
+    addCreatedDate(data, true);
 
-    expect(data).toBeTruthy()
-    expect(data.test).toEqual(123)
-    expect(data.createdDate).toBeTruthy()
-    expect(data.createdDate).toBeInstanceOf(Date)
+    expect(data).toBeTruthy();
+    expect(data['test']).toEqual(123);
+    expect(data['createdDate']).toBeTruthy();
+    expect(data['createdDate']).toBeInstanceOf(Date);
   });
 
   it('addCreatedDate date given', () => {
-    let data: { [field: string]: any } = {test: 123}
+    const data: { [field: string]: any } = {test: 123};
 
     const date = new Date(1982, 1, 2, 12, 32, 12, 32);
 
-    addCreatedDate(data, true, date)
+    addCreatedDate(data, true, date);
 
-    expect(data).toBeTruthy()
-    expect(data.test).toEqual(123)
-    expect(data.createdDate).toBeTruthy()
-    expect(data.createdDate).toBeInstanceOf(Date)
-    expect(data.createdDate).toBe(date)
+    expect(data).toBeTruthy();
+    expect(data['test']).toEqual(123);
+    expect(data['createdDate']).toBeTruthy();
+    expect(data['createdDate']).toBeInstanceOf(Date);
+    expect(data['createdDate']).toBe(date);
   });
 
   it('addCreatedDate no date given, try to overwrite', () => {
 
     const date = new Date(1982, 1, 2, 12, 32, 12, 32);
-    let data: { [field: string]: any } = {
+    const data: { [field: string]: any } = {
       test: 123,
       createdDate: date
-    }
+    };
 
-    addCreatedDate(data, true)
+    addCreatedDate(data, true);
 
-    expect(data).toBeTruthy()
-    expect(data.test).toEqual(123)
-    expect(data.createdDate).toBeTruthy()
-    expect(data.createdDate).toBeInstanceOf(Date)
-    expect(data.createdDate).toBe(date)
+    expect(data).toBeTruthy();
+    expect(data['test']).toEqual(123);
+    expect(data['createdDate']).toBeTruthy();
+    expect(data['createdDate']).toBeInstanceOf(Date);
+    expect(data['createdDate']).toBe(date);
   });
 
   it('addModifiedDate no date given', () => {
-    let data: { [field: string]: any } = {test: 123}
+    const data: { [field: string]: any } = {test: 123};
 
-    addModifiedDate(data, true)
+    addModifiedDate(data, true);
 
-    expect(data).toBeTruthy()
-    expect(data.test).toEqual(123)
-    expect(data.modifiedDate).toBeTruthy()
-    expect(data.modifiedDate).toBeInstanceOf(Date)
+    expect(data).toBeTruthy();
+    expect(data['test']).toEqual(123);
+    expect(data['modifiedDate']).toBeTruthy();
+    expect(data['modifiedDate']).toBeInstanceOf(Date);
   });
 
   it('addModifiedDate date given', () => {
-    let data: { [field: string]: any } = {test: 123}
+    const data: { [field: string]: any } = {test: 123};
 
     const date = new Date(1982, 1, 2, 12, 32, 12, 32);
 
-    addModifiedDate(data, true, date)
+    addModifiedDate(data, true, date);
 
-    expect(data).toBeTruthy()
-    expect(data.test).toEqual(123)
-    expect(data.modifiedDate).toBeTruthy()
-    expect(data.modifiedDate).toBeInstanceOf(Date)
-    expect(data.modifiedDate).toBe(date)
+    expect(data).toBeTruthy();
+    expect(data['test']).toEqual(123);
+    expect(data['modifiedDate']).toBeTruthy();
+    expect(data['modifiedDate']).toBeInstanceOf(Date);
+    expect(data['modifiedDate']).toBe(date);
   });
 
   it('addModifiedDate no date given, overwrite', () => {
 
     const date = new Date(1982, 1, 2, 12, 32, 12, 32);
-    let data: { [field: string]: any } = {
+    const data: { [field: string]: any } = {
       test: 123,
       modifiedDate: date
-    }
+    };
 
-    addModifiedDate(data, true)
+    addModifiedDate(data, true);
 
-    expect(data).toBeTruthy()
-    expect(data.test).toEqual(123)
-    expect(data.modifiedDate).toBeTruthy()
-    expect(data.modifiedDate).toBeInstanceOf(Date)
-    expect(data.modifiedDate).not.toBe(date)
+    expect(data).toBeTruthy();
+    expect(data['test']).toEqual(123);
+    expect(data['modifiedDate']).toBeTruthy();
+    expect(data['modifiedDate']).toBeInstanceOf(Date);
+    expect(data['modifiedDate']).not.toBe(date);
   });
 
   it('addCreatedBy', () => {
 
-    let data: { [field: string]: any } = {
+    const data: { [field: string]: any } = {
       test: 123,
-    }
+    };
 
-    let user = {
+    const user = {
       name: 'test',
       type: 'admin'
-    }
+    };
 
-    addCreatedBy(data, user, true)
+    addCreatedBy(data, user, true);
 
-    expect(data).toBeTruthy()
-    expect(data.test).toEqual(123)
-    expect(data.createdBy).toBeTruthy()
-    expect(data.createdBy).toBe(user)
+    expect(data).toBeTruthy();
+    expect(data['test']).toEqual(123);
+    expect(data['createdBy']).toBeTruthy();
+    expect(data['createdBy']).toBe(user);
   });
 
   it('convertTimestampToDate', () => {
@@ -176,20 +178,20 @@ describe('Helpers', () => {
     const modifiedDate = new Date(1982, 1, 2, 12, 32, 12, 32);
     const createdDate = new Date(1981, 1, 2, 12, 32, 12, 32);
 
-    let data: { [field: string]: any } = {
+    const data: { [field: string]: any } = {
       test: 123,
-      modifiedDate: firebase.firestore.Timestamp.fromDate(modifiedDate),
-      createdDate: firebase.firestore.Timestamp.fromDate(createdDate),
-    }
+      modifiedDate: FirebaseTimestamp.fromDate(modifiedDate),
+      createdDate: FirebaseTimestamp.fromDate(createdDate),
+    };
 
-    convertTimestampToDate(data)
+    convertTimestampToDate(data);
 
-    expect(data).toBeTruthy()
-    expect(data.test).toEqual(123)
-    expect(data.modifiedDate).toBeTruthy()
-    expect(data.modifiedDate).toEqual(modifiedDate)
-    expect(data.createdDate).toBeTruthy()
-    expect(data.createdDate).toEqual(createdDate)
+    expect(data).toBeTruthy();
+    expect(data['test']).toEqual(123);
+    expect(data['modifiedDate']).toBeTruthy();
+    expect(data['modifiedDate']).toEqual(modifiedDate);
+    expect(data['createdDate']).toBeTruthy();
+    expect(data['createdDate']).toEqual(createdDate);
   });
 
 });

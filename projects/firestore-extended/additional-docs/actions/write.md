@@ -1,6 +1,6 @@
 # Write / Add
 
-#### For a working demo checkout: [Demo](../../../demo), or [Code](https://github.com/Tylder/angularfirestore-deep)
+#### For a working demo checkout: [Demo](../../../demo_), or [Code](https://github.com/Tylder/angularfirestore-deep)
 
 #### Method Documentation
 
@@ -8,9 +8,11 @@
 
 Allows for easy splitting up of data into child collections and documents.
 
-All you need to do is specify the child collections that should be created in [SubCollectionWriters](../../interfaces/SubCollectionWriter.html)
+All you need to do is specify the child collections that should be created
+in [SubCollectionWriters](../../interfaces/SubCollectionWriter.html)
 
 Example restaurant object to add to firestore (same as can be seen in [demo](https://angularfirestore-deep.web.app/demo/)):
+
 ```typescript
 {
     name: 'Tonys Pizzeria and Italian Food',
@@ -52,10 +54,10 @@ Example restaurant object to add to firestore (same as can be seen in [demo](htt
 },
 ```
 
-If we wish to split this restaurant object up by putting reviews and dishes in their own collection and also keep the images 
-in the dishes in their collection under dishes all we have to do is specify that in a list of SubCollectionWriters
+If we wish to split this restaurant object up by putting reviews and dishes in their own collection and also keep the images in the dishes
+in their collection under dishes all we have to do is specify that in a list of SubCollectionWriters
 
-#####  Sub Collection Writers used in the examples.
+##### Sub Collection Writers used in the examples.
 
 [SubCollectionWriter documentation](../../interfaces/SubCollectionWriter.html)
 
@@ -71,7 +73,8 @@ const restaurantSubCollectionWriters: SubCollectionWriter[] = [
 ];
 ```
 
-Once that is done its easy to write all this to firestore: 
+Once that is done its easy to write all this to firestore:
+
 ```typescript
 addRestaurant$(restaurant: RestaurantItem): Observable<RestaurantItem> {
     return this.ngFirestoreDeep
@@ -80,6 +83,7 @@ addRestaurant$(restaurant: RestaurantItem): Observable<RestaurantItem> {
 ```
 
 ##### Models used in the examples.
+
 Notice that they extend [FirestoreItem](../../interfaces/FirestoreItem.html)
 
 ```typescript

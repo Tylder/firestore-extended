@@ -5,5 +5,5 @@ export interface DragAndDropItem {
 }
 
 export interface DragAndDropContainer {
-  items: DragAndDropItem[]
+  items: DragAndDropItem[];
 }

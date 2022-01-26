@@ -2,14 +2,7 @@
 
 Simplify the work with complex and deep objects while retaining all the great benefits from Firebase Firestore.
 
-## RxFire
 ```bash
-npm install rxfire firebase rxjs firestore-extended --save
-```
-
-## AngularFire
-```bash
-ng add @angular/fire@next
 npm install firebase rxjs firestore-extended --save
 ```
 
@@ -17,20 +10,22 @@ Firestore splits its data up into collections and documents which is what allows
 
 The issues that this can cause is that the best way to store your data might not be the best way to work with and display that data.
 
-It can also be more difficult to figure out how to store your data in a way that is not only cheap in terms of reads but also cheap in terms of performance/speed.
+It can also be more difficult to figure out how to store your data in a way that is not only cheap in terms of reads but also cheap in terms
+of performance/speed.
 
 AngularFireStore-Deep is meant to help developers solve these issues.
 
 ### Documentation and Examples
+
 [Documentation](https://angularfirestore-deep.web.app/docs/)
 <br>
-[Github](https://github.com/Tylder/angularfirestore-deep/tree/master/projects/angularfirestore-deep) 
+[Github](https://github.com/Tylder/angularfirestore-deep/tree/master/projects/angularfirestore-deep)
 
 
 > [Introduction](https://angularfirestore-deep.web.app/docs/additional-documentation/introduction.html)
-> 
 >
-> #### Actions 
+>
+> #### Actions
 > [Read](https://angularfirestore-deep.web.app/docs/additional-documentation/actions/read.html)
 > <br>
 > [Write](https://angularfirestore-deep.web.app/docs/additional-documentation/actions/write.html)
@@ -41,11 +36,11 @@ AngularFireStore-Deep is meant to help developers solve these issues.
 > <br>
 > [Edit Id](https://angularfirestore-deep.web.app/docs/additional-documentation/actions/edit-id.html)
 
-
 ### Demo
+
 You can find a simple demo in projects/demo.
 
-It can be run locally if you provide your own firebaseConfig in the environment file or you can find a running demo here: 
+It can be run locally if you provide your own firebaseConfig in the environment file or you can find a running demo here:
 <br>
 [Demo](https://angularfirestore-deep.web.app/demo/)
 
@@ -64,17 +59,57 @@ npm run start
 
 ## Using the library
 
-Use the library in any Angular application:
+This will add and read the `Address` in a collection inside each `Restaurant` Document.
+
+``example.fs.service.ts``
 
 ```ts
-  ngFirestoreDeep: AngularFirestoreDeep;  //  AngularFirestoreDeep variable
 
-  constructor(private ngFireStore: AngularFirestore) {
-    this.ngFirestoreDeep = new AngularFirestoreDeep(ngFireStore);  //  initialize AngularFireStoreDeep with AngularFirestore
+export interface Address {
+  zipCode: string;
+  city: string;
+  line1: string;
+}
+
+export interface Restaurant {
+  address: Address
+}
+
+const restaurantSubCollectionWriters: SubCollectionWriter[] = [
+  // add address sub Collection inside each Example Document
+  {name: 'address'},
+];
+
+const restaurantSubCollectionQueries: SubCollectionQuery[] = [
+  // listen for address sub Collection inside each Example Document
+  {name: 'address'},
+];
+
+export class RestaurantFsService { // <-- Service for listening/writing to Firestore
+
+  app: firebase.app.App;
+  rxFireExt: RxFirestoreExtended;  //  RxfirestoreExtended
+  collectionRef: CollectionReference<Restaurant>;
+
+  constructor() {
+    this.app = firebase.initializeApp(environment.firebase); // only call this once per application
+    this.app.firestore().useEmulator('localhost', firestoreEmulatorPort);
+    this.rxFireExt = new RxFirestoreExtended(this.app);  //  initialize RxFireStoreExtended with firestore
+    this.collectionRef = this.app.firestore().collection('restaurants'); // AngularFirestoreCollectionRef to the example collection
   }
+
+  listenForExamples$(): Observable<Restaurant[]> {
+    return this.rxFireExt.listenForCollection$<RestaurantItem>(this.restaurantCollectionRef, restaurantSubCollectionQueries);
+  }
+}
+
 ```
 
-See the [Documentation](https://angularfirestore-deep.web.app/docs/) for much more information. 
+### Angular
+
+Please read [Angular README](projects/firestore-extended/src/lib/ngx/README.md) for more information regarding use with Angular.
+
+See the [Documentation](https://angularfirestore-deep.web.app/docs/) for much more information.
 
 ## License
 

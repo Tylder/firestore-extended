@@ -1,8 +1,6 @@
-
 /* For Listening to a Doc and multiple sub collections in that doc */
 
-import firebase from 'firebase';
-import {QueryFn} from './interfaces';
+import {QueryConstraint} from 'firebase/firestore';
 
 /**
  * For Listening to a Document and multiple sub Collections in that Document
@@ -31,5 +29,6 @@ export interface SubCollectionQuery {
    *                  .where('publisher', '==', 'BigPublisher')
    *
    */
-  queryFn?: QueryFn;
+  // queryFn?: QueryFn;
+  queryConstraints?: QueryConstraint[];
 }

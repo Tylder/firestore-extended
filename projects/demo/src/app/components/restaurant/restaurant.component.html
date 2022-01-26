@@ -1,11 +1,11 @@
-<div class="restaurant-expanded">
-  <p>{{restaurant?.name}}</p>
+<div class="restaurant-expanded" *ngIf="restaurant as _restaurant">
+  <p>{{_restaurant.name}}</p>
 
   <p>Category: {{restaurant?.category}}</p>
 
   <p>Score: {{restaurant?.averageReviewScore}}</p>
 
-  <p>Address: {{restaurant?.address | json}}</p>
+  <!--  <p>Address: {{restaurant?.address | json}}</p>-->
 
   <p>Score: {{restaurant?.averageReviewScore}}</p>
 

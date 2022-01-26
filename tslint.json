@@ -1,6 +1,12 @@
 {
   "extends": "tslint:recommended",
   "rules": {
+    "noPropertyAccessFromIndexSignature": {
+      "severity": "warning"
+    },
+    "no-string-literal": {
+      "severity": "warning"
+    },
     "align": {
       "options": [
         "parameters",
@@ -59,8 +65,8 @@
       true,
       "debug",
       "info",
-//      "time",
-//      "timeEnd",
+      //      "time",
+      //      "timeEnd",
       "trace"
     ],
     "no-empty": false,
@@ -143,8 +149,5 @@
     "template-no-negated-async": true,
     "use-lifecycle-interface": true,
     "use-pipe-transform-interface": true
-  },
-  "rulesDirectory": [
-    "codelyzer"
-  ]
+  }
 }

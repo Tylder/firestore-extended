@@ -45,3 +45,6 @@ testem.log
 Thumbs.db
 
 firebase-secure.ts
+# angular cache
+/.angular/
+/.angular/

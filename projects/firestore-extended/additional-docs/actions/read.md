@@ -1,13 +1,12 @@
 # Read / Listen
 
-#### For a working demo checkout: [Demo](../../../demo), or [Code](https://github.com/Tylder/angularfirestore-deep)
+#### For a working demo checkout: [Demo](../../../demo_), or [Code](https://github.com/Tylder/angularfirestore-deep)
 
 #### Method Documentation
 
 - [listenForCollection$](../../classes/AngularFirestoreDeep.html#listenForCollection$)
 - [listenForDocDeep$](../../classes/AngularFirestoreDeep.html#listenForDocDeep$)
 - [listenForCollectionRecursively$](../../classes/AngularFirestoreDeep.html#listenForCollectionRecursively$)
-
 
 All reads done by AngularFirestore-Deep is using snapshotChanges().
 
@@ -73,7 +72,7 @@ This is done for the following reasons:
   }
 ```
 
-#####  Sub Collection Queries used in the examples.
+##### Sub Collection Queries used in the examples.
 
 [SubCollectionQuery documentation](../../interfaces/SubCollectionQuery.html)
 
@@ -94,6 +93,7 @@ const restaurantSubCollectionQueries: SubCollectionQuery[] = [
 ```
 
 ##### Models used in the examples.
+
 Notice that they extend [FirestoreItem](../../interfaces/FirestoreItem.html)
 
 ```typescript

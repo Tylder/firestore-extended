@@ -1,23 +1,30 @@
 // A convience type for making a query.
 // Example: const query = (ref) => ref.where('name', == 'david');
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import DocumentData = firebase.firestore.DocumentData;
-import CollectionReference = firebase.firestore.CollectionReference;
 import {Observable} from 'rxjs';
-import DocumentReference = firebase.firestore.DocumentReference;
-import DocumentSnapshot = firebase.firestore.DocumentSnapshot;
-import SetOptions = firebase.firestore.SetOptions;
-import UpdateData = firebase.firestore.UpdateData;
-import QueryDocumentSnapshot = firebase.firestore.QueryDocumentSnapshot;
-import FirebaseError = firebase.FirebaseError;
-export type Query<T = DocumentData> = firebase.firestore.Query<T>;
+import {
+  CollectionReference,
+  DocumentData,
+  DocumentReference,
+  DocumentSnapshot,
+  Firestore,
+  FirestoreError,
+  Query,
+  QuerySnapshot,
+  SetOptions,
+  UpdateData
+} from 'firebase/firestore';
+import {FirebaseApp} from 'firebase/app';
+
+// export type Query<T = DocumentData> = FirestoreQuery<T>;
 
 // A convenience type for making a query.
 // Example: const query = (ref) => ref.where('name', == 'david');
-export type QueryFn<T = DocumentData> = (ref: CollectionReference<T>) => Query<T>;
+// export type QueryFn<T = DocumentData> = (ref: CollectionReference<T>) => Query<T>;
 
-export interface FirebaseErrorExt extends FirebaseError, DocumentData {}
+// export declare type FirestoreErrorCodeExt = 'sdsdsd' & FirestoreErrorCode;
+
+export interface FirestoreErrorExt extends FirestoreError, DocumentData {
+}
 
 /** Used as a wrapper for adding a document, either doc or path must be specified, helps when adding multiple */
 export interface AddDocumentWrapper<A> {
@@ -31,15 +38,28 @@ export interface AddDocumentWrapper<A> {
   path?: string;
 }
 
-export interface FirestoreWrapper {
-  fbApp: firebase.app.App
-  // doc
-  doc(docRef: DocumentReference): Observable<DocumentSnapshot>
-  set<A>(docRef: DocumentReference, data: A, options?: SetOptions): Observable<void>
-  update(docRef: DocumentReference, data: UpdateData, options?: SetOptions): Observable<void>
-  delete(docRef: DocumentReference): Observable<void>
+export interface BaseFirestoreWrapper {
+  firebaseApp: FirebaseApp;
 
-  // collection
-  collection(collectionRef: CollectionReference): Observable<QueryDocumentSnapshot[]>
-  add<T>(collectionRef: CollectionReference<T>, data: T): Observable<DocumentReference<T>>
+  get firestore(): Firestore;
+
+  /** get document and listen for real time updates */
+  listenForDoc<T>(docRef: DocumentReference<T>): Observable<DocumentSnapshot<T>>;
+
+  /** get document */
+  getDoc<T>(docRef: DocumentReference<T>): Observable<DocumentSnapshot<T>>;
+
+  set<T>(docRef: DocumentReference<T>, data: T, options?: SetOptions): Observable<void>;
+
+  add<T>(collectionRef: CollectionReference<T>, data: T): Observable<DocumentReference<T>>;
+
+  update<T>(docRef: DocumentReference<T>, data: UpdateData<Partial<T>>, options?: SetOptions): Observable<void>;
+
+  delete<T>(docRef: DocumentReference<T>): Observable<void>;
+
+  /** get collection and listen for real time updates */
+  listenForCollection<T>(query: Query<T>): Observable<QuerySnapshot<T>>;
+
+  /** get collection */
+  getCollection<T>(query: Query<T>): Observable<QuerySnapshot<T>>;
 }
