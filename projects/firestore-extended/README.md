@@ -13,7 +13,7 @@ The issues that this can cause is that the best way to store your data might not
 It can also be more difficult to figure out how to store your data in a way that is not only cheap in terms of reads but also cheap in terms
 of performance/speed.
 
-AngularFireStore-Deep is meant to help developers solve these issues.
+Firestore Extended is meant to help developers solve these issues.
 
 ### Documentation and Examples
 
@@ -87,19 +87,20 @@ const restaurantSubCollectionQueries: SubCollectionQuery[] = [
 
 export class RestaurantFsService { // <-- Service for listening/writing to Firestore
 
-  app: firebase.app.App;
-  rxFireExt: RxFirestoreExtended;  //  RxfirestoreExtended
-  collectionRef: CollectionReference<Restaurant>;
+  app: FirebaseApp;
+  firestoreExt: FirestoreExt;  //
+  restaurantCollectionRef: CollectionReference<Restaurant>;
+  firestore: Firestore;
 
   constructor() {
-    this.app = firebase.initializeApp(environment.firebase); // only call this once per application
-    this.app.firestore().useEmulator('localhost', firestoreEmulatorPort);
-    this.rxFireExt = new RxFirestoreExtended(this.app);  //  initialize RxFireStoreExtended with firestore
-    this.collectionRef = this.app.firestore().collection('restaurants'); // AngularFirestoreCollectionRef to the example collection
+    this.app = initializeApp(environment.firebase); // only call this once per application
+    this.firestore = getFirestore(this.app);
+    this.firestoreExt = new FirestoreExt(this.app);  //  initialize FirestoreExt with firebase app
+    this.collectionRef = collection(this.firestore, 'restaurants');
   }
 
-  listenForExamples$(): Observable<Restaurant[]> {
-    return this.rxFireExt.listenForCollection$<RestaurantItem>(this.restaurantCollectionRef, restaurantSubCollectionQueries);
+  listenForRestaurants$(): Observable<Restaurant[]> {
+    return this.firestoreExt.listenForCollection$<Restaurant>(this.collectionRef);
   }
 }
 

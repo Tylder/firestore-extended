@@ -87,19 +87,20 @@ const restaurantSubCollectionQueries: SubCollectionQuery[] = [
 
 export class RestaurantFsService { // <-- Service for listening/writing to Firestore
 
-  app: firebase.app.App;
-  rxFireExt: RxFirestoreExtended;  //  RxfirestoreExtended
-  collectionRef: CollectionReference<Restaurant>;
+  app: FirebaseApp;
+  firestoreExt: FirestoreExt;  //
+  restaurantCollectionRef: CollectionReference<Restaurant>;
+  firestore: Firestore;
 
   constructor() {
-    this.app = firebase.initializeApp(environment.firebase); // only call this once per application
-    this.app.firestore().useEmulator('localhost', firestoreEmulatorPort);
-    this.rxFireExt = new RxFirestoreExtended(this.app);  //  initialize RxFireStoreExtended with firestore
-    this.collectionRef = this.app.firestore().collection('restaurants'); // AngularFirestoreCollectionRef to the example collection
+    this.app = initializeApp(environment.firebase); // only call this once per application
+    this.firestore = getFirestore(this.app);
+    this.firestoreExt = new FirestoreExt(this.app);  //  initialize FirestoreExt with firebase app
+    this.collectionRef = collection(this.firestore, 'restaurants');
   }
 
-  listenForExamples$(): Observable<Restaurant[]> {
-    return this.rxFireExt.listenForCollection$<RestaurantItem>(this.restaurantCollectionRef, restaurantSubCollectionQueries);
+  listenForRestaurants$(): Observable<Restaurant[]> {
+    return this.firestoreExt.listenForCollection$<Restaurant>(this.collectionRef);
   }
 }
 
@@ -107,7 +108,8 @@ export class RestaurantFsService { // <-- Service for listening/writing to Fires
 
 ### Angular
 
-Please read [Angular README](https://fir-extended-demo.web.app/docs/angular.md) for more information regarding use with Angular.
+Please read [Angular README](https://fir-extended-demo.web.app/docs/additional-documentation/angular.html) for more information regarding
+use with Angular.
 
 See the [Documentation](https://fir-extended-demo.web.app/docs/) for much more information.
 

@@ -48,9 +48,8 @@ export class RestaurantFsService {
     this.firestore = getFirestore(this.app);
     // connectFirestoreEmulator(this.firestore, 'localhost', firestoreEmulatorPort);
 
-    this.firestoreExt = new FirestoreExt(this.app);  //  initialize RxFireStoreExtended with firestore
-
-    this.restaurantCollectionRef = collection(this.firestore, 'demo_restaurants'); // AngularFirestoreCollectionRef to restaurants
+    this.firestoreExt = new FirestoreExt(this.app);  //  initialize FirestoreExt with firebase app
+    this.restaurantCollectionRef = collection(this.firestore, 'demo_restaurants');
   }
 
   /* LISTEN */
