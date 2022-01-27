@@ -1,11 +1,17 @@
 import {Injectable} from '@angular/core';
-import {RestaurantItem, ReviewItem} from '../models/restaurant';
+import {
+  FireItem,
+  getDocRefWithId,
+  getSubCollection,
+  NgxFirebaseService,
+  NgxFirestoreExtService,
+  SubCollectionQuery,
+  SubCollectionWriter
+} from 'firestore-extended';
+import {collection, CollectionReference, DocumentReference, orderBy} from 'firebase/firestore';
 import {Observable} from 'rxjs';
-import {environment} from '../../environments/environment';
+import {RestaurantItem, ReviewItem} from '../models/restaurant';
 import {switchMap} from 'rxjs/operators';
-import {FirebaseApp, initializeApp} from 'firebase/app';
-import {collection, CollectionReference, DocumentReference, Firestore, getFirestore, orderBy} from 'firebase/firestore';
-import {FireItem, FirestoreExt, getDocRefWithId, getSubCollection, SubCollectionQuery, SubCollectionWriter} from 'firestore-extended';
 
 const restaurantSubCollectionWriters: SubCollectionWriter[] = [
   {name: 'address'},
@@ -37,18 +43,16 @@ const restaurantSubCollectionQueries: SubCollectionQuery[] = [
 @Injectable({
   providedIn: 'root'
 })
-export class RestaurantFsService {
-  app: FirebaseApp;
-  firestoreExt: FirestoreExt;  //  FirestoreExt
-  restaurantCollectionRef: CollectionReference<any>;
-  firestore: Firestore;
+/**
+ * Firestore Restaurant service for Angular.
+ * Same as RestaurantFsService except that it uses the specific Angular module that initializes firebaseApp.
+ */
+export class NgxRestaurantFsService extends NgxFirestoreExtService {
 
-  constructor() {
-    this.app = initializeApp(environment.firebase); // only call this once per application
-    this.firestore = getFirestore(this.app);
-    // connectFirestoreEmulator(this.firestore, 'localhost', firestoreEmulatorPort);
+  public restaurantCollectionRef: CollectionReference<any>;
 
-    this.firestoreExt = new FirestoreExt(this.app);  //  initialize RxFireStoreExtended with firestore
+  constructor(ngxFirebaseService: NgxFirebaseService) {
+    super(ngxFirebaseService);
 
     this.restaurantCollectionRef = collection(this.firestore, 'demo_restaurants'); // AngularFirestoreCollectionRef to restaurants
   }
@@ -124,5 +128,4 @@ export class RestaurantFsService {
       })
     );
   }
-
 }

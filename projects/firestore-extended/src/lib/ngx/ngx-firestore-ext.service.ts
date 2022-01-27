@@ -16,12 +16,12 @@ import {Firestore} from 'firebase/firestore';
  */
 export class NgxFirestoreExtService {
 
-  public fireExt: FirestoreExt;
+  public firestoreExt: FirestoreExt;
   public firestore: Firestore;
   public firebaseApp: FirebaseApp;
 
   constructor(ngxFirebaseService: NgxFirebaseService) {
-    this.fireExt = ngxFirebaseService.fireExt;
+    this.firestoreExt = ngxFirebaseService.firestoreExt;
     this.firebaseApp = ngxFirebaseService.firebaseApp;
     this.firestore = ngxFirebaseService.firestore;
   }

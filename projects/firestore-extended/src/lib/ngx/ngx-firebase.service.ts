@@ -25,7 +25,7 @@ import {FirestoreExt} from '../firestore-extended.class';
 export class NgxFirebaseService {
 
   public firebaseApp: FirebaseApp;
-  public fireExt: FirestoreExt;
+  public firestoreExt: FirestoreExt;
 
   constructor(@Optional() config?: FirebaseConfig,
               @Optional() @Inject(FIRESTORE_USE_EMULATOR) public emulatorConfig?: FirestoreEmulatorConfig) {
@@ -46,7 +46,7 @@ export class NgxFirebaseService {
       // getFirestore(this.firebaseApp).useEmulator(emulatorConfig.host, emulatorConfig.port); // v8
     }
 
-    this.fireExt = new FirestoreExt(this.firebaseApp);
+    this.firestoreExt = new FirestoreExt(this.firebaseApp);
   }
 
   get firestore(): Firestore {

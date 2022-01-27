@@ -18,7 +18,8 @@ export function getRefFromPath<A>(path: string, firestore: Firestore): DocumentR
   }
 }
 
-export function getSubCollection<T extends DocumentData, A extends DocumentData>(docRef: DocumentReference<T>, collectionName: string): CollectionReference<A> {
+export function getSubCollection<T extends DocumentData, A extends DocumentData>(docRef: DocumentReference<T>,
+                                                                                 collectionName: string): CollectionReference<A> {
   const collectionPath: string = docRef.path.concat('/', collectionName);
   return collection(docRef.firestore, collectionPath) as CollectionReference<A>;
 }
