@@ -4,6 +4,10 @@
     "file": "intro.md"
   },
   {
+    "title": "Angular",
+    "file": "angular.md"
+  },
+  {
     "title": "Actions",
     "file": "actions.md",
     "children": [
