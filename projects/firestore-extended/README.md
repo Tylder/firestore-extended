@@ -108,7 +108,8 @@ export class RestaurantFsService { // <-- Service for listening/writing to Fires
 
 ### Angular
 
-Please read [Angular README](https://fir-extended-demo.web.app/docs/angular.md) for more information regarding use with Angular.
+Please read [Angular README](https://fir-extended-demo.web.app/docs/additional-documentation/angular.html) for more information regarding
+use with Angular.
 
 See the [Documentation](https://fir-extended-demo.web.app/docs/) for much more information.
 

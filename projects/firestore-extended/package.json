@@ -1,6 +1,6 @@
 {
   "name": "firestore-extended",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "scripts": {
     "doc": "npx compodoc -p tsconfig.doc.json --includes additional-docs"
   },
@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/Tylder/firestore-extended.git"
   },
-  "homepage": "https://github.com/Tylder/firestore-extended.git",
+  "homepage": "https://fir-extended-demo.web.app/docs/",
   "author": {
     "name": "Daniel Lofgren",
     "email": "lofgrendaniel@hotmail.com"
@@ -27,8 +27,8 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "firebase": "^9.6.1",
-    "rxjs": "~7.4.0"
+    "firebase": ">=9",
+    "rxjs": ">=6.4"
   },
   "dependencies": {
     "tslib": "^2.3.0"
