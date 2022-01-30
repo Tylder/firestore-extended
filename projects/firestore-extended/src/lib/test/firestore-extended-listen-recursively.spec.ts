@@ -59,7 +59,7 @@ describe('Firestore Extended Listen', () => {
 
   describe('listenForDoc$', () => {
     let testCollectionRef: CollectionReference<RestaurantItem>;
-    let testDocRef: DocumentReference;
+    let testDocRef: DocumentReference<RestaurantItem>;
     let origData: Readonly<RestaurantItem>;
 
     const subCollectionWriters: SubCollectionWriter[] = [

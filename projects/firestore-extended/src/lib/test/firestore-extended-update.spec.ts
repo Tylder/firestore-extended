@@ -3,12 +3,12 @@ import {mockDeepItems} from './mock/mockItems';
 
 import {SubCollectionWriter} from '../sub-collection-writer';
 import {AddressItem, DishItem, RestaurantItem} from './models/restaurant';
-import {catchError, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, map, switchMap, take, tap} from 'rxjs/operators';
 import {of, Subscription} from 'rxjs';
 import {SubCollectionQuery} from '../sub-collection-query';
 import {DocNotExistAction} from '../firestore-extended';
 import {createId} from './utils';
-import {FireItem} from '../models/firestoreItem';
+import {FireItem} from '../models/fireItem';
 import {deleteApp, FirebaseApp, initializeApp} from 'firebase/app';
 import {
   collection,
@@ -60,7 +60,7 @@ describe('Firestore Extended Update', () => {
 
   describe('update$ shallow', () => {
     let testCollectionRef: CollectionReference<RestaurantItem>;
-    let testDocRef: DocumentReference; // ref to created doc
+    let testDocRef: DocumentReference<RestaurantItem>; // ref to created doc
     let origData: Readonly<RestaurantItem>;
 
     beforeEach((done: DoneFn) => {
@@ -90,9 +90,11 @@ describe('Firestore Extended Update', () => {
         switchMap(() => {
           return fireExt.listenForDoc$<RestaurantItem>(testDocRef, subCollectionQueries, DocNotExistAction.RETURN_NULL);
         }),
-        tap(d => {
-
+        tap((d: FireItem<RestaurantItem>) => {
           expect(d).toBeTruthy();
+        }),
+        map((d: FireItem<RestaurantItem>) => fireExt.cleanExtrasFromData(d)),
+        tap((d: RestaurantItem) => {
           expect(d.address).toEqual(newAddress);
         }),
         take(1)
@@ -103,7 +105,7 @@ describe('Firestore Extended Update', () => {
     it('change doc id', (done: DoneFn) => {
 
       const subCollectionQueries: SubCollectionQuery[] = [];
-      let newDocRef: DocumentReference;
+      let newDocRef: DocumentReference<RestaurantItem>;
 
       subscription = fireExt.changeDocId$<RestaurantItem>(testDocRef, 'newId', subCollectionQueries).pipe(
         // changeDocId
@@ -140,8 +142,8 @@ describe('Firestore Extended Update', () => {
       const subCollectionQueries: SubCollectionQuery[] = [];
 
       subscription = fireExt.listenForDoc$<RestaurantItem>(testDocRef, subCollectionQueries, DocNotExistAction.RETURN_NULL).pipe(
-        switchMap(d => {
-          return fireExt.moveItemInArray$<DishItem>(d.dishes as FireItem<DishItem>[], 0, 1);
+        switchMap((d: FireItem<RestaurantItem>) => {
+          return fireExt.moveItemInArray$<DishItem>(d.dishes, 0, 1);
         }),
         catchError((err: FirestoreErrorExt) => {
           expect(err.name).toEqual('firestoreExt/unable-to-change-index-of-non-document');
@@ -155,7 +157,7 @@ describe('Firestore Extended Update', () => {
 
   describe('update$ deep', () => {
     let testCollectionRef: CollectionReference<RestaurantItem>;
-    let testDocRef: DocumentReference;
+    let testDocRef: DocumentReference<RestaurantItem>;
     let origData: Readonly<RestaurantItem>;
     let subCollectionWriters: SubCollectionWriter[];
 
@@ -230,7 +232,7 @@ describe('Firestore Extended Update', () => {
         },
       ];
 
-      let newDocRef: DocumentReference;
+      let newDocRef: DocumentReference<RestaurantItem>;
 
       subscription = fireExt.changeDocId$<RestaurantItem>(testDocRef, 'newId', subCollectionQueries).pipe(
         // changeDocId
@@ -277,7 +279,7 @@ describe('Firestore Extended Update', () => {
           originalSavedData = d;
         }),
         switchMap(_ => {
-          return fireExt.moveItemInArray$<DishItem>(originalSavedData.dishes as FireItem<DishItem>[], 0, 2, false);
+          return fireExt.moveItemInArray$<DishItem>(originalSavedData.dishes, 0, 2, false);
         }),
         switchMap(_ => {
           return fireExt.listenForDoc$<RestaurantItem>(testDocRef, subCollectionQueries, DocNotExistAction.RETURN_NULL);
@@ -324,7 +326,7 @@ describe('Firestore Extended Update', () => {
           originalSavedData = d;
         }),
         switchMap(_ => {
-          return fireExt.moveItemInArray$<DishItem>(originalSavedData.dishes as FireItem<DishItem>[], 0, 2, true);
+          return fireExt.moveItemInArray$<DishItem>(originalSavedData.dishes, 0, 2, true);
         }),
         switchMap(_ => {
           return fireExt.listenForDoc$<RestaurantItem>(testDocRef, subCollectionQueries, DocNotExistAction.RETURN_NULL);
@@ -377,7 +379,7 @@ describe('Firestore Extended Update', () => {
         }),
         switchMap(_ => {
           return fireExt.deleteIndexedItemInArray$<DishItem>(
-            originalSavedData.dishes as FireItem<DishItem>[], 1, dishSubCollectionQueries, false);
+            originalSavedData.dishes, 1, dishSubCollectionQueries, false);
         }),
         switchMap(_ => {
           return fireExt.listenForDoc$<RestaurantItem>(testDocRef, subCollectionQueries, DocNotExistAction.RETURN_NULL);
@@ -428,7 +430,7 @@ describe('Firestore Extended Update', () => {
         }),
         switchMap(_ => {
           return fireExt.deleteIndexedItemInArray$<DishItem>(
-            originalSavedData.dishes as FireItem<DishItem>[], 1, dishSubCollectionQueries, true);
+            originalSavedData.dishes, 1, dishSubCollectionQueries, true);
         }),
         switchMap(_ => {
           return fireExt.listenForDoc$<RestaurantItem>(testDocRef, subCollectionQueries, DocNotExistAction.RETURN_NULL);
@@ -480,7 +482,7 @@ describe('Firestore Extended Update', () => {
         }),
         switchMap(_ => {
           return fireExt.deleteIndexedItemsInArray$<DishItem>(
-            originalSavedData.dishes as FireItem<DishItem>[], [1, 2], dishSubCollectionQueries, false);
+            originalSavedData.dishes, [1, 2], dishSubCollectionQueries, false);
         }),
         switchMap(_ => {
           return fireExt.listenForDoc$<RestaurantItem>(testDocRef, subCollectionQueries, DocNotExistAction.RETURN_NULL);
@@ -525,12 +527,12 @@ describe('Firestore Extended Update', () => {
 
       subscription = fireExt.listenForDoc$<RestaurantItem>(testDocRef, subCollectionQueries, DocNotExistAction.RETURN_NULL).pipe(
         take(1),
-        tap(d => {
+        tap((d: FireItem<RestaurantItem>) => {
           originalSavedData = d;
         }),
         switchMap(_ => {
           return fireExt.deleteIndexedItemsInArray$<DishItem>(
-            originalSavedData.dishes as FireItem<DishItem>[], [1, 2], dishSubCollectionQueries, true);
+            originalSavedData.dishes, [1, 2], dishSubCollectionQueries, true);
         }),
         switchMap(_ => {
           return fireExt.listenForDoc$<RestaurantItem>(testDocRef, subCollectionQueries, DocNotExistAction.RETURN_NULL);

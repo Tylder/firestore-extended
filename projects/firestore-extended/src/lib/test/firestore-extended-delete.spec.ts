@@ -8,8 +8,6 @@ import {forkJoin, Observable, Subscription} from 'rxjs';
 import {SubCollectionQuery} from '../sub-collection-query';
 import {DocNotExistAction} from '../firestore-extended';
 import {createId} from './utils';
-import {FireItem} from '../models/firestoreItem';
-import {deleteApp, FirebaseApp, initializeApp} from 'firebase/app';
 import {
   collection,
   CollectionReference,
@@ -20,6 +18,8 @@ import {
   orderBy
 } from 'firebase/firestore';
 import {FirestoreExt} from '../firestore-extended.class';
+import {deleteApp, FirebaseApp, initializeApp} from 'firebase/app';
+import {FireItem} from '../models/fireItem';
 
 describe('Firestore Extended Delete', () => {
   let app: FirebaseApp;
@@ -59,7 +59,7 @@ describe('Firestore Extended Delete', () => {
 
   describe('delete$ shallow', () => {
     let testCollectionRef: CollectionReference<RestaurantItem>;
-    let testDocRef: DocumentReference;
+    let testDocRef: DocumentReference<RestaurantItem>;
     let origData: Readonly<RestaurantItem>;
 
     beforeEach((done: DoneFn) => {
@@ -82,7 +82,7 @@ describe('Firestore Extended Delete', () => {
         switchMap(() => {
           return fireExt.listenForDoc$<RestaurantItem>(testDocRef, subCollectionQueries, DocNotExistAction.RETURN_ALL_BUT_DATA);
         }),
-        tap(d => {
+        tap((d) => {
           expect(d).toBeTruthy();
           expect(d.firestoreMetadata.isExists).toBeFalse();
         }),
@@ -95,7 +95,7 @@ describe('Firestore Extended Delete', () => {
 
   describe('delete$ deep', () => {
     let testCollectionRef: CollectionReference<RestaurantItem>;
-    let testDocRef: DocumentReference;
+    let testDocRef: DocumentReference<RestaurantItem>;
     let origData: Readonly<RestaurantItem>;
     let subCollectionWriters: SubCollectionWriter[];
 
@@ -176,7 +176,7 @@ describe('Firestore Extended Delete', () => {
 
       const subCollectionQueries: SubCollectionQuery[] = [];
 
-      subscription = fireExt.deleteCollection$(testCollectionRef, subCollectionQueries).pipe(
+      subscription = fireExt.deleteCollection$<RestaurantItem>(testCollectionRef, subCollectionQueries).pipe(
         switchMap(() => {
           return fireExt.listenForCollection$<RestaurantItem>(testCollectionRef, subCollectionQueries);
         }),
@@ -396,7 +396,7 @@ describe('Firestore Extended Delete', () => {
       console.log('beforeEach inner, path:', testCollectionRef.path);
 
       fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true).pipe(
-        tap(d => item = d)
+        tap((d) => item = d)
       ).subscribe(() => done());
 
     });

@@ -3,10 +3,10 @@ import {mockDeepItems} from './mock/mockItems';
 import {deleteApp, FirebaseApp, initializeApp} from 'firebase/app';
 
 import {SubCollectionWriter} from '../sub-collection-writer';
-import {AddressItem, DishItem, RestaurantItem} from './models/restaurant';
+import {AddressItem, RestaurantItem} from './models/restaurant';
 import {catchError, count, tap} from 'rxjs/operators';
 import {of, Subscription} from 'rxjs';
-import {FireItem} from '../models/firestoreItem';
+import {FireItem} from '../models/fireItem';
 import {createId, isCompleteFirestoreMetadata, isDatesExists} from './utils';
 import {collection, CollectionReference, connectFirestoreEmulator, Firestore, FirestoreError, getFirestore} from 'firebase/firestore';
 import {FirestoreExt} from '../firestore-extended.class';
@@ -58,15 +58,15 @@ describe('Firestore Extended Add', () => {
 
     describe('flat', () => {
 
-      const origData = Object.assign({}, mockDeepItems[0]);
+      const origData: RestaurantItem = Object.assign({}, mockDeepItems[0]);
       const subCollectionWriters: SubCollectionWriter[] = [];
 
       it('random id no date', (done: DoneFn) => {
         // Testing add Deep with non deep data
         subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, false)
           .pipe(
-            tap((d) => {
-
+            tap((d: FireItem<RestaurantItem>) => {
+              const foo = d.address?.firestoreMetadata?.ref;
               expect(d).toBeTruthy();
               expect(isDatesExists(d)).toBeFalse();
               expect(isCompleteFirestoreMetadata(d.firestoreMetadata)).toBeTrue();
@@ -135,7 +135,7 @@ describe('Firestore Extended Add', () => {
 
     describe('deep', () => {
       it('random id', (done: DoneFn) => {
-        const origData = Object.assign({}, mockDeepItems[0]);
+        const origData: RestaurantItem = Object.assign({}, mockDeepItems[0]);
         const subCollectionWriters: SubCollectionWriter[] = [
           {name: 'reviews'}, // make reviews a sub collection
           {
@@ -148,12 +148,11 @@ describe('Firestore Extended Add', () => {
 
         subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, false)
           .pipe(
-            tap(d => {
-
+            tap((d: FireItem<RestaurantItem>) => {
               expect(d).toBeTruthy();
               expect(isDatesExists(d)).toBeFalsy();
               expect(isCompleteFirestoreMetadata(d.firestoreMetadata)).toBeTrue();
-              expect(d.reviews?.length).toEqual(origData.reviews?.length);
+              expect(d.reviews['length']).toEqual(origData['reviews']?.length);
 
               expect(d.reviews[0]).toBeTruthy();
               expect(d.reviews[0].firestoreMetadata).toBeTruthy();
@@ -183,12 +182,10 @@ describe('Firestore Extended Add', () => {
 
         subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true, 'test')
           .pipe(
-            tap(d => {
-
-              expect(d).toBeTruthy();
+            tap((d: FireItem<RestaurantItem>) => {
               expect(isDatesExists(d)).toBeTrue();
               expect(isCompleteFirestoreMetadata(d.firestoreMetadata)).toBeTrue();
-              expect(d.reviews?.length).toEqual(origData.reviews?.length);
+              expect(d.reviews['length']).toEqual(origData['reviews']?.length);
 
               expect(d.reviews[0]).toBeTruthy();
               expect(d.reviews[0].firestoreMetadata).toBeTruthy();
@@ -197,8 +194,8 @@ describe('Firestore Extended Add', () => {
 
               expect(d.firestoreMetadata.path).toEqual(`${testCollectionRef.path}/test`);
               expect(d.dishes[0]?.firestoreMetadata?.path).toContain(`${testCollectionRef.path}/test/dishes/`);
-              expect((d.dishes[0].images[0] as FireItem<any>).firestoreMetadata.path).toContain(`${testCollectionRef.path}/test/dishes/`);
-              expect((d.dishes[0].images[0] as FireItem<any>).firestoreMetadata.path).toContain(`/images`);
+              expect(d.dishes[0].images[0].firestoreMetadata.path).toContain(`${testCollectionRef.path}/test/dishes/`);
+              expect(d.dishes[0].images[0].firestoreMetadata.path).toContain(`/images`);
 
               const cleanData = fireExt.cleanExtrasFromData<RestaurantItem>(d, subCollectionWriters, ['modifiedDate', 'createdDate']);
               expect(cleanData).toEqual(origData);
@@ -213,10 +210,19 @@ describe('Firestore Extended Add', () => {
       it('array in single doc under given docId', (done: DoneFn) => {
         // Testing add Deep with non deep data
 
-        const origData = {
+        const origData: RestaurantItem = {
+          address: {
+            zipCode: '123',
+            city: 'sds',
+            line1: '123',
+          },
+          averageReviewScore: 0,
+          category: '',
+          reviews: [],
           name: 'Tonys Pizzeria and Italian Food',
           dishes: [
             {
+              index: 0,
               name: 'Margherita Pizza',
               images: [
                 {url: 'example.jpg'},
@@ -224,13 +230,14 @@ describe('Firestore Extended Add', () => {
               ]
             },
             {
+              index: 1,
               name: 'Pasta alla Carbonara',
               images: [
                 {url: 'example.jpg'},
                 {url: 'example2.jpg'}
               ]
             }
-          ],
+          ]
         };
 
         const subCollectionWriters: SubCollectionWriter[] = [
@@ -242,7 +249,7 @@ describe('Firestore Extended Add', () => {
 
         subscription = fireExt.add$(origData, testCollectionRef, subCollectionWriters, true, 'test')
           .pipe(
-            tap((d: FireItem<any>) => {
+            tap((d) => {
 
               expect(d).toBeTruthy();
               expect(isDatesExists(d)).toBeTrue();
@@ -250,9 +257,10 @@ describe('Firestore Extended Add', () => {
 
               expect(d.firestoreMetadata.path).toEqual(`${testCollectionRef.path}/test`);
 
+              const dishes: FireItem = d.dishes as any;
               // proves that dishes is its own document
-              expect(d.dishes.firestoreMetadata).toBeTruthy();
-              expect(d.dishes.firestoreMetadata.path).toEqual(`${testCollectionRef.path}/test/dishes/data`); // all dishes in single doc
+              expect(dishes.firestoreMetadata).toBeTruthy();
+              expect(dishes.firestoreMetadata.path).toEqual(`${testCollectionRef.path}/test/dishes/data`); // all dishes in single doc
 
               // cannot except d toEqual origData because using a docId on a an array of data such as dishes, causes the data
               // to become a map instead of an array and therefore break toEqual
@@ -277,7 +285,7 @@ describe('Firestore Extended Add', () => {
           }
         ];
 
-        subscription = fireExt.add$(origData, testCollectionRef, subCollectionWriters, true, 'test')
+        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true, 'test')
           .pipe(
             tap((d) => {
 
@@ -287,7 +295,7 @@ describe('Firestore Extended Add', () => {
 
               expect(d.firestoreMetadata.path).toEqual(`${testCollectionRef.path}/test`);
 
-              const dish = d.dishes[0] as FireItem<DishItem>;
+              const dish = d.dishes[0];
 
               // stuffs in individual documents
               expect(dish.firestoreMetadata.path).toEqual(`${testCollectionRef.path}/test/dishes/${dish.firestoreMetadata.id}`);
@@ -337,10 +345,9 @@ describe('Firestore Extended Add', () => {
           },
         ];
 
-        subscription = fireExt.add$(origData, testCollectionRef, subCollectionWriters, true, 'test')
+        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true, 'test')
           .pipe(
             tap((d) => {
-
               expect(d).toBeTruthy();
               expect(isDatesExists(d)).toBeTrue();
               expect(isCompleteFirestoreMetadata(d.firestoreMetadata)).toBeTrue();
@@ -348,8 +355,8 @@ describe('Firestore Extended Add', () => {
               expect(d.firestoreMetadata.path).toEqual(`${testCollectionRef.path}/test`);
 
               expect(isDatesExists(d.address)).toBeTrue();
-              expect(isCompleteFirestoreMetadata((d.address as FireItem<AddressItem>).firestoreMetadata)).toBeTrue();
-              expect((d.address as FireItem<AddressItem>).firestoreMetadata.path).toEqual(`${testCollectionRef.path}/test/address/${fireExt.defaultDocId}`);
+              expect(isCompleteFirestoreMetadata((d.address as (AddressItem & FireItem)).firestoreMetadata)).toBeTrue();
+              expect((d.address as (AddressItem & FireItem)).firestoreMetadata.path).toEqual(`${testCollectionRef.path}/test/address/${fireExt.defaultDocId}`);
 
               const cleanData = fireExt.cleanExtrasFromData<RestaurantItem>(d, subCollectionWriters, ['createdDate', 'modifiedDate']);
               expect(cleanData).toEqual(origData);

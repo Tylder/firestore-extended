@@ -2,7 +2,7 @@
  * Public API Surface of firestore-extended.ts
  */
 /* Base Api exports */
-export * from './lib/models/firestoreItem';
+export * from './lib/models/fireItem';
 export * from './lib/firestore-extended';
 export * from './lib/sub-collection-query';
 export * from './lib/sub-collection-writer';

@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {
-  FireItem,
   getDocRefWithId,
   getSubCollection,
   NgxFirebaseService,
@@ -58,13 +57,13 @@ export class NgxRestaurantFsService extends NgxFirestoreExtService {
   }
 
   /* LISTEN */
-  listenForRestaurantById$(restaurantId: string): Observable<FireItem<RestaurantItem>> {
+  listenForRestaurantById$(restaurantId: string): Observable<RestaurantItem> {
     const docRef: DocumentReference<RestaurantItem> = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
     return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries);
   }
 
   // doesn't get the reviews and dishes
-  listenForRestaurants$(): Observable<FireItem<RestaurantItem>[]> {
+  listenForRestaurants$(): Observable<RestaurantItem[]> {
     // return this.firestoreExt.listenForCollection$<RestaurantItem>(this.restaurantCollectionRef, restaurantSubCollectionQueries);
     return this.firestoreExt.listenForCollection$<RestaurantItem>(this.restaurantCollectionRef);
   }
@@ -98,12 +97,15 @@ export class NgxRestaurantFsService extends NgxFirestoreExtService {
   }
 
   /* EDIT/UPDATE */
-  editRestaurant$(restaurant: FireItem<RestaurantItem>, data: object): Observable<any> {
+  editRestaurant$(restaurant: RestaurantItem, data: object): Observable<any> {
     return this.firestoreExt.update$(data, restaurant.firestoreMetadata.ref, restaurantSubCollectionWriters);
   }
 
-  changeIdOfRestaurant$(restaurant: FireItem<RestaurantItem>, newId: string): Observable<RestaurantItem> {
-    return this.firestoreExt.changeDocId$(restaurant.firestoreMetadata.ref,
+  changeIdOfRestaurant$(restaurant: RestaurantItem, newId: string): Observable<RestaurantItem> {
+
+    const ref = restaurant.firestoreMetadata.ref;
+
+    return this.firestoreExt.changeDocId$<RestaurantItem>(restaurant.firestoreMetadata.ref,
       newId,
       restaurantSubCollectionQueries,
       restaurantSubCollectionWriters);

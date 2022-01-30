@@ -6,7 +6,7 @@ import {DishItem} from './models/restaurant';
 import {delay, switchMap, take, tap} from 'rxjs/operators';
 import {forkJoin, Observable, Subscription} from 'rxjs';
 import {createId} from './utils';
-import {FireItem} from '../models/firestoreItem';
+import {FireItem} from '../models/fireItem';
 import {DragAndDropItem} from './models/groupItem';
 import {combineLatestToObject} from '../rxjs-ops/combine-latest-to-object';
 import {deleteApp, FirebaseApp, initializeApp} from 'firebase/app';
@@ -79,20 +79,20 @@ describe('Firestore Extended transferItemInIndexedDocs', () => {
 
   it('useCopy = false, update modifiedDate', (done: DoneFn) => {
 
-    const queryContainerA = QueryContainer.fromPath<DishItem>(firestore, testCollectionRef.path)
+    const queryContainerA = QueryContainer.fromPath<DragAndDropItem>(firestore, testCollectionRef.path)
       .where('groupName', '==', 'A')
       .orderBy('index', 'desc');
 
-    const queryContainerB = QueryContainer.fromPath<DishItem>(firestore, testCollectionRef.path)
+    const queryContainerB = QueryContainer.fromPath<DragAndDropItem>(firestore, testCollectionRef.path)
       .where('groupName', '==', 'B')
       .orderBy('index', 'desc');
 
-    let originalSavedDataA: FireItem<DishItem>[];
-    let originalSavedDataB: FireItem<DishItem>[];
+    let originalSavedDataA: DragAndDropItem[];
+    let originalSavedDataB: DragAndDropItem[];
 
     subscription = combineLatestToObject({
-      a: fireExt.listenForCollection$<DishItem>(queryContainerA.query),
-      b: fireExt.listenForCollection$<DishItem>(queryContainerB.query),
+      a: fireExt.listenForCollection$<DragAndDropItem>(queryContainerA.query),
+      b: fireExt.listenForCollection$<DragAndDropItem>(queryContainerB.query),
     }).pipe(
       take(1),
       tap((d) => {
@@ -102,13 +102,13 @@ describe('Firestore Extended transferItemInIndexedDocs', () => {
       delay(2000), // so that we can see if modifiedDate gets updated
       switchMap((d) => { // move from A to B and from index 0 to 2
         return fireExt.transferItemInIndexedDocs(
-          d.a as FireItem<any>, d.b as FireItem<any>, 0, 2,
+          d.a, d.b, 0, 2,
           'B', {}, true, false);
       }),
       switchMap((_) => {
         return combineLatestToObject({
-          a: fireExt.listenForCollection$<DishItem>(queryContainerA.query),
-          b: fireExt.listenForCollection$<DishItem>(queryContainerB.query),
+          a: fireExt.listenForCollection$<DragAndDropItem>(queryContainerA.query),
+          b: fireExt.listenForCollection$<DragAndDropItem>(queryContainerB.query),
         });
       }),
       tap((d) => {
@@ -122,8 +122,8 @@ describe('Firestore Extended transferItemInIndexedDocs', () => {
         const cleanA = fireExt.cleanExtrasFromData<DishItem>(d.a, [], ['modifiedDate', 'createdDate']);
         const cleanB = fireExt.cleanExtrasFromData<DishItem>(d.b, [], ['modifiedDate', 'createdDate']);
 
-        const cleanSavedDataA = fireExt.cleanExtrasFromData<DishItem>(originalSavedDataA, [], ['modifiedDate', 'createdDate']);
-        const cleanSavedDataB = fireExt.cleanExtrasFromData<DishItem>(originalSavedDataB, [], ['modifiedDate', 'createdDate']);
+        const cleanSavedDataA = fireExt.cleanExtrasFromData<DragAndDropItem>(originalSavedDataA, [], ['modifiedDate', 'createdDate']);
+        const cleanSavedDataB = fireExt.cleanExtrasFromData<DragAndDropItem>(originalSavedDataB, [], ['modifiedDate', 'createdDate']);
 
         expect(cleanA).toEqual(jasmine.arrayWithExactContents(cleanSavedDataA));
         expect(cleanB).toEqual(jasmine.arrayWithExactContents(cleanSavedDataB));

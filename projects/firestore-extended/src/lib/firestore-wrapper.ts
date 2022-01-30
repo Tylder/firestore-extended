@@ -56,7 +56,6 @@ export class FirestoreWrapper implements BaseFirestoreWrapper {
           console.log('complete doc');
         });
     });
-
   }
 
   public add<T>(collectionRef: CollectionReference<T>, data: T): Observable<DocumentReference<T>> {

@@ -1,6 +1,7 @@
 import {FirestoreItem} from 'firestore-extended';
 
 export interface RestaurantItem extends FirestoreItem {
+
   name: string;
   category: string;
   averageReviewScore: number;

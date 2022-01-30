@@ -6,8 +6,8 @@ import {DragAndDropContainer, DragAndDropItem} from '../models/groupItem';
 
 export const mockSimpleItems = [
   {
-   foo: 'bar',
-   thing: 123
+    foo: 'bar',
+    thing: 123
   },
   {
     bar: 'foo',
@@ -15,6 +15,8 @@ export const mockSimpleItems = [
   }
 ];
 
+
+// export const mockDeepItems: FirestoreItemIn<RestaurantItem>[] = [
 export const mockDeepItems: RestaurantItem[] = [
   {
     name: 'Tonys Pizzeria and Italian Food',
@@ -23,7 +25,7 @@ export const mockDeepItems: RestaurantItem[] = [
     address: {
       zipCode: '12345',
       city: 'example city',
-      line1: '12 example rd'
+      line1: '12 example rd',
     },
     dishes: [
       {
@@ -118,59 +120,59 @@ export const mockDeepItems: RestaurantItem[] = [
 
 export const mockDragAndDropItems: DragAndDropItem[] = [
   {
-    'index': 0,
-    'groupName': "A",
-    'data': "123"
+    index: 0,
+    groupName: 'A',
+    data: '123'
   },
   {
     index: 1,
-    groupName: "A",
-    data: "311"
+    groupName: 'A',
+    data: '311'
   },
   {
     index: 2,
-    groupName: "A",
-    data: "Abc"
+    groupName: 'A',
+    data: 'Abc'
   },
   {
     index: 0,
-    groupName: "B",
-    data: "sdsd"
+    groupName: 'B',
+    data: 'sdsd'
   },
   {
     index: 1,
-    groupName: "B",
-    data: "23s"
+    groupName: 'B',
+    data: '23s'
   }
-]
+];
 
 
 export const mockDragAndDropContainer: DragAndDropContainer = {
   items: [
     {
-      'index': 0,
-      'groupName': "A",
-      'data': "123"
+      index: 0,
+      groupName: 'A',
+      data: '123'
     },
     {
       index: 1,
-      groupName: "A",
-      data: "311"
+      groupName: 'A',
+      data: '311'
     },
     {
       index: 2,
-      groupName: "A",
-      data: "Abc"
+      groupName: 'A',
+      data: 'Abc'
     },
     {
       index: 0,
-      groupName: "B",
-      data: "sdsd"
+      groupName: 'B',
+      data: 'sdsd'
     },
     {
       index: 1,
-      groupName: "B",
-      data: "23s"
+      groupName: 'B',
+      data: '23s'
     }
   ]
-}
+};
