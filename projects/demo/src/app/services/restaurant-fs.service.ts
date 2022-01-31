@@ -71,7 +71,7 @@ export class RestaurantFsService {
    *
    * Since a docId is given as restaurant.name the document Id will not be random so that we cannot add 2 restaurants with the same name.
    */
-  addRestaurant$(restaurant: RestaurantItem): Observable<RestaurantItem> {
+  addRestaurant$(restaurant: RestaurantItem): Observable<FireItem<RestaurantItem>> {
     return this.firestoreExt
       .add$<RestaurantItem>(restaurant, this.restaurantCollectionRef, restaurantSubCollectionWriters, true, restaurant.name);
   }
@@ -97,8 +97,9 @@ export class RestaurantFsService {
     return this.firestoreExt.update$(data, restaurant.firestoreMetadata.ref, restaurantSubCollectionWriters);
   }
 
-  changeIdOfRestaurant$(restaurant: FireItem<RestaurantItem>, newId: string): Observable<RestaurantItem> {
-    return this.firestoreExt.changeDocId$(restaurant.firestoreMetadata.ref,
+  changeIdOfRestaurant$(restaurant: FireItem<RestaurantItem>, newId: string): Observable<FireItem<RestaurantItem>> {
+    return this.firestoreExt.changeDocId$(
+      restaurant.firestoreMetadata.ref,
       newId,
       restaurantSubCollectionQueries,
       restaurantSubCollectionWriters);

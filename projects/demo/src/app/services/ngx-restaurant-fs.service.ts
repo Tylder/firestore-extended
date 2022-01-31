@@ -11,6 +11,7 @@ import {collection, CollectionReference, DocumentReference, orderBy} from 'fireb
 import {Observable} from 'rxjs';
 import {RestaurantItem, ReviewItem} from '../models/restaurant';
 import {switchMap} from 'rxjs/operators';
+import {FireItem} from '../../../../firestore-extended/src/lib/models/fireItem';
 
 const restaurantSubCollectionWriters: SubCollectionWriter[] = [
   {name: 'address'},
@@ -57,13 +58,13 @@ export class NgxRestaurantFsService extends NgxFirestoreExtService {
   }
 
   /* LISTEN */
-  listenForRestaurantById$(restaurantId: string): Observable<RestaurantItem> {
+  listenForRestaurantById$(restaurantId: string): Observable<FireItem<RestaurantItem>> {
     const docRef: DocumentReference<RestaurantItem> = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
     return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries);
   }
 
   // doesn't get the reviews and dishes
-  listenForRestaurants$(): Observable<RestaurantItem[]> {
+  listenForRestaurants$(): Observable<FireItem<RestaurantItem>[]> {
     // return this.firestoreExt.listenForCollection$<RestaurantItem>(this.restaurantCollectionRef, restaurantSubCollectionQueries);
     return this.firestoreExt.listenForCollection$<RestaurantItem>(this.restaurantCollectionRef);
   }
@@ -75,7 +76,7 @@ export class NgxRestaurantFsService extends NgxFirestoreExtService {
    *
    * Since a docId is given as restaurant.name the document Id will not be random so that we cannot add 2 restaurants with the same name.
    */
-  addRestaurant$(restaurant: RestaurantItem): Observable<RestaurantItem> {
+  addRestaurant$(restaurant: RestaurantItem): Observable<FireItem<RestaurantItem>> {
     return this.firestoreExt
       .add$<RestaurantItem>(restaurant, this.restaurantCollectionRef, restaurantSubCollectionWriters, true, restaurant.name);
   }
@@ -97,11 +98,11 @@ export class NgxRestaurantFsService extends NgxFirestoreExtService {
   }
 
   /* EDIT/UPDATE */
-  editRestaurant$(restaurant: RestaurantItem, data: object): Observable<any> {
+  editRestaurant$(restaurant: FireItem<RestaurantItem>, data: object): Observable<any> {
     return this.firestoreExt.update$(data, restaurant.firestoreMetadata.ref, restaurantSubCollectionWriters);
   }
 
-  changeIdOfRestaurant$(restaurant: RestaurantItem, newId: string): Observable<RestaurantItem> {
+  changeIdOfRestaurant$(restaurant: FireItem<RestaurantItem>, newId: string): Observable<FireItem<RestaurantItem>> {
 
     const ref = restaurant.firestoreMetadata.ref;
 

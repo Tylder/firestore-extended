@@ -7,7 +7,7 @@ import {
   Firestore,
   Timestamp as FirebaseTimestamp
 } from 'firebase/firestore';
-import {FireItemWithDates, FireStoreItem} from './models/fireItem';
+import {FireItemWithDates} from './models/fireItem';
 
 /** Helper method to get reference from path, the path can be either to a Document or Collection */
 export function getRefFromPath<A>(path: string, firestore: Firestore): DocumentReference<A> | CollectionReference<A> {
@@ -98,7 +98,7 @@ export function addCreatedBy<A>(item: A, createdBy: { [field: string]: any }, in
  * @param item item that contains 'createdDate' and/or 'modifiedDate'
  */
 
-export function convertTimestampToDate<T extends FireStoreItem & FireItemWithDates>(item: T): T {
+export function convertTimestampToDate<T extends FireItemWithDates>(item: T): T {
   if (item.hasOwnProperty('createdDate')) {
     item.createdDate = item.createdDate as FirebaseTimestamp;
     item.createdDate = item.createdDate.toDate();
@@ -127,15 +127,6 @@ export type DeepOmitArray<T extends any[], K> = {
   [P in keyof T]: DeepOmit<T[P], K>
 };
 
-/** Deeply omit members of an interface or type. makes all members required */
-// export type DeepOmit<T, K> = T extends Primitive ? T : {
-//   [P in Exclude<keyof T, K>]: // extra level of indirection needed to trigger homomorhic behavior
-//   T[P] extends infer TP ? // distribute over unions
-//     TP extends Primitive ? TP : // leave primitives and functions alone
-//       TP extends any[] ? DeepOmitArray<TP, K> : // Array special handling
-//         DeepOmit<TP, K>
-//     : never
-// };
 
 export type DeepOmit<T, K> = T extends Primitive
   ? T
@@ -164,28 +155,3 @@ export type PartialDeepOmit<T, K> = T extends Primitive ? T : Partial<{
         Partial<PartialDeepOmit<TP, K>>
     : never
 }>;
-
-// /** Mark some properties as required, leaving others unchanged */
-export type MarkRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
-export type DeepMarkRequiredArray<T, K extends keyof T, Condition> = {
-  // @ts-ignore
-  [P in keyof T]: DeepMarkRequired<T[P], K, Condition>
-};
-
-
-export type DeepMarkRequired<T, K extends keyof T> = T extends Primitive
-  ? Omit<T, K> & Required<Pick<T, K>>
-  : {
-    // [P in keyof Omit<T, K> & Required<Pick<T, K>>]: T[P] extends infer TP
-    [P in keyof Omit<T, K> & Required<Pick<T, K>>]: T[P];
-    // ? TP extends Primitive
-    //   ? TP // leave primitives and functions alone
-    //   : TP extends Condition[]
-    //     // @ts-ignore
-    //     ? DeepMarkRequiredArray<TP, K, Condition> // Array special handling
-    //     : TP extends Condition
-    //       // @ts-ignore
-    //       ? DeepMarkRequired<TP, K, Condition>
-    //       : TP
-    // : never;
-  };

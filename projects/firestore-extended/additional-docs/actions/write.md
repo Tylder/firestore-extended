@@ -73,12 +73,17 @@ const restaurantSubCollectionWriters: SubCollectionWriter[] = [
 ];
 ```
 
-Once that is done its easy to write all this to firestore:
+Once that is done its easy to write all this to firestore, notice that the optional docId is given as the restaurant name.:
+if no docId is given a random unique one is used.
 
 ```typescript
-addRestaurant$(restaurant: RestaurantItem): Observable<RestaurantItem> {
-    return this.ngFirestoreDeep
-        .addDeep$<RestaurantItem>(restaurant, this.restaurantCollectionFs, restaurantSubCollectionWriters, true, restaurant.name);
+addRestaurant$(restaurant
+:
+RestaurantItem
+):
+Observable < FireItem < RestaurantItem >> {
+  return this.firestoreExt
+    .add$<RestaurantItem>(restaurant, this.restaurantCollectionRef, restaurantSubCollectionWriters, true, restaurant.name);
 }
 ```
 

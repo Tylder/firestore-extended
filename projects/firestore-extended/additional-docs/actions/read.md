@@ -47,29 +47,43 @@ This is done for the following reasons:
 ##### Listen for Document with sub collections.
 
 ```typescript
-  listenForRestaurantById$(restaurantId: string): Observable<RestaurantItem> {
-    const docFs = this.restaurantCollectionFs.doc(restaurantId);
-    return this.ngFirestoreDeep.listenForDocDeep$<RestaurantItem>(docFs, restaurantSubCollectionQueries);
-  }
+listenForRestaurantById$(restaurantId
+:
+string
+):
+Observable < FireItem < RestaurantItem >> {
+  const docRef
+:
+DocumentReference < RestaurantItem > = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
+return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries);
+}
 ```
 
 ##### If you do not with to listen for changes and instead just get the firestore data once, you can use take(1):
 
 ```typescript
-  getRestaurantById$(restaurantId: string): Observable<RestaurantItem> {
-    const docFs = this.restaurantCollectionFs.doc(restaurantId);
-    return this.ngFirestoreDeep.listenForDocDeep$<RestaurantItem>(docFs, restaurantSubCollectionQueries).pipe(
-        take(1)
-    );
-  }
+getRestaurantById$(restaurantId
+:
+string
+):
+Observable < FireItem < RestaurantItem >> {
+  const docRef
+:
+DocumentReference < RestaurantItem > = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
+return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries).pipe(
+  take(1) // this makes sure that the observable stops after returning
+);
+}
 ```
 
-##### Listen for Collection without listening for sub collections:
+##### Listen for Collection without listening for sub collections, notice the Partial<RestaurantItem>:
 
 ```typescript
-  listenForRestaurants$(): Observable<RestaurantItem[]> {
-    return this.ngFirestoreDeep.listenForCollection$<RestaurantItem>(this.restaurantCollectionFs);
-  }
+  listenForRestaurants$()
+:
+Observable < FireItem < Partial < RestaurantItem >> [] > {
+  return this.firestoreExt.listenForCollection$<RestaurantItem>(this.restaurantCollectionFs);
+}
 ```
 
 ##### Sub Collection Queries used in the examples.

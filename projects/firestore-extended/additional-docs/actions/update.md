@@ -15,8 +15,8 @@ specified in the SubCollectionWriters.
 ##### Update Document
 
 ```typescript
-editRestaurant$(restaurant: RestaurantItem, data: object): Observable<any> {
-    return this.ngFirestoreDeep.updateDeep$(data, restaurant.docFs, restaurantSubCollectionWriters);
+editRestaurant$(restaurant: FireItem<RestaurantItem>, data: UpdateData<Partial<RestaurantItem>>): Observable<void> {
+    return this.firestoreExt.update$(data, restaurant.firestoreMetadata.ref, restaurantSubCollectionWriters);
 }
 ```
 

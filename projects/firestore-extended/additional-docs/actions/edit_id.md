@@ -11,15 +11,15 @@ then create a new document with all the child documents. Once this is done the o
 
 ##### Edit name of document.
 
-If there are child documents your should provide subCollectionQueries and subCollectionWriters.
+If there are child documents you should provide subCollectionQueries and subCollectionWriters.
 
 ```typescript
-changeIdOfRestaurant$(restaurant: RestaurantItem, newId: string): Observable<RestaurantItem> {
-
-    return this.ngFirestoreDeep.changeDocId$(restaurant.docFs,
-                                             newId,
-                                             restaurantSubCollectionQueries,
-                                             restaurantSubCollectionWriters);
+  changeIdOfRestaurant$(restaurant: FireItem<RestaurantItem>, newId: string): Observable<FireItem<RestaurantItem>> {
+  return this.firestoreExt.changeDocId$(
+    restaurant.firestoreMetadata.ref,
+    newId,
+    restaurantSubCollectionQueries,
+    restaurantSubCollectionWriters);
 }
 ```
 

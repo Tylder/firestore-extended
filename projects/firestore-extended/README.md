@@ -64,14 +64,15 @@ This will add and read the `Address` in a collection inside each `Restaurant` Do
 ``example.fs.service.ts``
 
 ```ts
+import {FirestoreItem} from 'firestore-extended';
 
-export interface Address {
+export interface Address extends FirestoreItem {
   zipCode: string;
   city: string;
   line1: string;
 }
 
-export interface Restaurant {
+export interface Restaurant extends FirestoreItem {
   address: Address
 }
 
@@ -96,10 +97,10 @@ export class RestaurantFsService { // <-- Service for listening/writing to Fires
     this.app = initializeApp(environment.firebase); // only call this once per application
     this.firestore = getFirestore(this.app);
     this.firestoreExt = new FirestoreExt(this.app);  //  initialize FirestoreExt with firebase app
-    this.collectionRef = collection(this.firestore, 'restaurants');
+    this.collectionRef = collection<Restaurant>(this.firestore, 'restaurants');
   }
 
-  listenForRestaurants$(): Observable<Restaurant[]> {
+  listenForRestaurants$(): Observable<FireItem<Restaurant>[]> {
     return this.firestoreExt.listenForCollection$<Restaurant>(this.collectionRef);
   }
 }

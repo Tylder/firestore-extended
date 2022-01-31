@@ -247,10 +247,9 @@ describe('Firestore Extended Add', () => {
           }
         ];
 
-        subscription = fireExt.add$(origData, testCollectionRef, subCollectionWriters, true, 'test')
+        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true, 'test')
           .pipe(
             tap((d) => {
-
               expect(d).toBeTruthy();
               expect(isDatesExists(d)).toBeTrue();
               expect(isCompleteFirestoreMetadata(d.firestoreMetadata)).toBeTrue();

@@ -23,15 +23,25 @@ AngularFireStore-Deep handles that by using [SubCollectionQuery](../../classes/S
 and documents in sub collections as specified in restaurantSubCollectionQueries, see below for definition.
 
 ```typescript
-deleteRestaurantById$(restaurantId: string): Observable<RestaurantItem> {
-    const docFs = this.restaurantCollectionFs.doc(restaurantId);
-    return this.ngFirestoreDeep.deleteDeep$(docFs, restaurantSubCollectionQueries);
+deleteRestaurantById$(restaurantId
+:
+string
+):
+Observable < void > {
+  const docRef
+:
+DocumentReference < RestaurantItem > = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
+return this.firestoreExt.delete$(docRef, restaurantSubCollectionQueries);
 }
 ```
 
 ##### Delete all documents in collection
 
-and documents in sub collections as specified in restaurantSubCollectionQueries, see below for definition.
+and documents in sub collections as specified in restaurantSubCollectionQueries, see below for definition. This is quite inefficient since
+we must fetch all documents and the documents in any subcollection. This is ok if the collection is quite small but for larger collections I
+recommend deleting the collection through the Firebase console.
+
+This is what happens behind the scenes:
 
 1. Listens to all restaurants in collection.
 2. Since we only want to get the restaurants once and not continuously listen for updates we do a take(1)
@@ -40,15 +50,12 @@ and documents in sub collections as specified in restaurantSubCollectionQueries,
 4. switchMap to deleteMultipleDeep -> works the same as deleteMultipleDeep except we can give it a list of AngularFirestoreDocuments and it
    deletes them all asynchronously.
 
-```typescript
-deleteAllRestaurants$(): Observable<any> {
-    return this.listenForRestaurants$().pipe(
-        take(1),
-        map((restaurants: RestaurantItem[]) => restaurants.map(rest => rest.docFs)),
-        tap(val => console.log(val)),
-        switchMap((docsFs: AngularFirestoreDocument[]) => this.ngFirestoreDeep.deleteMultipleDeep$(docsFs, restaurantSubCollectionQueries)),
-    );
-}   
+```ts
+deleteAllRestaurants$()
+:
+Observable < any > {
+  return this.firestoreExt.deleteCollection$(this.restaurantCollectionRef, restaurantSubCollectionQueries);
+}
 ```
 
 ##### Sub Collection Queries used in the examples.
@@ -57,17 +64,17 @@ deleteAllRestaurants$(): Observable<any> {
 
 ```typescript
 const restaurantSubCollectionQueries: SubCollectionQuery[] = [
-    // add reviews sub Collection to restaurant object
-    {
-        name: 'reviews',
-        queryFn: ref => ref.orderBy('score')
-    },
-    { // add dishes sub Collection to restaurant object
-        name: 'dishes',
-        subCollectionQueries: [
-            { name: 'images' } // add images sub Collection to dish object
-        ]
-    },
+  // add reviews sub Collection to restaurant object
+  {
+    name: 'reviews',
+    queryFn: ref => ref.orderBy('score')
+  },
+  { // add dishes sub Collection to restaurant object
+    name: 'dishes',
+    subCollectionQueries: [
+      {name: 'images'} // add images sub Collection to dish object
+    ]
+  },
 ];
 ```
 
@@ -77,32 +84,32 @@ Notice that they extend [FirestoreItem](../../interfaces/FirestoreItem.html)
 
 ```typescript
 export interface RestaurantItem extends FirestoreItem {
-    name: string;
-    category: string;
-    averageReviewScore: number;
-    address: AddressItem;
-    dishes?: DishItem[]; // optional so that we can get just the base object to display in a list
-    reviews?: ReviewItem[]; // optional so that we can get just the base object to display in a list
+  name: string;
+  category: string;
+  averageReviewScore: number;
+  address: AddressItem;
+  dishes?: DishItem[]; // optional so that we can get just the base object to display in a list
+  reviews?: ReviewItem[]; // optional so that we can get just the base object to display in a list
 }
 
 export interface AddressItem {
-    zipCode: string;
-    city: string;
-    line1: string;
+  zipCode: string;
+  city: string;
+  line1: string;
 }
 
 export interface DishItem extends FirestoreItem {
-    name: string;
-    images: ImageItem[];
+  name: string;
+  images: ImageItem[];
 }
 
 export interface ImageItem extends FirestoreItem {
-    url: string;
+  url: string;
 }
 
-export interface ReviewItem extends FirestoreItem  {
-    score: number;
-    text: string;
-    userName: string;
+export interface ReviewItem extends FirestoreItem {
+  score: number;
+  text: string;
+  userName: string;
 }
 ```

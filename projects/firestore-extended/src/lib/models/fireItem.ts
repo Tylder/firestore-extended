@@ -3,94 +3,37 @@ import {Observable} from 'rxjs';
 import {DocumentData, DocumentReference, SnapshotMetadata, Timestamp as FirebaseTimestamp} from 'firebase/firestore';
 import {Primitive} from '../helpers';
 
-
 /** The object returned by most FirestoreExtended methods,
  * containing the database data and the additional data from FireStoreItem
  */
 
-export type FireStoreItem<T = DocumentData> = T & {
-  // firestoreMetadata?: FirestoreMetadata<T>;
-};
-
-
-// /** Mark some properties as required, leaving others unchanged */
-export type MarkRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
-// export type DeepMarkRequiredArray<T, K extends keyof T> = {
-//   // @ts-ignore
-//   [P in keyof T]: DeepMarkRequired<T[P], K>
-// };
+export type FirestoreItem<T = DocumentData> = T;
 
 export type DeepFireArray<T> = {
   [P in keyof T]: FireItem<T[P]>
 };
 
-
-// export type DeepMarkRequired<T, K extends keyof T> = T extends Primitive
-//   ? T
-//   : {
-//   [P in keyof T]: T[P] extends { 'firestoreMetadata'?: FirestoreMetadata }
-//     ? T & Required<Pick<T, K>>
-//     : T extends { 'firestoreMetadata'?: FirestoreMetadata }[]
-//       ? DeepMarkRequiredArray<T, K>
-//       : T;
-//   // @ts-ignore
-// } & Required<Pick<T, 'firestoreMetadata'>>;
-
-// export type DeepMarkRequired<T, K extends keyof T> =
-//   T extends Primitive
-//     ? T
-//     : {
-//       [P in keyof T]:
-//       T[P] extends infer TP // distribute over unions
-//         ? TP extends FireStoreItem
-//           // @ts-ignore
-//           ? DeepMarkRequired<TP & Required<Pick<TP, K>>, K>
-//           : TP extends FireStoreItem[]
-//             // @ts-ignore
-//             ? DeepMarkRequiredArray<TP, K>
-//             : TP
-//         : T[P]
-//     };
-
 export type DeepFireItem<T> =
   T extends Primitive
-    ? T
+    ? T // do nothing to primitives
     : {
-      [P in keyof T]:
+      [P in keyof T]: // iterate over each key in type
       T[P] extends infer TP // distribute over unions
-        ? TP extends FireStoreItem
-          ? FireItem<TP>
-          : TP extends FireStoreItem[]
-            ? DeepFireArray<TP>
+        ? TP extends FirestoreItem
+          ? FireItem<TP> // if subtype extends FireStoreItem make it into a FireItem<TP>..adding { firestoreMetadata: FirestoreMetadata<T> }
+          : TP extends FirestoreItem[]
+            ? DeepFireArray<TP> // if subtype extends FireStoreItem make it into a FireItem<TP>[]
             : TP
         : T[P]
     };
 
 
-// export type FireItem<T extends FireStoreItem> = Omit<T, 'firestoreMetadata'> & Required<Pick<T, 'firestoreMetadata'>>;
-// export type FireItem<T extends FireStoreItem> = T & Required<Pick<T, 'firestoreMetadata'>>;
-// export type FireItem<T extends FireStoreItem = FireStoreItem> =
-//   DeepMarkRequired<T, 'firestoreMetadata'> & Required<Pick<T, 'firestoreMetadata'>>;
 /**
  * Makes all types that extends FirestoreItem into a FireItem<T>. This is the type that is returned from all the
  * methods that returns the data from the database
  */
-export type FireItem<T extends FireStoreItem = FireStoreItem> = DeepFireItem<T> & { firestoreMetadata: FirestoreMetadata<T> };
+export type FireItem<T extends FirestoreItem = FirestoreItem> = DeepFireItem<T> & { firestoreMetadata: FirestoreMetadata<T> };
 
-// export type FireItem<T extends FireStoreItem> = T & {
-//   firestoreMetadata: FirestoreMetadata<T>;
-// };
-//
-// interface Foo extends FireStoreItem {
-//   testFoo: string;
-// }
-//
-// interface Bar extends FireStoreItem {
-//   testBar: number;
-//   foo: Foo;
-//
-//   foo2: Foo[];
-// }
 
 /**
  * The base object of all firestore documents, containing additional data for
@@ -138,18 +81,6 @@ export interface FireItemWithIndexGroup extends FireItemWithIndex {
   /** the groupName of document */
   groupName: string;
 }
-
-// /**
-//  * Used for documents that require indexing
-//  */
-// export interface FirestoreMetadataWithIndex<T> extends FirestoreMetadata<T> {
-//   /** the index of document */
-//   index: number;
-// }
-//
-// export interface FirestoreItemWIndex extends FirestoreItem {
-//   firestoreMetadata: FirestoreMetadataWithIndex<this>;
-// }
 
 /**
  * Used to save the storagePath of items in Firebase Storage
