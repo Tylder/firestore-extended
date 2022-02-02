@@ -21,8 +21,8 @@ export class NgxFirestoreExtService {
   public firebaseApp: FirebaseApp;
 
   constructor(ngxFirebaseService: NgxFirebaseService) {
-    this.firestoreExt = ngxFirebaseService.firestoreExt;
     this.firebaseApp = ngxFirebaseService.firebaseApp;
     this.firestore = ngxFirebaseService.firestore;
+    this.firestoreExt = new FirestoreExt(this.firebaseApp);
   }
 }
