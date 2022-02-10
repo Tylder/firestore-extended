@@ -34,7 +34,8 @@ export const mockDeepItems: RestaurantItem[] = [
         images: [
           {url: 'example.jpg'},
           {url: 'example2.jpg'}
-        ]
+        ],
+        ingredients: ['stuff']
       },
       {
         name: 'Pasta alla Carbonara',
@@ -42,7 +43,8 @@ export const mockDeepItems: RestaurantItem[] = [
         images: [
           {url: 'example.jpg'},
           {url: 'example2.jpg'}
-        ]
+        ],
+        ingredients: ['stuff']
       },
       {
         name: 'Other kind of Pizza',
@@ -50,7 +52,8 @@ export const mockDeepItems: RestaurantItem[] = [
         images: [
           {url: 'example.jpg'},
           {url: 'example2.jpg'}
-        ]
+        ],
+        ingredients: ['stuff']
       },
       {
         name: 'Other kind of Pasta',
@@ -58,7 +61,8 @@ export const mockDeepItems: RestaurantItem[] = [
         images: [
           {url: 'example.jpg'},
           {url: 'example2.jpg'}
-        ]
+        ],
+        ingredients: ['stuff']
       },
     ],
     reviews: [
@@ -91,7 +95,8 @@ export const mockDeepItems: RestaurantItem[] = [
         images: [
           {url: 'example.jpg'},
           {url: 'example2.jpg'}
-        ]
+        ],
+        ingredients: ['stuff']
       },
       {
         name: 'Chicken Salad',
@@ -99,7 +104,8 @@ export const mockDeepItems: RestaurantItem[] = [
         images: [
           {url: 'example.jpg'},
           {url: 'example2.jpg'}
-        ]
+        ],
+        ingredients: ['stuff']
       }
     ],
     reviews: [

@@ -23,6 +23,7 @@ export interface AddressItem extends FirestoreItem, FireItemWithDates {
 export interface DishItem extends FirestoreItem, FireItemWithDates, FireItemWithIndex {
   name: string;
   images: ImageItem[];
+  ingredients: string[];
 }
 
 export interface ImageItem extends FirestoreItem, FireItemWithDates {

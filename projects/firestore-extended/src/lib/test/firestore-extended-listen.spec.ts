@@ -93,8 +93,7 @@ describe('Firestore Extended Listen', () => {
       subscription = fireExt.listenForDoc$<RestaurantItem>(testDocRef, subCollectionQueries, DocNotExistAction.RETURN_NULL)
         .pipe(
           take(1),
-          tap(d => {
-
+          tap((d) => {
             expect(d).toBeTruthy();
             expect(isDatesExists(d)).toBeTrue();
 
@@ -261,8 +260,7 @@ describe('Firestore Extended Listen', () => {
       subscription = fireExt.listenForCollection$<RestaurantItem>(testCollectionRef, subCollectionQueries)
         .pipe(
           take(1),
-          tap(datas => {
-
+          tap((datas) => {
             expect(datas).toBeTruthy();
             expect(datas.length).toEqual(origData.length);
 

@@ -93,7 +93,7 @@ describe('Firestore Extended Update', () => {
         tap((d: FireItem<RestaurantItem>) => {
           expect(d).toBeTruthy();
         }),
-        map((d: FireItem<RestaurantItem>) => fireExt.cleanExtrasFromData(d)),
+        map((d) => fireExt.cleanExtrasFromData(d)),
         tap((d: RestaurantItem) => {
           expect(d.address).toEqual(newAddress);
         }),

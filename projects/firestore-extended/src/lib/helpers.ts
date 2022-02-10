@@ -1,10 +1,12 @@
 import {
+  Bytes,
   collection,
   CollectionReference,
   doc,
   DocumentData,
   DocumentReference,
   Firestore,
+  GeoPoint,
   Timestamp as FirebaseTimestamp
 } from 'firebase/firestore';
 import {FireItemWithDates} from './models/fireItem';
@@ -121,6 +123,23 @@ export function convertTimestampToDate<T extends FireItemWithDates>(item: T): T 
 /** Union of primitives to skip with deep omit utilities. */
 // tslint:disable-next-line:ban-types
 export type Primitive = string | Function | number | boolean | Symbol | undefined | null;
+export type FirestoreAllowedPrimitives =
+  string
+  | number
+  | boolean
+  | undefined
+  | null
+  | FirebaseTimestamp
+  | Date
+  | DocumentReference
+  | GeoPoint
+  | Bytes;
+
+/* Allowed Firestore types */
+export type FirestoreAllowedTypes =
+  FirestoreAllowedPrimitives
+  | Map<FirestoreAllowedPrimitives, FirestoreAllowedPrimitives>
+  | Array<FirestoreAllowedPrimitives>;
 
 /** Deeply omit members of an array of interface or array of type. */
 export type DeepOmitArray<T extends any[], K> = {

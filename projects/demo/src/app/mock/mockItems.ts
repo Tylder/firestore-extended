@@ -4,7 +4,6 @@
 import {RestaurantItem} from '../models/restaurant';
 import {DragAndDropContainer, DragAndDropItem} from '../models/groupItem';
 
-
 /**
  * Mock Items used for demo
  *

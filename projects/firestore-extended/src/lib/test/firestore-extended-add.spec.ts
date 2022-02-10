@@ -227,7 +227,8 @@ describe('Firestore Extended Add', () => {
               images: [
                 {url: 'example.jpg'},
                 {url: 'example2.jpg'}
-              ]
+              ],
+              ingredients: ['stuff']
             },
             {
               index: 1,
@@ -235,7 +236,8 @@ describe('Firestore Extended Add', () => {
               images: [
                 {url: 'example.jpg'},
                 {url: 'example2.jpg'}
-              ]
+              ],
+              ingredients: ['stuff']
             }
           ]
         };
