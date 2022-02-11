@@ -6,7 +6,7 @@ Each restaurant would also have some basic data such as their name, address, foo
 
 An example restaurant object might look like this:
 
-```ts
+```
 {
     name: 'Tonys Pizzeria and Italian Food',
     category: 'italian',

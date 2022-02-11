@@ -4,19 +4,25 @@
 
 #### Method Documentation
 
-- [updateDeep$](../../classes/AngularFirestoreDeep.html#updateDeep$)
-- [updateDeepByPath$](../../classes/AngularFirestoreDeep.html#updateDeepByPath$)
-- [updateMultiple$](../../classes/AngularFirestoreDeep.html#updateMultiple$)
-- [updateMultipleByPaths$](../../classes/AngularFirestoreDeep.html#updateMultipleByPaths$)
+- [update$](../../classes/FirestoreExt.html#update$)
+- [updateMultiple$](../../classes/FirestoreExt.html#updateMultiple$)
+- [moveItemInArray$](../../classes/FirestoreExt.html#moveItemInArray$)
+- [transferItemInIndexedDocs](../../classes/FirestoreExt.html#transferItemInIndexedDocs)
 
 Works basically the same as [adding documents](write.html) in that the data can be split up into child collections and documents if
 specified in the SubCollectionWriters.
 
 ##### Update Document
 
-```typescript
-editRestaurant$(restaurant: FireItem<RestaurantItem>, data: UpdateData<Partial<RestaurantItem>>): Observable<void> {
-    return this.firestoreExt.update$(data, restaurant.firestoreMetadata.ref, restaurantSubCollectionWriters);
+```ts
+editRestaurant$(restaurant
+:
+FireItem < RestaurantItem >, data
+:
+UpdateData<Partial<RestaurantItem>>
+):
+Observable < void > {
+  return this.firestoreExt.update$(data, restaurant.firestoreMetadata.ref, restaurantSubCollectionWriters);
 }
 ```
 

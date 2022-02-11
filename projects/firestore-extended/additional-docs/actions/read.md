@@ -4,11 +4,11 @@
 
 #### Method Documentation
 
-- [listenForCollection$](../../classes/AngularFirestoreDeep.html#listenForCollection$)
-- [listenForDocDeep$](../../classes/AngularFirestoreDeep.html#listenForDocDeep$)
-- [listenForCollectionRecursively$](../../classes/AngularFirestoreDeep.html#listenForCollectionRecursively$)
+- [listenForDoc$](../../classes/FirestoreExt.html#listenForDoc$)
+- [listenForCollection$](../../classes/FirestoreExt.html#listenForCollection$)
+- [listenForCollectionRecursively$](../../classes/FirestoreExt.html#listenForCollectionRecursively$)
 
-All reads done by AngularFirestore-Deep is using snapshotChanges().
+All reads done by Firestore-Extended is using snapshotChanges().
 
 This is done for the following reasons:
 <ul>
@@ -22,42 +22,50 @@ This is done for the following reasons:
             id: string => the id of the document
           </li>
           <li>
-            docRef: DocumentReference => the Firestore document reference
+            ref: DocumentReference => the Firestore document reference
           </li>
           <li>
             path: string => A string representing the path of the referenced document (relative to the root of the database).
-          </li>
-          <li>
-            docFs: AngularFirestoreDocument => the AngularFire Document reference, used be AngularFire
           </li>
           <li>    
             isExists: boolean => False if document does not exist, applicable when DocNotExistAction.RETURN_ALL_BUT_DATA is used.
           </li>
         </ul>
-      These properties are added when a document is read but will not be saved to firestore.      
-      <br>
-      This is why extending FirestoreItem or FirestoreBaseItem is recommended with your firestore models. (see below for links)
     </li> 
 </ul>
 
-[FirestoreItem](../../interfaces/FirestoreItem.html)
-<br>
-[FirestoreBaseItem](../../interfaces/FirestoreBaseItem.html)
+These properties are added as the property [firestoreMetadata](../../interfaces/FirestoreMetadata.html) to the returned object when a
+document is read but will not be saved to firestore. An object of type `T` that contains the additional firestoreMetadata has the
+type `FireItem<T>`.
+
+[FireItem](../../miscellaneous/typealiases.html#FireItem) is the type that is returned by all methods that return data from firestore.
 
 ##### Listen for Document with sub collections.
 
-```typescript
-listenForRestaurantById$(restaurantId: string): Observable <FireItem<RestaurantItem>> {
-  const docRef: DocumentReference <RestaurantItem> = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
-  return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries);
+```ts
+listenForRestaurantById$(restaurantId
+:
+string
+):
+Observable < FireItem < RestaurantItem >> {
+  const docRef
+:
+DocumentReference < RestaurantItem > = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
+return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries);
 }
 ```
 
 ##### If you do not with to listen for changes and instead just get the firestore data once, you can use take(1):
 
-```typescript
-getRestaurantById$(restaurantId: string): Observable <FireItem<RestaurantItem>> {
-  const docRef: DocumentReference <RestaurantItem> = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
+```ts
+getRestaurantById$(restaurantId
+:
+string
+):
+Observable < FireItem < RestaurantItem >> {
+  const docRef
+:
+DocumentReference < RestaurantItem > = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
 return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries).pipe(
   take(1) // this makes sure that the observable stops after returning
 );
@@ -66,8 +74,10 @@ return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubColl
 
 ##### Listen for Collection without listening for sub collections, notice the Partial<RestaurantItem>:
 
-```typescript
-listenForRestaurants$(): Observable <FireItem<Partial<RestaurantItem>> [] > {
+```ts
+listenForRestaurants$()
+:
+Observable < FireItem < Partial < RestaurantItem >> [] > {
   return this.firestoreExt.listenForCollection$<RestaurantItem>(this.restaurantCollectionFs);
 }
 ```

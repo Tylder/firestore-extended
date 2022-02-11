@@ -738,7 +738,8 @@ export class FirestoreExtended {
   /* ----------  DELETE -------------- */
 
   /**
-   * Delete Document and child documents
+   * Delete Document and child documents.
+   * Takes a DocumentReference and an optional list of SubCollectionQuery
    *
    * @param docRef DocumentReference that is to be deleted
    * @param subCollectionQueries if the document has child documents the subCollectionQueries are needed to locate them
@@ -860,7 +861,8 @@ export class FirestoreExtended {
   /**
    * Delete document by FirestoreItem
    *
-   * Convenience method that works the same as deleteDeep$ but takes a FirestoreItem to be deleted
+   * A very convenient method to remove a previously fetched document.
+   * Requires that the document/Item is previously fetched since the item needs to be a FireItem, i.e. includes firestoreMetadata.
    *
    * @param item FirestoreItem to be deleted
    * @param subCollectionQueries if the document has child documents the subCollectionQueries are needed to locate them

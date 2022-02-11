@@ -4,7 +4,7 @@
 
 #### Method Documentation
 
-- [addDeep$](../../classes/AngularFirestoreDeep.html#addDeep$)
+- [add$](../../classes/FirestoreExt.html#add$)
 
 Allows for easy splitting up of data into child collections and documents.
 
@@ -13,17 +13,28 @@ in [SubCollectionWriters](../../interfaces/SubCollectionWriter.html)
 
 Example restaurant object to add to firestore (same as can be seen in the [Demo](https://fir-extended-demo.web.app/demo/)):
 
-```typescript
+```ts
 {
-    name: 'Tonys Pizzeria and Italian Food',
-    category: 'italian',
-    averageReviewScore: 6.5,
-    address: {
-        zipCode: '12345',
-        city: 'example city',
-        line1: '12 example rd'
-    },
-    dishes: [
+  name: 'Tonys Pizzeria and Italian Food',
+    category
+:
+  'italian',
+    averageReviewScore
+:
+  6.5,
+    address
+:
+  {
+    zipCode: '12345',
+      city
+  :
+    'example city',
+      line1
+  :
+    '12 example rd'
+  }
+,
+  dishes: [
         {
             name: 'Margherita Pizza',
             images: [
@@ -76,7 +87,7 @@ const restaurantSubCollectionWriters: SubCollectionWriter[] = [
 Once that is done its easy to write all this to firestore, notice that the optional docId is given as the restaurant name.:
 if no docId is given a random unique one is used.
 
-```typescript
+```
 addRestaurant$(restaurant: RestaurantItem): Observable <FireItem<RestaurantItem>> {
   return this.firestoreExt.add$<RestaurantItem>(restaurant, this.restaurantCollectionRef, restaurantSubCollectionWriters, true, restaurant.name);
 }

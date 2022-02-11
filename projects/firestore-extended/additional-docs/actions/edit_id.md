@@ -4,7 +4,7 @@
 
 #### Method Documentation
 
-- [changeDocId$](../../classes/AngularFirestoreDeep.html#changeDocId$)
+- [changeDocId$](../../classes/FirestoreExt.html#changeDocId$)
 
 Firestore does not provide a method for changing the Id of a document. The only way is to copy the document and all its child documents and
 then create a new document with all the child documents. Once this is done the old document is deleted.
@@ -13,13 +13,20 @@ then create a new document with all the child documents. Once this is done the o
 
 If there are child documents you should provide subCollectionQueries and subCollectionWriters.
 
-```typescript
-changeIdOfRestaurant$(restaurant: FireItem<RestaurantItem>, newId: string): Observable<FireItem<RestaurantItem>> {
+```ts
+changeIdOfRestaurant$(restaurant
+:
+FireItem < RestaurantItem >, newId
+:
+string
+):
+Observable < FireItem < RestaurantItem >> {
   return this.firestoreExt.changeDocId$(
     restaurant.firestoreMetadata.ref,
     newId,
     restaurantSubCollectionQueries,
-    restaurantSubCollectionWriters);
+    restaurantSubCollectionWriters
+  );
 }
 ```
 
@@ -58,8 +65,6 @@ const restaurantSubCollectionQueries: SubCollectionQuery[] = [
 ```
 
 ##### Models used in the examples.
-
-Notice that they extend [FirestoreItem](../../interfaces/FirestoreItem.html)
 
 ```typescript
 export interface RestaurantItem {
