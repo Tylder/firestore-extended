@@ -40,45 +40,32 @@ type `FireItem<T>`.
 
 [FireItem](../../miscellaneous/typealiases.html#FireItem) is the type that is returned by all methods that return data from firestore.
 
+
 ##### Listen for Document with sub collections.
 
 ```ts
-listenForRestaurantById$(restaurantId
-:
-string
-):
-Observable < FireItem < RestaurantItem >> {
-  const docRef
-:
-DocumentReference < RestaurantItem > = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
-return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries);
+listenForRestaurantById$(restaurantId: string): Observable <FireItem<RestaurantItem>> {
+    const docRef: DocumentReference <RestaurantItem> = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
+    return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries);
 }
 ```
 
 ##### If you do not with to listen for changes and instead just get the firestore data once, you can use take(1):
 
 ```ts
-getRestaurantById$(restaurantId
-:
-string
-):
-Observable < FireItem < RestaurantItem >> {
-  const docRef
-:
-DocumentReference < RestaurantItem > = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
-return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries).pipe(
-  take(1) // this makes sure that the observable stops after returning
-);
+getRestaurantById$(restaurantId: string): Observable <FireItem<RestaurantItem>> {
+    const docRef: DocumentReference <RestaurantItem> = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
+    return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries).pipe(
+        take(1) // this makes sure that the observable stops after returning
+    );
 }
 ```
 
 ##### Listen for Collection without listening for sub collections, notice the Partial<RestaurantItem>:
 
 ```ts
-listenForRestaurants$()
-:
-Observable < FireItem < Partial < RestaurantItem >> [] > {
-  return this.firestoreExt.listenForCollection$<RestaurantItem>(this.restaurantCollectionFs);
+listenForRestaurants$(): Observable <FireItem<Partial<RestaurantItem>> [] > {
+    return this.firestoreExt.listenForCollection$<RestaurantItem>(this.restaurantCollectionFs);
 }
 ```
 

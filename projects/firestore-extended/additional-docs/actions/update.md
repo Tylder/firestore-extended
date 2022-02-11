@@ -15,14 +15,8 @@ specified in the SubCollectionWriters.
 ##### Update Document
 
 ```ts
-editRestaurant$(restaurant
-:
-FireItem < RestaurantItem >, data
-:
-UpdateData<Partial<RestaurantItem>>
-):
-Observable < void > {
-  return this.firestoreExt.update$(data, restaurant.firestoreMetadata.ref, restaurantSubCollectionWriters);
+editRestaurant$(restaurant: FireItem<RestaurantItem>, data: UpdateData<Partial<RestaurantItem>>): Observable<void> {
+    return this.firestoreExt.update$(data, restaurant.firestoreMetadata.ref, restaurantSubCollectionWriters);
 }
 ```
 

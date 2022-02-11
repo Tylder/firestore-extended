@@ -35,16 +35,16 @@ Example restaurant object to add to firestore (same as can be seen in the [Demo]
   }
 ,
   dishes: [
-        {
-            name: 'Margherita Pizza',
-            images: [
-                {url: 'example.jpg'},
-                {url: 'example2.jpg'}
-            ]
-        },
-        {
-            name: 'Pasta alla Carbonara',
-            images: [
+    {
+      name: 'Margherita Pizza',
+      images: [
+        {url: 'example.jpg'},
+        {url: 'example2.jpg'}
+      ]
+    },
+    {
+      name: 'Pasta alla Carbonara',
+      images: [
                 {url: 'example.jpg'},
                 {url: 'example2.jpg'}
             ]

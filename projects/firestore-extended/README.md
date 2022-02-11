@@ -27,7 +27,7 @@ Firestore Extended is meant to help developers solve these issues.
 
 > ### Documentation
 >
-> [Introduction](https://fir-extended-demo.web.app/docs/additional-documentation/introduction.html)
+> [Introduction](../../additional-documentation/introduction.html)
 >
 >
 > #### Actions
