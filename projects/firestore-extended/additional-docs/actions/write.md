@@ -15,36 +15,25 @@ Example restaurant object to add to firestore (same as can be seen in the [Demo]
 
 ```ts
 {
-  name: 'Tonys Pizzeria and Italian Food',
-    category
-:
-  'italian',
-    averageReviewScore
-:
-  6.5,
-    address
-:
-  {
-    zipCode: '12345',
-      city
-  :
-    'example city',
-      line1
-  :
-    '12 example rd'
-  }
-,
-  dishes: [
-    {
-      name: 'Margherita Pizza',
-      images: [
-        {url: 'example.jpg'},
-        {url: 'example2.jpg'}
-      ]
+    name: 'Tonys Pizzeria and Italian Food',
+    category: 'italian',
+    averageReviewScore: 6.5,
+    address: {
+        zipCode: '12345',
+        city: 'example city',
+        line1: '12 example rd'  
     },
-    {
-      name: 'Pasta alla Carbonara',
-      images: [
+    dishes: [
+        {
+            name: 'Margherita Pizza',
+            images: [
+                {url: 'example.jpg'},
+                {url: 'example2.jpg'}
+            ]
+        },
+        {
+            name: 'Pasta alla Carbonara',
+            images: [
                 {url: 'example.jpg'},
                 {url: 'example2.jpg'}
             ]

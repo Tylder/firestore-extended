@@ -34,9 +34,8 @@ This is done for the following reasons:
     </li> 
 </ul>
 
-These properties are added as the property [firestoreMetadata](../../interfaces/FirestoreMetadata.html) to the returned object when a
-document is read but will not be saved to firestore. An object of type `T` that contains the additional firestoreMetadata has the
-type `FireItem<T>`.
+These properties are added as the property [firestoreMetadata](../../interfaces/FirestoreMetadata.html) to the returned object when a document is read but will not be saved to firestore.
+An object of type `T` that contains the additional firestoreMetadata has the type `FireItem<T>`. 
 
 [FireItem](../../miscellaneous/typealiases.html#FireItem) is the type that is returned by all methods that return data from firestore.
 
