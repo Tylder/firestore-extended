@@ -1,6 +1,6 @@
 # Write / Add
 
-#### For a working demo checkout: [Demo](../../../demo_), or [Code](https://github.com/Tylder/angularfirestore-deep)
+#### For a working demo checkout: [Demo](https://fir-extended-demo.web.app/demo/), or [Code](https://github.com/Tylder/firestore-extended/tree/master/projects/firestore-extended)
 
 #### Method Documentation
 
@@ -11,7 +11,7 @@ Allows for easy splitting up of data into child collections and documents.
 All you need to do is specify the child collections that should be created
 in [SubCollectionWriters](../../interfaces/SubCollectionWriter.html)
 
-Example restaurant object to add to firestore (same as can be seen in [demo](https://angularfirestore-deep.web.app/demo/)):
+Example restaurant object to add to firestore (same as can be seen in the [Demo](https://fir-extended-demo.web.app/demo/)):
 
 ```typescript
 {
@@ -82,17 +82,14 @@ addRestaurant$(restaurant
 RestaurantItem
 ):
 Observable < FireItem < RestaurantItem >> {
-  return this.firestoreExt
-    .add$<RestaurantItem>(restaurant, this.restaurantCollectionRef, restaurantSubCollectionWriters, true, restaurant.name);
+  return this.firestoreExt.add$<RestaurantItem>(restaurant, this.restaurantCollectionRef, restaurantSubCollectionWriters, true, restaurant.name);
 }
 ```
 
 ##### Models used in the examples.
 
-Notice that they extend [FirestoreItem](../../interfaces/FirestoreItem.html)
-
 ```typescript
-export interface RestaurantItem extends FirestoreItem {
+export interface RestaurantItem {
   name: string;
   category: string;
   averageReviewScore: number;
@@ -107,16 +104,16 @@ export interface AddressItem {
   line1: string;
 }
 
-export interface DishItem extends FirestoreItem {
+export interface DishItem {
   name: string;
   images: ImageItem[];
 }
 
-export interface ImageItem extends FirestoreItem {
+export interface ImageItem {
   url: string;
 }
 
-export interface ReviewItem extends FirestoreItem  {
+export interface ReviewItem {
   score: number;
   text: string;
   userName: string;

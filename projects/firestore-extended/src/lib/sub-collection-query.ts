@@ -19,16 +19,28 @@ export interface SubCollectionQuery {
 
   /**
    *
-   * The Collection QueryFn.
+   * The Collection QueryConstraint.
    *
-   * Example:
-   * const query = ref.where('type', '==', 'Book')
-   *                  .where('price', '>' 18.00)
-   *                  .where('price', '<' 100.00)
-   *                  .where('category', '==', 'Fiction')
-   *                  .where('publisher', '==', 'BigPublisher')
+   * In Firebase v.9 the queryFn was replaced with QueryConstraint
+   *
+   * Firebase v.9 Example:
+   * queryConstraints: [
+   *    where('type', '==', 'Book'),
+   *    where('price', '>' 18.00),
+   *    where(price', '<' 100.00),
+   *    where('category', '==', 'Fiction'),
+   *    where('publisher', '==', 'BigPublisher'),
+   *    orderBy('price'),
+   * ]
+   *
+   *
+   * Old Example < Firebase v.9 version:
+   * queryFn = ref.where('type', '==', 'Book')
+   *              .where('price', '>' 18.00)
+   *              .where('price', '<' 100.00)
+   *              .where('category', '==', 'Fiction')
+   *              .where('publisher', '==', 'BigPublisher')
    *
    */
-  // queryFn?: QueryFn;
   queryConstraints?: QueryConstraint[];
 }

@@ -1,6 +1,4 @@
-import {FirestoreItem} from 'firestore-extended';
-
-export interface RestaurantItem extends FirestoreItem {
+export interface RestaurantItem {
 
   name: string;
   category: string;
@@ -16,17 +14,17 @@ export interface AddressItem {
   line1: string;
 }
 
-export interface DishItem extends FirestoreItem {
+export interface DishItem {
   name: string;
   images: ImageItem[];
   index: number;
 }
 
-export interface ImageItem extends FirestoreItem {
+export interface ImageItem {
   url: string;
 }
 
-export interface ReviewItem extends FirestoreItem {
+export interface ReviewItem {
   score: number;
   text: string;
   userName: string;

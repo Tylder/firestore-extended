@@ -1,6 +1,6 @@
 # Read / Listen
 
-#### For a working demo checkout: [Demo](../../../demo_), or [Code](https://github.com/Tylder/angularfirestore-deep)
+#### For a working demo checkout: [Demo](https://fir-extended-demo.web.app/demo/), or [Code](https://github.com/Tylder/firestore-extended/tree/master/projects/firestore-extended)
 
 #### Method Documentation
 
@@ -79,7 +79,7 @@ return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubColl
 ##### Listen for Collection without listening for sub collections, notice the Partial<RestaurantItem>:
 
 ```typescript
-  listenForRestaurants$()
+listenForRestaurants$()
 :
 Observable < FireItem < Partial < RestaurantItem >> [] > {
   return this.firestoreExt.listenForCollection$<RestaurantItem>(this.restaurantCollectionFs);
@@ -95,12 +95,14 @@ const restaurantSubCollectionQueries: SubCollectionQuery[] = [
   // add reviews sub Collection to restaurant object
   {
     name: 'reviews',
-    queryFn: ref => ref.orderBy('score')
+    queryConstraints: [
+      orderBy('score')
+    ]
   },
   { // add dishes sub Collection to restaurant object
     name: 'dishes',
     subCollectionQueries: [
-      { name: 'images' } // add images sub Collection to dish object
+      {name: 'images'} // add images sub Collection to dish object
     ]
   },
 ];
@@ -108,10 +110,8 @@ const restaurantSubCollectionQueries: SubCollectionQuery[] = [
 
 ##### Models used in the examples.
 
-Notice that they extend [FirestoreItem](../../interfaces/FirestoreItem.html)
-
 ```typescript
-export interface RestaurantItem extends FirestoreItem {
+export interface RestaurantItem {
   name: string;
   category: string;
   averageReviewScore: number;
@@ -126,16 +126,16 @@ export interface AddressItem {
   line1: string;
 }
 
-export interface DishItem extends FirestoreItem {
+export interface DishItem {
   name: string;
   images: ImageItem[];
 }
 
-export interface ImageItem extends FirestoreItem {
+export interface ImageItem {
   url: string;
 }
 
-export interface ReviewItem extends FirestoreItem  {
+export interface ReviewItem {
   score: number;
   text: string;
   userName: string;

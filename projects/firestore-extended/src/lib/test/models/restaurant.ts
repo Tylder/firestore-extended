@@ -1,6 +1,6 @@
-import {FireItemWithDates, FireItemWithIndex, FirestoreItem} from '../../models/fireItem';
+import {FireItemWithDates, FireItemWithIndex} from '../../models/fireItem';
 
-export interface RestaurantItem extends FirestoreItem, FireItemWithDates {
+export interface RestaurantItem extends FireItemWithDates {
   name: string;
   category: string;
   averageReviewScore: number;
@@ -14,23 +14,23 @@ export interface RestaurantItem extends FirestoreItem, FireItemWithDates {
 //   reviews: FirestoreItemMetadataOptional<ReviewItem>[]; // optional so that we can get just the base object to display in a list
 // };
 
-export interface AddressItem extends FirestoreItem, FireItemWithDates {
+export interface AddressItem extends FireItemWithDates {
   zipCode: string;
   city: string;
   line1: string;
 }
 
-export interface DishItem extends FirestoreItem, FireItemWithDates, FireItemWithIndex {
+export interface DishItem extends FireItemWithDates, FireItemWithIndex {
   name: string;
   images: ImageItem[];
   ingredients: string[];
 }
 
-export interface ImageItem extends FirestoreItem, FireItemWithDates {
+export interface ImageItem extends FireItemWithDates {
   url: string;
 }
 
-export interface ReviewItem extends FirestoreItem, FireItemWithDates {
+export interface ReviewItem extends FireItemWithDates {
   score: number;
   text: string;
   userName: string;

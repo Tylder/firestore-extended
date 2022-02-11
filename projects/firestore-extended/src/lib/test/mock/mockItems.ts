@@ -16,7 +16,6 @@ export const mockSimpleItems = [
 ];
 
 
-// export const mockDeepItems: FirestoreItemIn<RestaurantItem>[] = [
 export const mockDeepItems: RestaurantItem[] = [
   {
     name: 'Tonys Pizzeria and Italian Food',

@@ -152,7 +152,7 @@ describe('Firestore Extended Add', () => {
               expect(d).toBeTruthy();
               expect(isDatesExists(d)).toBeFalsy();
               expect(isCompleteFirestoreMetadata(d.firestoreMetadata)).toBeTrue();
-              expect(d.reviews['length']).toEqual(origData['reviews']?.length);
+              expect(d.reviews.length).toEqual(origData.reviews?.length);
 
               expect(d.reviews[0]).toBeTruthy();
               expect(d.reviews[0].firestoreMetadata).toBeTruthy();
@@ -185,7 +185,7 @@ describe('Firestore Extended Add', () => {
             tap((d: FireItem<RestaurantItem>) => {
               expect(isDatesExists(d)).toBeTrue();
               expect(isCompleteFirestoreMetadata(d.firestoreMetadata)).toBeTrue();
-              expect(d.reviews['length']).toEqual(origData['reviews']?.length);
+              expect(d.reviews.length).toEqual(origData.reviews?.length);
 
               expect(d.reviews[0]).toBeTruthy();
               expect(d.reviews[0].firestoreMetadata).toBeTruthy();

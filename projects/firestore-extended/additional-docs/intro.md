@@ -78,36 +78,40 @@ Now we have a few options regarding the reviews, each with benefits and issues:
         + Would require a costly, but fast query for restaurant name in order to get the reviews related to a specific restaurant.
         + Same as above.
         
-I think that in this case since its much more common to want the reviews per restaurant rather than per user, we should keep the reviews in a sub collection under the product.
-This would make getting the restaurants reviews cheaper and faster.
+I think that in this case since it's much more common to want the reviews per restaurant rather than per user, we should keep the reviews in
+a sub collection under the product. This would make getting the restaurants reviews cheaper and faster.
 
-Wouldn't it be nice to not have to worry about splitting the data up into sub collections and putting it back together again when you 
-want the entire object.
+Wouldn't it be nice to not have to worry about splitting the data up into sub collections and putting it back together again when you want
+the entire object.
 
-<strong>That is where AngularFirestore-deep comes in.</strong>
+<strong>That is where firestore-extended comes in.</strong>
 
-The 'deep' comes from the ability to read/write/update/delete collections and documents arbitrarily deep (up to the firestore max of 100 levels) and not have to worry about splitting the data up and putting it back together.
+The 'deep' comes from the ability to read/write/update/delete collections and documents arbitrarily deep (up to the firestore max of 100
+levels) and not have to worry about splitting the data up and putting it back together.
 
-We do that by using SubCollectionQueries and SubCollectionWriters, these are classes that allow us to specify how we want the data to be stored. 
-AngularFirestore-deep then uses these to perform your read/write/update/delete and you do not have to deal with splitting up the data and collecting it back together.
+We do that by using SubCollectionQueries and SubCollectionWriters, these are classes that allow us to specify how we want the data to be
+stored. AngularFirestore-deep then uses these to perform your read/write/update/delete and you do not have to deal with splitting up the
+data and collecting it back together.
 
 ---
 
 #### Example SubCollectionQuery array
-This SubCollectionQuery specifies that the reviews are saved in a collection inside the restaurant document and they should be read and ordered by score.
-The dishes are also stored as a sub collection and inside each dish document there is another sub collection called images. 
 
-[SubCollectionQuery documentation]()
+This SubCollectionQuery specifies that the reviews are saved in a collection inside the restaurant document and they should be read and
+ordered by score. The dishes are also stored as a sub collection and inside each dish document there is another sub collection called
+images.
+
+[SubCollectionQuery documentation](../../interfaces/SubCollectionQuery.html)
 
 ```typescript
 const restaurantSubColQuery: SubCollectionQuery[] = [
-    { 
-        name: 'reviews', 
-        queryFn: ref => ref.orderBy('score')
-    },
-    {
-        name: 'dishes',
-        subCollectionQueries: [  // sub collection inside a sub collection
+  {
+    name: 'reviews',
+    queryFn: ref => ref.orderBy('score')
+  },
+  {
+    name: 'dishes',
+    subCollectionQueries: [  // sub collection inside a sub collection
             { 
                 name: 'images' 
             }
@@ -119,9 +123,10 @@ const restaurantSubColQuery: SubCollectionQuery[] = [
 ---
 
 #### Example SubCollectionWriter array
+
 SubCollectionWriters are very similar to SubCollectionQueries, the most obvious difference is the lack of the need for queryFunctions.
 
-[SubCollectionWriter documentation]()
+[SubCollectionWriter documentation](../../interfaces/SubCollectionWriter.html)
 
 ```typescript
 const restaurantSubColWriters: SubCollectionWriter[] = [

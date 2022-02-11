@@ -11,7 +11,7 @@
   "exclude": [
     "src/test.ts",
     "**/*.spec.ts",
-    "src/lib/test/**",
+    "src/lib/test",
     "src/lib/test/config.ts"
   ]
 }

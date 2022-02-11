@@ -1,6 +1,6 @@
 # Edit Document Id
 
-#### For a working demo checkout: [Demo](../../../demo_), or [Code](https://github.com/Tylder/angularfirestore-deep)
+#### For a working demo checkout: [Demo](https://fir-extended-demo.web.app/demo/), or [Code](https://github.com/Tylder/firestore-extended/tree/master/projects/firestore-extended)
 
 #### Method Documentation
 
@@ -35,7 +35,7 @@ const restaurantSubCollectionWriters: SubCollectionWriter[] = [
   {
     name: 'dishes',  // make dishes a sub collection
     subCollectionWriters: [ // sub collection inside a sub collection
-      { name: 'images' } // make images a sub collection inside dishes
+      {name: 'images'} // make images a sub collection inside dishes
     ]
   },
 ];
@@ -44,12 +44,14 @@ const restaurantSubCollectionQueries: SubCollectionQuery[] = [
   // add reviews sub Collection to restaurant object
   {
     name: 'reviews',
-    queryFn: ref => ref.orderBy('score')
+    queryConstraints: [
+      orderBy('score')
+    ]
   },
   { // add dishes sub Collection to restaurant object
     name: 'dishes',
     subCollectionQueries: [
-      { name: 'images' } // add images sub Collection to dish object
+      {name: 'images'} // add images sub Collection to dish object
     ]
   },
 ];
@@ -60,7 +62,7 @@ const restaurantSubCollectionQueries: SubCollectionQuery[] = [
 Notice that they extend [FirestoreItem](../../interfaces/FirestoreItem.html)
 
 ```typescript
-export interface RestaurantItem extends FirestoreItem {
+export interface RestaurantItem {
   name: string;
   category: string;
   averageReviewScore: number;

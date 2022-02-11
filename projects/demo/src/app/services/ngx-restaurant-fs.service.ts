@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
+  FireItem,
   getDocRefWithId,
   getSubCollection,
   NgxFirebaseService,
@@ -11,7 +12,6 @@ import {collection, CollectionReference, DocumentReference, orderBy} from 'fireb
 import {Observable} from 'rxjs';
 import {RestaurantItem, ReviewItem} from '../models/restaurant';
 import {switchMap} from 'rxjs/operators';
-import {FireItem} from '../../../../firestore-extended/src/lib/models/fireItem';
 
 const restaurantSubCollectionWriters: SubCollectionWriter[] = [
   {name: 'address'},

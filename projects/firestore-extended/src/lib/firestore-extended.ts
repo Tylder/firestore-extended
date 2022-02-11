@@ -40,7 +40,7 @@ import {
 } from './helpers';
 import {SubCollectionQuery} from './sub-collection-query';
 import {BaseFirestoreWrapper, FirestoreErrorExt} from './interfaces';
-import {FireItem, FireItemWithDates, FireItemWithIndex, FireItemWithIndexGroup, FirestoreItem, FirestoreMetadata} from './models/fireItem';
+import {FireItem, FireItemWithDates, FireItemWithIndex, FireItemWithIndexGroup, FirestoreMetadata} from './models/fireItem';
 import {SubCollectionWriter} from './sub-collection-writer';
 import {moveItemInArray, transferArrayItem} from './drag-utils';
 
@@ -122,7 +122,7 @@ export class FirestoreExtended {
    * @param subCollectionQueries - see example
    * @param actionIfNotExist Action to take if document does not exist
    */
-  public listenForDoc$<T extends FirestoreItem>(
+  public listenForDoc$<T extends DocumentData>(
     docRef: DocumentReference<T>,
     subCollectionQueries: SubCollectionQuery[] = [],
     actionIfNotExist: DocNotExistAction = DocNotExistAction.RETURN_ALL_BUT_DATA): Observable<FireItem<T>> {
@@ -164,7 +164,7 @@ export class FirestoreExtended {
    * @param subCollectionQueries
    * @param documentChangeTypes list of DocumentChangeType that will be listened to, if null listen to all
    */
-  public listenForCollection$<T extends FirestoreItem>(
+  public listenForCollection$<T extends DocumentData>(
     _query: Query<T>,
     subCollectionQueries: SubCollectionQuery[] = []): Observable<Array<FireItem<T>>> {
     /**
@@ -199,7 +199,7 @@ export class FirestoreExtended {
   /**
    * Listens for collections inside collections with the same name to an unlimited depth and returns all of it as an array.
    */
-  public listenForCollectionRecursively$<T extends FirestoreItem>(
+  public listenForCollectionRecursively$<T extends DocumentData>(
     collectionPath: string,
     collectionKey: string,
     orderKey?: string): Observable<any> {
@@ -256,7 +256,7 @@ export class FirestoreExtended {
    * @param isAddDates if true 'createdDate' and 'modifiedDate' is added to the data
    * @param docId If a docId is given it will use that specific id when saving the doc, if no docId is given a random id will be used.
    */
-  public add$<T extends FirestoreItem>(
+  public add$<T extends DocumentData>(
     data: T,
     collectionRef: CollectionReference<T>,
     subCollectionWriters: SubCollectionWriter[] = [],
@@ -421,10 +421,10 @@ export class FirestoreExtended {
    * @param subCollectionWriters if the data contains properties that should be placed in child collections and documents specify that here
    * @param isAddModifiedDate if true the modifiedDate property is added/updated on the affected documents
    */
-  public update$<T extends FirestoreItem>(data: UpdateData<Partial<T>>,
-                                          docRef: DocumentReference<T>,
-                                          subCollectionWriters: SubCollectionWriter[] = [],
-                                          isAddModifiedDate: boolean = true): Observable<void> {
+  public update$<T extends DocumentData>(data: UpdateData<Partial<T>>,
+                                         docRef: DocumentReference<T>,
+                                         subCollectionWriters: SubCollectionWriter[] = [],
+                                         isAddModifiedDate: boolean = true): Observable<void> {
 
     if (subCollectionWriters == null || subCollectionWriters.length === 0) {
       return this.updateSimple$(data, docRef, isAddModifiedDate); // no subCollectionWriters so just do a simple update
@@ -467,10 +467,10 @@ export class FirestoreExtended {
    * @param subCollectionQueries if the document has child documents the subCollectionQueries are needed to locate them
    * @param subCollectionWriters if the document has child documents the SubCollectionWriters are needed to add them back
    */
-  public changeDocId$<T extends FirestoreItem>(docRef: DocumentReference<T>,
-                                               newId: string,
-                                               subCollectionQueries: SubCollectionQuery[] = [],
-                                               subCollectionWriters?: SubCollectionWriter[]): Observable<FireItem<T>> {
+  public changeDocId$<T extends DocumentData>(docRef: DocumentReference<T>,
+                                              newId: string,
+                                              subCollectionQueries: SubCollectionQuery[] = [],
+                                              subCollectionWriters?: SubCollectionWriter[]): Observable<FireItem<T>> {
 
     if (subCollectionWriters == null) {
       subCollectionWriters = subCollectionQueries as SubCollectionWriter[];
@@ -513,10 +513,10 @@ export class FirestoreExtended {
    * @param toIndex
    * @param useCopy if true the given array will not be updated
    */
-  public moveItemInArray$<T extends FirestoreItem & FireItemWithIndex>(items: Array<FireItem<T>>,
-                                                                       fromIndex: number,
-                                                                       toIndex: number,
-                                                                       useCopy = false): Observable<void> {
+  public moveItemInArray$<T extends DocumentData & FireItemWithIndex>(items: Array<FireItem<T>>,
+                                                                      fromIndex: number,
+                                                                      toIndex: number,
+                                                                      useCopy = false): Observable<void> {
 
     if (fromIndex == null || toIndex == null || fromIndex === toIndex || items.length <= 0) { // we didnt really move anything
       return of();
@@ -546,10 +546,10 @@ export class FirestoreExtended {
    * @param useCopy if true the given array will not be updated
    * @protected
    */
-  protected getBatchFromMoveItemInIndexedDocs<T extends FirestoreItem & FireItemWithIndex>(items: Array<FireItem<T>>,
-                                                                                           fromIndex: number,
-                                                                                           toIndex: number,
-                                                                                           useCopy = false): WriteBatch {
+  protected getBatchFromMoveItemInIndexedDocs<T extends DocumentData & FireItemWithIndex>(items: Array<FireItem<T>>,
+                                                                                          fromIndex: number,
+                                                                                          toIndex: number,
+                                                                                          useCopy = false): WriteBatch {
 
     const lowestIndex = Math.min(fromIndex, toIndex);
     const batch: WriteBatch = writeBatch(this.fs.firestore);
@@ -592,10 +592,10 @@ export class FirestoreExtended {
    * @param subCollectionQueries
    * @param useCopy
    */
-  public deleteIndexedItemInArray$<T extends FirestoreItem & FireItemWithIndex>(items: Array<FireItem<T>>,
-                                                                                indexToDelete: number,
-                                                                                subCollectionQueries: SubCollectionQuery[] = [],
-                                                                                useCopy: boolean = false): Observable<void> {
+  public deleteIndexedItemInArray$<T extends DocumentData & FireItemWithIndex>(items: Array<FireItem<T>>,
+                                                                               indexToDelete: number,
+                                                                               subCollectionQueries: SubCollectionQuery[] = [],
+                                                                               useCopy: boolean = false): Observable<void> {
 
     let usedItems: Array<FireItem<T>>;
 
@@ -631,10 +631,10 @@ export class FirestoreExtended {
    * @param subCollectionQueries
    * @param useCopy
    */
-  public deleteIndexedItemsInArray$<T extends FirestoreItem & FireItemWithIndex>(items: Array<FireItem<T>>,
-                                                                                 indicesToDelete: number[],
-                                                                                 subCollectionQueries: SubCollectionQuery[] = [],
-                                                                                 useCopy: boolean = false): Observable<void> {
+  public deleteIndexedItemsInArray$<T extends DocumentData & FireItemWithIndex>(items: Array<FireItem<T>>,
+                                                                                indicesToDelete: number[],
+                                                                                subCollectionQueries: SubCollectionQuery[] = [],
+                                                                                useCopy: boolean = false): Observable<void> {
 
     let usedItems: Array<FireItem<T>>;
 
@@ -696,7 +696,7 @@ export class FirestoreExtended {
    * @param batch
    * @protected
    */
-  protected getBatchFromUpdateIndexFromListOfDocs<T extends FirestoreItem & FireItemWithIndex>(
+  protected getBatchFromUpdateIndexFromListOfDocs<T extends DocumentData & FireItemWithIndex>(
     items: Array<FireItem<T>>,
     batch: WriteBatch = writeBatch(this.fs.firestore)
   ): WriteBatch {
@@ -712,7 +712,7 @@ export class FirestoreExtended {
     return batch;
   }
 
-  public transferItemInIndexedDocs<T extends FirestoreItem & FireItemWithIndexGroup>(
+  public transferItemInIndexedDocs<T extends DocumentData & FireItemWithIndexGroup>(
     previousArray: Array<FireItem<T>>,
     currentArray: Array<FireItem<T>>,
     previousIndex: number,
@@ -835,8 +835,8 @@ export class FirestoreExtended {
    * @param collectionRef
    * @param subCollectionQueries
    */
-  public deleteCollection$<T extends FirestoreItem>(collectionRef: CollectionReference<T>,
-                                                    subCollectionQueries: SubCollectionQuery[] = []): Observable<any> {
+  public deleteCollection$<T extends DocumentData>(collectionRef: CollectionReference<T>,
+                                                   subCollectionQueries: SubCollectionQuery[] = []): Observable<any> {
     return this.getDocumentReferencesFromCollectionRef$(collectionRef, subCollectionQueries).pipe(
       switchMap((docRefs) => this.deleteMultiple$(docRefs))
     ).pipe(
@@ -865,7 +865,7 @@ export class FirestoreExtended {
    * @param item FirestoreItem to be deleted
    * @param subCollectionQueries if the document has child documents the subCollectionQueries are needed to locate them
    */
-  public deleteItem$<T extends FirestoreItem>(item: FireItem<T>, subCollectionQueries: SubCollectionQuery[] = []): Observable<any> {
+  public deleteItem$<T extends DocumentData>(item: FireItem<T>, subCollectionQueries: SubCollectionQuery[] = []): Observable<any> {
 
     const docRefs = this.getDocumentReferencesFromItem(item, subCollectionQueries);
 
@@ -995,7 +995,7 @@ export class FirestoreExtended {
    * @param _query the Query which will be listened to
    * @protected
    */
-  protected listenForCollectionSimple$<T extends FirestoreItem>(_query: Query<T>): Observable<Array<FireItem<T>>> {
+  protected listenForCollectionSimple$<T extends DocumentData>(_query: Query<T>): Observable<Array<FireItem<T>>> {
     /**
      * Returns an observable that will emit whenever the ref changes in any way.
      * Also adds the id and ref to the object.
@@ -1039,7 +1039,7 @@ export class FirestoreExtended {
    * @param subCollectionQueries
    * @protected
    */
-  protected listenForCollectionsDeep<T extends FirestoreItem>(
+  protected listenForCollectionsDeep<T extends DocumentData>(
     item: FireItem<T>,
     subCollectionQueries: SubCollectionQuery[] = []): Observable<FireItem<T>[]> {
 
@@ -1250,11 +1250,11 @@ export class FirestoreExtended {
   /**
    * DO NOT CALL THIS METHOD, used by update deep
    */
-  protected updateDeepToBatchHelper<T extends FirestoreItem>(data: UpdateData<T>,
-                                                             docRef: DocumentReference<T>,
-                                                             subCollectionWriters: SubCollectionWriter[] = [],
-                                                             isAddModifiedDate: boolean = true,
-                                                             batch?: WriteBatch): WriteBatch {
+  protected updateDeepToBatchHelper<T extends DocumentData>(data: UpdateData<T>,
+                                                            docRef: DocumentReference<T>,
+                                                            subCollectionWriters: SubCollectionWriter[] = [],
+                                                            isAddModifiedDate: boolean = true,
+                                                            batch?: WriteBatch): WriteBatch {
 
     if (batch === undefined) {
       batch = writeBatch(this.fs.firestore);
@@ -1307,7 +1307,7 @@ export class FirestoreExtended {
    * @param useCopy
    * @protected
    */
-  protected getBatchFromTransferItemInIndexedDocs<T extends FirestoreItem & FireItemWithIndexGroup>(
+  protected getBatchFromTransferItemInIndexedDocs<T extends DocumentData & FireItemWithIndexGroup>(
     previousArray: Array<FireItem<T>>,
     currentArray: Array<FireItem<T>>,
     previousIndex: number,
@@ -1488,8 +1488,8 @@ export class FirestoreExtended {
     );
   }
 
-  protected getDocumentReferencesFromCollectionRef$<T extends FirestoreItem>(collectionRef: CollectionReference<T>,
-                                                                             subCollectionQueries: SubCollectionQuery[] = []):
+  protected getDocumentReferencesFromCollectionRef$<T extends DocumentData>(collectionRef: CollectionReference<T>,
+                                                                            subCollectionQueries: SubCollectionQuery[] = []):
     Observable<DocumentReference[]> {
 
     return this.listenForCollectionSimple$(collectionRef).pipe(
@@ -1524,7 +1524,7 @@ export class FirestoreExtended {
    * @param item FirestoreItem from where we get the AngularFirestoreDocuments
    * @param subCollectionQueries if the dbItem has child documents the subCollectionQueries are needed to locate them
    */
-  protected getDocumentReferencesFromItem<T extends FirestoreItem>(
+  protected getDocumentReferencesFromItem<T extends DocumentData>(
     item: FireItem<T>,
     subCollectionQueries: SubCollectionQuery[] = []): DocumentReference[] {
 

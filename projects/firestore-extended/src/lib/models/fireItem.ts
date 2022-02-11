@@ -3,58 +3,122 @@ import {Observable} from 'rxjs';
 import {DocumentData, DocumentReference, SnapshotMetadata, Timestamp as FirebaseTimestamp} from 'firebase/firestore';
 import {FirestoreAllowedTypes} from '../helpers';
 
-/** The object returned by most FirestoreExtended methods,
- * containing the database data and the additional data from FireStoreItem
- */
 
-export type FirestoreItem<T = DocumentData> = T;
+// export type FirestoreItem<T = DocumentData> = T;
 
 export type DeepFireArray<T> = {
   [P in keyof T]: FireItem<T[P]>
 };
 
+//
+// /**
+//  * This definition of DeepFireItem<T> assumes all non FirestoreAllowedTypes are saved as documents on firestore.
+//  */
+// export type DeepFireItem<T> =
+//   T extends FirestoreAllowedTypes
+//     ? T // do nothing to FirestoreAllowedTypes
+//     : {
+//       [P in keyof T]: // iterate over each key in type
+//       T[P] extends infer TP // distribute over unions
+//         ? TP extends FirestoreAllowedTypes // do nothing to FirestoreAllowedTypes
+//           ? TP
+//           : TP extends FirestoreAllowedTypes[] // do nothing to FirestoreAllowedTypes[
+//             ? TP
+//             : TP extends FirestoreItem[]
+//               ? DeepFireArray<T[P]>
+//               : TP extends FirestoreItem
+//                 ? FireItem<TP> // if subtype extends FireStoreItem make it into a FireItem<TP>[]
+//                 : TP
+//         : T[P]
+//     };
 
+/**
+ * This definition of DeepFireItem<T> assumes all non FirestoreAllowedTypes are saved as documents on firestore.
+ */
 export type DeepFireItem<T> =
   T extends FirestoreAllowedTypes
-    ? T // do nothing to primitives
+    ? T // do nothing to FirestoreAllowedTypes
     : {
       [P in keyof T]: // iterate over each key in type
       T[P] extends infer TP // distribute over unions
-        ? TP extends FirestoreAllowedTypes
+        ? TP extends FirestoreAllowedTypes // do nothing to FirestoreAllowedTypes
           ? TP
-          : TP extends FirestoreAllowedTypes[]
+          : TP extends FirestoreAllowedTypes[] // do nothing to FirestoreAllowedTypes[
             ? TP
-            : TP extends FirestoreItem[]
+            : TP extends any[]
               ? DeepFireArray<T[P]>
-              : TP extends FirestoreItem
-                ? FireItem<TP> // if subtype extends FireStoreItem make it into a FireItem<TP>[]
-                : TP
+              : FireItem<TP>
         : T[P]
     };
+
+
+/**
+ *
+ */
+// export type DeepFireItem<T> =
+//   T extends FirestoreAllowedTypes
+//     ? T // do nothing to primitives
+//     : {
+//       [P in keyof T]: // iterate over each key in type
+//       T[P] extends infer TP // distribute over unions
+//         ? TP extends FirestoreAllowedTypes
+//           ? TP
+//           : TP extends FirestoreAllowedTypes[]
+//             ? TP
+//             : TP extends FireItem[]
+//               ? DeepFireArray<T[P]>
+//               : TP extends FireItem
+//                 ? FireItem<TP> // if subtype extends FireStoreItem make it into a FireItem<TP>[]
+//                 : TP
+//         : T[P]
+//     };
+
+
+// export type DeepFireItem<T> =
+//   T extends Primitive
+//     ? T
+//     : {
+//       [P in keyof T]: // iterate over each key in type
+//       T[P] extends infer TP // distribute over unions
+//         ? TP extends { firestoreMetadata: FirestoreMetadata<TP> }
+//           ? FireItem<TP>
+//           : TP extends FirestoreItem[]
+//             ? DeepFireArray<T[P]>
+//             : TP
+//         : T[P]
+//     };
 
 /**
  * Makes all types that extends FirestoreItem into a FireItem<T>. This is the type that is returned from all the
  * methods that returns the data from the database
  */
-export type FireItem<T extends FirestoreItem = FirestoreItem> = DeepFireItem<T> & { firestoreMetadata: FirestoreMetadata<T> };
+// export type FireItem<T extends FirestoreItem = FirestoreItem> = DeepFireItem<T> & { firestoreMetadata: FirestoreMetadata<T> };
+export type FireItem<T extends DocumentData = DocumentData> = DeepFireItem<T> & { firestoreMetadata: FirestoreMetadata<T> };
+
 //
-//
-// interface Bar extends FirestoreItem {
+// interface Bar {
 //   bar: number;
 // }
 //
-// interface Foo extends FirestoreItem {
+// interface Thing {
 //   thing: number;
-//   thingies: number[];
-//   name: string;
-//   names: string[];
-//   bars: Bar[];
-//   bar: Bar;
-//   timestamp: FirebaseTimestamp;
-//   timestamps: FirebaseTimestamp[];
 // }
 //
-// interface FireFoo extends FireItem<Foo> {
+//
+// interface Foo {
+//   stuff: number;
+//   stuffs: number[];
+//   // name: string;
+//   // names: string[];
+//   // bars: Bar[];
+//   // bar: Bar;
+//   // timestamp: FirebaseTimestamp;
+//   // timestamps: FirebaseTimestamp[];
+//   // thing: Thing;
+//   // things: Thing[];
+// }
+//
+// interface MockFireFoo extends FireItem<Foo> {
 //   firestoreMetadata: {
 //     id: string,
 //     path: string,
@@ -65,19 +129,25 @@ export type FireItem<T extends FirestoreItem = FirestoreItem> = DeepFireItem<T> 
 //
 // const bar: FireItem<Foo>;
 //
-// bar.thingies;
+// bar.stuff;
+// bar.stuffs;
 // bar.names;
-// bar.thing;
 // bar.bar;
 // bar.bars;
 // bar.timestamp;
 // bar.timestamps;
+// bar.thing;
+// bar.things;
 //
-// const foo: FireFoo = {
-//   thing: 123,
-//   thingies: [122],
-//   name: 'thing',
-//   names: ['dssd'],
+// const foo: MockFireFoo = {
+//   stuff: 123,
+//   stuffs: [123, 321],
+//   firestoreMetadata: {
+//     id: '1',
+//     isExists: true,
+//     path: 'sds',
+//     ref: null
+//   },
 // };
 
 

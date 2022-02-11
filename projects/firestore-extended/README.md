@@ -20,8 +20,13 @@ Firestore Extended is meant to help developers solve these issues.
 [Documentation](https://fir-extended-demo.web.app/docs/)
 <br>
 [Github](https://github.com/Tylder/firestore-extended/tree/master/projects/firestore-extended)
+<br>
+[npm](https://www.npmjs.com/package/firestore-extended)
+<br>
+[Demo](https://fir-extended-demo.web.app/demo/)
 
-
+> ### Documentation
+>
 > [Introduction](https://fir-extended-demo.web.app/docs/additional-documentation/introduction.html)
 >
 >
@@ -64,15 +69,13 @@ This will add and read the `Address` in a collection inside each `Restaurant` Do
 ``example.fs.service.ts``
 
 ```ts
-import {FirestoreItem} from 'firestore-extended';
-
-export interface Address extends FirestoreItem {
+export interface Address {
   zipCode: string;
   city: string;
   line1: string;
 }
 
-export interface Restaurant extends FirestoreItem {
+export interface Restaurant {
   address: Address
 }
 

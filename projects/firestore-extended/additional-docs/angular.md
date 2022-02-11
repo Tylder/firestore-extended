@@ -41,7 +41,7 @@ export class ExampleFirstoreService extends NgxFirestoreExtService {
     this.exampleCollectionRef = collection(this.firestore, 'example');
   }
 
-  listenAll$(): Observable<Example[]> {
+  listenAll$(): Observable<FireItem<Example>[]> {
     return this.firestoreExt.listenForCollection$<Example>(this.exampleCollectionRef);
   }
 }
