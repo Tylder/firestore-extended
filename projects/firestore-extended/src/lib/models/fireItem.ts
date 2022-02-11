@@ -3,7 +3,6 @@ import {Observable} from 'rxjs';
 import {DocumentData, DocumentReference, SnapshotMetadata, Timestamp as FirebaseTimestamp} from 'firebase/firestore';
 import {FirestoreAllowedTypes} from '../helpers';
 
-
 // export type FirestoreItem<T = DocumentData> = T;
 
 export type DeepFireArray<T> = {
@@ -52,9 +51,6 @@ export type DeepFireItem<T> =
     };
 
 
-/**
- *
- */
 // export type DeepFireItem<T> =
 //   T extends FirestoreAllowedTypes
 //     ? T // do nothing to primitives
