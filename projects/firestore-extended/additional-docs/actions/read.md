@@ -47,29 +47,17 @@ This is done for the following reasons:
 ##### Listen for Document with sub collections.
 
 ```typescript
-listenForRestaurantById$(restaurantId
-:
-string
-):
-Observable < FireItem < RestaurantItem >> {
-  const docRef
-:
-DocumentReference < RestaurantItem > = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
-return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries);
+listenForRestaurantById$(restaurantId: string): Observable <FireItem<RestaurantItem>> {
+  const docRef: DocumentReference <RestaurantItem> = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
+  return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries);
 }
 ```
 
 ##### If you do not with to listen for changes and instead just get the firestore data once, you can use take(1):
 
 ```typescript
-getRestaurantById$(restaurantId
-:
-string
-):
-Observable < FireItem < RestaurantItem >> {
-  const docRef
-:
-DocumentReference < RestaurantItem > = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
+getRestaurantById$(restaurantId: string): Observable <FireItem<RestaurantItem>> {
+  const docRef: DocumentReference <RestaurantItem> = getDocRefWithId(this.restaurantCollectionRef, restaurantId);
 return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubCollectionQueries).pipe(
   take(1) // this makes sure that the observable stops after returning
 );
@@ -79,9 +67,7 @@ return this.firestoreExt.listenForDoc$<RestaurantItem>(docRef, restaurantSubColl
 ##### Listen for Collection without listening for sub collections, notice the Partial<RestaurantItem>:
 
 ```typescript
-listenForRestaurants$()
-:
-Observable < FireItem < Partial < RestaurantItem >> [] > {
+listenForRestaurants$(): Observable <FireItem<Partial<RestaurantItem>> [] > {
   return this.firestoreExt.listenForCollection$<RestaurantItem>(this.restaurantCollectionFs);
 }
 ```

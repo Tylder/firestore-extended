@@ -77,11 +77,7 @@ Once that is done its easy to write all this to firestore, notice that the optio
 if no docId is given a random unique one is used.
 
 ```typescript
-addRestaurant$(restaurant
-:
-RestaurantItem
-):
-Observable < FireItem < RestaurantItem >> {
+addRestaurant$(restaurant: RestaurantItem): Observable <FireItem<RestaurantItem>> {
   return this.firestoreExt.add$<RestaurantItem>(restaurant, this.restaurantCollectionRef, restaurantSubCollectionWriters, true, restaurant.name);
 }
 ```

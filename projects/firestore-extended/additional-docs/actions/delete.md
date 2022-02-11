@@ -22,7 +22,7 @@ AngularFireStore-Deep handles that by using [SubCollectionQuery](../../classes/S
 
 and documents in sub collections as specified in restaurantSubCollectionQueries, see below for definition.
 
-```ts
+```typescript
 deleteRestaurantById$(restaurantId
 :
 string
