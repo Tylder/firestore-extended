@@ -957,9 +957,8 @@ export class FirestoreExtended {
       }),
 
       filter((snapshot: DocumentSnapshot) => {
-        return !(snapshot.exists() && actionIfNotExist === DocNotExistAction.FILTER);
+        return !(!snapshot.exists() && actionIfNotExist === DocNotExistAction.FILTER);
       }),
-
       map((snapshot: DocumentSnapshot) => {
 
         if (snapshot.exists() || actionIfNotExist === DocNotExistAction.RETURN_ALL_BUT_DATA) {

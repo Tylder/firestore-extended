@@ -48,7 +48,7 @@ export class FirestoreWrapper implements BaseFirestoreWrapper {
         (snapshot: DocumentSnapshot<T>) => observer.next(snapshot),
         (error: FirestoreError) => {
           observer.unsubscribe();
-          console.log('unsub doc');
+          console.error('unsub doc', error);
           return error;
         },
         () => {

@@ -1,6 +1,6 @@
 import {FireItem, FirestoreMetadata} from '../models/fireItem';
 
-export function isCompleteFirestoreMetadata(metadata: FirestoreMetadata): boolean {
+export function isCompleteFirestoreMetadata(metadata: FirestoreMetadata<any>): boolean {
   return 'id' in metadata &&
     'path' in metadata &&
     'ref' in metadata &&
