@@ -1,6 +1,6 @@
 {
   "name": "firestore-extended",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "scripts": {
     "doc": "npx compodoc -p tsconfig.doc.json --includes additional-docs"
   },
