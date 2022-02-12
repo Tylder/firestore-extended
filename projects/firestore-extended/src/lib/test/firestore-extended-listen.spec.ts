@@ -5,8 +5,8 @@ import 'firebase/firestore';
 
 import {SubCollectionWriter} from '../sub-collection-writer';
 import {DishItem, RestaurantItem} from './models/restaurant';
-import {take, tap} from 'rxjs/operators';
-import {forkJoin, Observable, Subscription} from 'rxjs';
+import {catchError, take, takeUntil, tap} from 'rxjs/operators';
+import {forkJoin, Observable, of, Subject, Subscription, timer} from 'rxjs';
 import {SubCollectionQuery} from '../sub-collection-query';
 import {DocNotExistAction} from '../firestore-extended';
 import {createId, isCompleteFirestoreMetadata, isDatesExists} from './utils';
@@ -21,6 +21,9 @@ import {
   orderBy
 } from 'firebase/firestore';
 import {FirestoreExt} from '../firestore-extended.class';
+import {getDocRefWithId} from '../helpers';
+import {FireItem} from '../models/fireItem';
+import {FirestoreErrorExt} from '../interfaces';
 
 describe('Firestore Extended Listen', () => {
   let app: FirebaseApp;
@@ -169,6 +172,81 @@ describe('Firestore Extended Listen', () => {
           }),
         ).subscribe(() => done());
     });
+
+
+    it('DocNotExistAction.RETURN_NULL', (done: DoneFn) => {
+      const subCollectionQueries: SubCollectionQuery[] = [];
+
+      const nonExistingDocRef: DocumentReference<RestaurantItem> = getDocRefWithId(testCollectionRef, '123');
+
+      subscription = fireExt.listenForDoc$<RestaurantItem>(nonExistingDocRef, subCollectionQueries, DocNotExistAction.RETURN_NULL)
+        .pipe(
+          take(1),
+          tap((d: FireItem<RestaurantItem> | null) => {
+            expect(d).toEqual(null);
+          }),
+        ).subscribe(() => done());
+    });
+
+    it('DocNotExistAction.RETURN_ALL_BUT_DATA', (done: DoneFn) => {
+      const subCollectionQueries: SubCollectionQuery[] = [];
+
+      const nonExistingDocRef: DocumentReference<RestaurantItem> = getDocRefWithId(testCollectionRef, '123');
+
+      subscription = fireExt.listenForDoc$<RestaurantItem>(nonExistingDocRef, subCollectionQueries, DocNotExistAction.RETURN_ALL_BUT_DATA)
+        .pipe(
+          take(1),
+          tap((d: FireItem<RestaurantItem>) => {
+            expect(d).toBeTruthy();
+            expect(d?.firestoreMetadata).toBeTruthy();
+            expect(isCompleteFirestoreMetadata(d?.firestoreMetadata)).toBeTrue();
+          }),
+        ).subscribe(() => done());
+    });
+
+    it('DocNotExistAction.FILTER', (done: DoneFn) => {
+      const subCollectionQueries: SubCollectionQuery[] = [];
+
+      const nonExistingDocRef: DocumentReference<RestaurantItem> = getDocRefWithId(testCollectionRef, '123');
+
+      const stop$: Subject<any> = new Subject();
+
+      timer(2000).pipe(
+        take(1),
+        tap(() => console.log('stop listening for doc')),
+      ).subscribe(() => stop$.next(null));
+
+      subscription = fireExt.listenForDoc$<RestaurantItem>(nonExistingDocRef, subCollectionQueries, DocNotExistAction.FILTER)
+        .pipe(
+          take(1),
+          takeUntil(stop$),
+          tap((d) => {
+            fail('Data was returned'); /* no data should be returned since we are filtering */
+          }),
+        ).subscribe(() => done(), error => {
+        }, () => done());
+    });
+
+    it('DocNotExistAction.THROW_DOC_NOT_FOUND', (done: DoneFn) => {
+      const subCollectionQueries: SubCollectionQuery[] = [];
+
+      const nonExistingDocRef: DocumentReference<RestaurantItem> = getDocRefWithId(testCollectionRef, '123');
+
+      subscription = fireExt.listenForDoc$<RestaurantItem>(nonExistingDocRef, subCollectionQueries, DocNotExistAction.THROW_DOC_NOT_FOUND)
+        .pipe(
+          take(1),
+          tap((d) => {
+            fail('Data was returned'); /* no data should be returned since we are filtering */
+          }),
+          catchError((error: FirestoreErrorExt) => {
+            expect(error).toBeTruthy();
+            expect(error.code).toEqual('not-found');
+            done();
+            return of(error);
+          }),
+        ).subscribe();
+    });
+
   });
 
   describe('listenForCollection$', () => {
