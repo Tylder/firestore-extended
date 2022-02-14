@@ -13,7 +13,8 @@
     "build": "npm run build:lib && npm run build:demo && npm run doc",
     "build:lib": "npm run copy:readme && npm run copy:license && ng build --prod firestore-extended ",
     "build:demo": "ng build demo --base-href /demo/",
-    "publish": "npm run publish:lib && publish:demo"
+    "publish": "npm run publish:lib && publish:demo",
+    "deploy": "firebase deploy --project=fir-extended-demo"
   },
   "private": true,
   "dependencies": {
