@@ -40,7 +40,7 @@ import {
 } from './helpers';
 import {SubCollectionQuery} from './sub-collection-query';
 import {BaseFirestoreWrapper, FirestoreErrorExt} from './interfaces';
-import {FireItem, FireItemWithDates, FireItemWithIndex, FireItemWithIndexGroup, FirestoreMetadata} from './models/fireItem';
+import {FireItem, FirestoreMetadata, ItemWithDates, ItemWithIndex, ItemWithIndexGroup} from './models/fireItem';
 import {SubCollectionWriter} from './sub-collection-writer';
 import {moveItemInArray, transferArrayItem} from './drag-utils';
 
@@ -513,10 +513,10 @@ export class FirestoreExtended {
    * @param toIndex
    * @param useCopy if true the given array will not be updated
    */
-  public moveItemInArray$<T extends DocumentData & FireItemWithIndex>(items: Array<FireItem<T>>,
-                                                                      fromIndex: number,
-                                                                      toIndex: number,
-                                                                      useCopy = false): Observable<void> {
+  public moveItemInArray$<T extends DocumentData & ItemWithIndex>(items: Array<FireItem<T>>,
+                                                                  fromIndex: number,
+                                                                  toIndex: number,
+                                                                  useCopy = false): Observable<void> {
 
     if (fromIndex == null || toIndex == null || fromIndex === toIndex || items.length <= 0) { // we didnt really move anything
       return of();
@@ -546,10 +546,10 @@ export class FirestoreExtended {
    * @param useCopy if true the given array will not be updated
    * @protected
    */
-  protected getBatchFromMoveItemInIndexedDocs<T extends DocumentData & FireItemWithIndex>(items: Array<FireItem<T>>,
-                                                                                          fromIndex: number,
-                                                                                          toIndex: number,
-                                                                                          useCopy = false): WriteBatch {
+  protected getBatchFromMoveItemInIndexedDocs<T extends DocumentData & ItemWithIndex>(items: Array<FireItem<T>>,
+                                                                                      fromIndex: number,
+                                                                                      toIndex: number,
+                                                                                      useCopy = false): WriteBatch {
 
     const lowestIndex = Math.min(fromIndex, toIndex);
     const batch: WriteBatch = writeBatch(this.fs.firestore);
@@ -592,10 +592,10 @@ export class FirestoreExtended {
    * @param subCollectionQueries
    * @param useCopy
    */
-  public deleteIndexedItemInArray$<T extends DocumentData & FireItemWithIndex>(items: Array<FireItem<T>>,
-                                                                               indexToDelete: number,
-                                                                               subCollectionQueries: SubCollectionQuery[] = [],
-                                                                               useCopy: boolean = false): Observable<void> {
+  public deleteIndexedItemInArray$<T extends DocumentData & ItemWithIndex>(items: Array<FireItem<T>>,
+                                                                           indexToDelete: number,
+                                                                           subCollectionQueries: SubCollectionQuery[] = [],
+                                                                           useCopy: boolean = false): Observable<void> {
 
     let usedItems: Array<FireItem<T>>;
 
@@ -631,10 +631,10 @@ export class FirestoreExtended {
    * @param subCollectionQueries
    * @param useCopy
    */
-  public deleteIndexedItemsInArray$<T extends DocumentData & FireItemWithIndex>(items: Array<FireItem<T>>,
-                                                                                indicesToDelete: number[],
-                                                                                subCollectionQueries: SubCollectionQuery[] = [],
-                                                                                useCopy: boolean = false): Observable<void> {
+  public deleteIndexedItemsInArray$<T extends DocumentData & ItemWithIndex>(items: Array<FireItem<T>>,
+                                                                            indicesToDelete: number[],
+                                                                            subCollectionQueries: SubCollectionQuery[] = [],
+                                                                            useCopy: boolean = false): Observable<void> {
 
     let usedItems: Array<FireItem<T>>;
 
@@ -696,7 +696,7 @@ export class FirestoreExtended {
    * @param batch
    * @protected
    */
-  protected getBatchFromUpdateIndexFromListOfDocs<T extends DocumentData & FireItemWithIndex>(
+  protected getBatchFromUpdateIndexFromListOfDocs<T extends DocumentData & ItemWithIndex>(
     items: Array<FireItem<T>>,
     batch: WriteBatch = writeBatch(this.fs.firestore)
   ): WriteBatch {
@@ -712,7 +712,7 @@ export class FirestoreExtended {
     return batch;
   }
 
-  public transferItemInIndexedDocs<T extends DocumentData & FireItemWithIndexGroup>(
+  public transferItemInIndexedDocs<T extends DocumentData & ItemWithIndexGroup>(
     previousArray: Array<FireItem<T>>,
     currentArray: Array<FireItem<T>>,
     previousIndex: number,
@@ -1024,7 +1024,7 @@ export class FirestoreExtended {
       }),
       map((datas: Array<FireItem<T>>) => datas.map((data) => {
         if (data.hasOwnProperty('createdDate') || data.hasOwnProperty('modifiedDate')) {
-          convertTimestampToDate(data as FireItemWithDates);
+          convertTimestampToDate(data as unknown as FireItem<T> & ItemWithDates);
         }
         return data;
       }))
@@ -1308,7 +1308,7 @@ export class FirestoreExtended {
    * @param useCopy
    * @protected
    */
-  protected getBatchFromTransferItemInIndexedDocs<T extends DocumentData & FireItemWithIndexGroup>(
+  protected getBatchFromTransferItemInIndexedDocs<T extends DocumentData & ItemWithIndexGroup>(
     previousArray: Array<FireItem<T>>,
     currentArray: Array<FireItem<T>>,
     previousIndex: number,
