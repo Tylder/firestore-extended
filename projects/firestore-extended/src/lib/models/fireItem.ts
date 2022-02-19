@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs';
 
-import {DocumentData, DocumentReference, SnapshotMetadata, Timestamp as FirebaseTimestamp} from 'firebase/firestore';
+import {DocumentData, DocumentReference, DocumentSnapshot, Timestamp as FirebaseTimestamp} from 'firebase/firestore';
 import {FirestoreAllowedTypes} from '../helpers';
 
 // export type FirestoreItem<T = DocumentData> = T;
@@ -169,7 +169,13 @@ export interface FirestoreMetadata<T = DocumentData> {
    */
   isExists: boolean;
 
-  snapshotMetadata?: SnapshotMetadata;
+  /** The full DocumentSnapshot as returned from firestore,
+   * mainly used for pagination with startAt, StartAfter, EndAt, EndAfter
+   *
+   * not required because it is not included in the item returned when adding an item to
+   * the firestore only when reading
+   */
+  documentSnapshot?: DocumentSnapshot<T>;
 }
 
 export interface ItemWithDates {

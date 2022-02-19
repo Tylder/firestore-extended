@@ -944,8 +944,8 @@ export class FirestoreExtended {
   ): Observable<FireItem<T>> {
 
     return this.fs.listenForDoc(docRef).pipe(
-      tap((snapshot: DocumentSnapshot) => {
-        if (!snapshot.exists() && actionIfNotExist === DocNotExistAction.THROW_DOC_NOT_FOUND) {
+      tap((documentSnapshot: DocumentSnapshot<T>) => {
+        if (!documentSnapshot.exists() && actionIfNotExist === DocNotExistAction.THROW_DOC_NOT_FOUND) {
           const error: FirestoreErrorExt = {
             name: 'FirebaseErrorExt',
             code: 'not-found',
@@ -956,20 +956,20 @@ export class FirestoreExtended {
         }
       }),
 
-      filter((snapshot: DocumentSnapshot) => {
-        return !(!snapshot.exists() && actionIfNotExist === DocNotExistAction.FILTER);
+      filter((documentSnapshot: DocumentSnapshot<T>) => {
+        return !(!documentSnapshot.exists() && actionIfNotExist === DocNotExistAction.FILTER);
       }),
-      map((snapshot: DocumentSnapshot) => {
+      map((documentSnapshot: DocumentSnapshot<T>) => {
 
-        if (snapshot.exists() || actionIfNotExist === DocNotExistAction.RETURN_ALL_BUT_DATA) {
-          const data = snapshot.data() as T;
+        if (documentSnapshot.exists() || actionIfNotExist === DocNotExistAction.RETURN_ALL_BUT_DATA) {
+          const data = documentSnapshot.data() as T;
 
           const firestoreMetadata: FirestoreMetadata<T> = {
-            id: snapshot.id,
-            ref: snapshot.ref as DocumentReference<T>,
+            id: documentSnapshot.id,
+            ref: documentSnapshot.ref as DocumentReference<T>,
             path: docRef.path,
-            isExists: snapshot.exists(),
-            snapshotMetadata: snapshot.metadata
+            isExists: documentSnapshot.exists(),
+            documentSnapshot
           };
 
           return {...data, firestoreMetadata} as FireItem<T>;
@@ -1002,21 +1002,20 @@ export class FirestoreExtended {
      * Also adds the id and ref to the object.
      */
     return this.fs.listenForCollection(_query).pipe(
-      map((snap: QuerySnapshot<T>) => {
-        return snap.docs.map(snapshot => {
-          const data = snapshot.data() as T;
+      map((querySnapshot: QuerySnapshot<T>) => {
+        return querySnapshot.docs.map(documentSnapshot => {
+          const data = documentSnapshot.data() as T;
 
-          const id = snapshot.id;
-          const ref = snapshot.ref as DocumentReference<T>;
+          const id = documentSnapshot.id;
+          const ref = documentSnapshot.ref as DocumentReference<T>;
           const path = ref.path;
-          const snapshotMetadata = snapshot.metadata;
 
           const firestoreMetadata: FirestoreMetadata<T> = {
             id,
             path,
             ref,
-            snapshotMetadata,
-            isExists: true
+            isExists: true,
+            documentSnapshot
           };
 
           return {...data, firestoreMetadata} as FireItem<T>;
