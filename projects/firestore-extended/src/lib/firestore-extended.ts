@@ -981,7 +981,7 @@ export class FirestoreExtended {
       }),
       map((data) => {
         if (data != null) {
-          return convertTimestampToDate(data as T);
+          return convertTimestampToDate(data as FireItem<T> & Partial<ItemWithDates>);
         } else {
           return data;
         }
@@ -1023,10 +1023,7 @@ export class FirestoreExtended {
         });
       }),
       map((datas: Array<FireItem<T>>) => datas.map((data) => {
-        if (data.hasOwnProperty('createdDate') || data.hasOwnProperty('modifiedDate')) {
-          convertTimestampToDate(data as unknown as FireItem<T> & ItemWithDates);
-        }
-        return data;
+        return convertTimestampToDate(data as FireItem<T> & Partial<ItemWithDates>);
       }))
     ) as Observable<Array<FireItem<T>>>;
   }

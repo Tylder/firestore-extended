@@ -9,7 +9,7 @@ import {
   GeoPoint,
   Timestamp as FirebaseTimestamp
 } from 'firebase/firestore';
-import {FireItemWithDates} from './models/fireItem';
+import {ItemWithDates} from './models/fireItem';
 
 /** Helper method to get reference from path, the path can be either to a Document or Collection */
 export function getRefFromPath<A>(path: string, firestore: Firestore): DocumentReference<A> | CollectionReference<A> {
@@ -100,7 +100,7 @@ export function addCreatedBy<A>(item: A, createdBy: { [field: string]: any }, in
  * @param item item that contains 'createdDate' and/or 'modifiedDate'
  */
 
-export function convertTimestampToDate<T extends FireItemWithDates>(item: T): T {
+export function convertTimestampToDate<T extends Partial<ItemWithDates>>(item: T): T {
   if (item.hasOwnProperty('createdDate')) {
     item.createdDate = item.createdDate as FirebaseTimestamp;
     item.createdDate = item.createdDate.toDate();
