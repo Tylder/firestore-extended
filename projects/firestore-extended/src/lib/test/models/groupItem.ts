@@ -1,6 +1,6 @@
-import {FireItemWithIndexGroup} from '../../models/fireItem';
+import {ItemWithIndexGroup} from '../../models/fireItem';
 
-export interface DragAndDropItem extends FireItemWithIndexGroup {
+export interface DragAndDropItem extends ItemWithIndexGroup {
   data: string;
 }
 

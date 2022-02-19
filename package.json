@@ -6,6 +6,7 @@
     "start": "ng serve",
     "watch": "ng build --watch --configuration development",
     "emulators": "firebase emulators:start",
+    "emulators:firestore": "firebase emulators:start --only=firestore",
     "test": "firebase emulators:exec --project=firestore-extended \"ng test\"",
     "copy:readme": "cp ./README.md ./projects/firestore-extended",
     "copy:license": "cp ./LICENSE.md ./projects/firestore-extended",
