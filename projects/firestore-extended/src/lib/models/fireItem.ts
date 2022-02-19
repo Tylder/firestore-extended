@@ -172,15 +172,15 @@ export interface FirestoreMetadata<T = DocumentData> {
   snapshotMetadata?: SnapshotMetadata;
 }
 
-export interface FireItemWithDates {
-  modifiedDate?: Date | FirebaseTimestamp;
-  createdDate?: Date | FirebaseTimestamp;
+export interface ItemWithDates {
+  modifiedDate: Date | FirebaseTimestamp;
+  createdDate: Date | FirebaseTimestamp;
 }
 
 /**
  * Used for documents that require indexing
  */
-export interface FireItemWithIndex {
+export interface ItemWithIndex {
   /** the index of document */
   index: number;
 }
@@ -189,7 +189,7 @@ export interface FireItemWithIndex {
  * Used for documents that require indexing and grouping
  * Meant for example when drag and drop from one indexed group to another
  */
-export interface FireItemWithIndexGroup extends FireItemWithIndex {
+export interface ItemWithIndexGroup extends ItemWithIndex {
   /** the groupName of document */
   groupName: string;
 }
