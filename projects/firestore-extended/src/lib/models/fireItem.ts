@@ -31,25 +31,6 @@ export type DeepFireArray<T> = {
 //         : T[P]
 //     };
 
-/**
- * This definition of DeepFireItem<T> assumes all non FirestoreAllowedTypes are saved as documents on firestore.
- */
-export type DeepFireItem<T> =
-  T extends FirestoreAllowedTypes
-    ? T // do nothing to FirestoreAllowedTypes
-    : {
-      [P in keyof T]: // iterate over each key in type
-      T[P] extends infer TP // distribute over unions
-        ? TP extends FirestoreAllowedTypes // do nothing to FirestoreAllowedTypes
-          ? TP
-          : TP extends FirestoreAllowedTypes[] // do nothing to FirestoreAllowedTypes[
-            ? TP
-            : TP extends any[]
-              ? DeepFireArray<T[P]>
-              : FireItem<TP>
-        : T[P]
-    };
-
 
 // export type DeepFireItem<T> =
 //   T extends FirestoreAllowedTypes
@@ -83,13 +64,36 @@ export type DeepFireItem<T> =
 //             : TP
 //         : T[P]
 //     };
+/**
+ * This definition of DeepFireItem<T> assumes all non FirestoreAllowedTypes are saved as documents on firestore.
+ */
+export type DeepFireItem<T> =
+  T extends FirestoreAllowedTypes
+    ? T // do nothing to FirestoreAllowedTypes
+    : {
+      [P in keyof T]: // iterate over each key in type
+      T[P] extends infer TP // distribute over unions
+        ? TP extends FirestoreAllowedTypes // do nothing to FirestoreAllowedTypes
+          ? TP
+          : TP extends FirestoreAllowedTypes[] // do nothing to FirestoreAllowedTypes[
+            ? TP
+            : TP extends any[]
+              ? DeepFireArray<T[P]>
+              : FireItem<TP>
+        : T[P]
+    };
+
 
 /**
  * Makes all types that extends FirestoreItem into a FireItem<T>. This is the type that is returned from all the
  * methods that returns the data from the database
  */
 // export type FireItem<T extends FirestoreItem = FirestoreItem> = DeepFireItem<T> & { firestoreMetadata: FirestoreMetadata<T> };
-export type FireItem<T extends DocumentData = DocumentData> = DeepFireItem<T> & { firestoreMetadata: FirestoreMetadata<T> };
+export type FireItem<T extends DocumentData = DocumentData> = DeepFireItem<T> & {
+  firestoreMetadata: FirestoreMetadata<T>,
+  modifiedDate: Date | FirebaseTimestamp;
+  createdDate: Date | FirebaseTimestamp;
+};
 
 //
 // interface Bar {
@@ -100,8 +104,7 @@ export type FireItem<T extends DocumentData = DocumentData> = DeepFireItem<T> & 
 //   thing: number;
 // }
 //
-//
-// interface Foo {
+// interface Foo extends ItemWithDates {
 //   stuff: number;
 //   stuffs: number[];
 //   // name: string;
@@ -125,6 +128,7 @@ export type FireItem<T extends DocumentData = DocumentData> = DeepFireItem<T> & 
 //
 // const bar: FireItem<Foo>;
 //
+//
 // bar.stuff;
 // bar.stuffs;
 // bar.names;
@@ -135,6 +139,7 @@ export type FireItem<T extends DocumentData = DocumentData> = DeepFireItem<T> & 
 // bar.thing;
 // bar.things;
 //
+//
 // const foo: MockFireFoo = {
 //   stuff: 123,
 //   stuffs: [123, 321],
@@ -142,7 +147,7 @@ export type FireItem<T extends DocumentData = DocumentData> = DeepFireItem<T> & 
 //     id: '1',
 //     isExists: true,
 //     path: 'sds',
-//     ref: null
+//     ref: null,
 //   },
 // };
 
@@ -169,18 +174,18 @@ export interface FirestoreMetadata<T = DocumentData> {
    */
   isExists: boolean;
 
-  /** The full DocumentSnapshot as returned from firestore,
+  /** The full DocumentSnapshot as returned from Firestore,
    * mainly used for pagination with startAt, StartAfter, EndAt, EndAfter
    *
-   * not required because it is not included in the item returned when adding an item to
-   * the firestore only when reading
+   * -- Optional -- because it is not included in the item returned when adding an item to
+   * the Firestore only when reading from Firestore
    */
   documentSnapshot?: DocumentSnapshot<T>;
 }
 
 export interface ItemWithDates {
-  modifiedDate: Date | FirebaseTimestamp;
-  createdDate: Date | FirebaseTimestamp;
+  modifiedDate?: Date | FirebaseTimestamp;
+  createdDate?: Date | FirebaseTimestamp;
 }
 
 /**

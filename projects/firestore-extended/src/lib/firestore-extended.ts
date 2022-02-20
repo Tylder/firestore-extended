@@ -40,7 +40,7 @@ import {
 } from './helpers';
 import {SubCollectionQuery} from './sub-collection-query';
 import {BaseFirestoreWrapper, FirestoreErrorExt} from './interfaces';
-import {FireItem, FirestoreMetadata, ItemWithDates, ItemWithIndex, ItemWithIndexGroup} from './models/fireItem';
+import {FireItem, FirestoreMetadata, ItemWithIndex, ItemWithIndexGroup} from './models/fireItem';
 import {SubCollectionWriter} from './sub-collection-writer';
 import {moveItemInArray, transferArrayItem} from './drag-utils';
 
@@ -260,7 +260,7 @@ export class FirestoreExtended {
     data: T,
     collectionRef: CollectionReference<T>,
     subCollectionWriters: SubCollectionWriter[] = [],
-    isAddDates: boolean = true,
+    // isAddDates: boolean = true,
     docId?: string): Observable<FireItem<T>> {
 
     if (Array.isArray(data) && docId && subCollectionWriters.length > 0) {
@@ -293,7 +293,7 @@ export class FirestoreExtended {
       subCollections = split.subCollections;
     }
 
-    return this.addSimple$<T>(currentDoc as T, collectionRef, isAddDates, docId).pipe(
+    return this.addSimple$<T>(currentDoc as T, collectionRef, docId).pipe(
       /* Add Sub/sub collections*/
       mergeMap((currentData) => {
 
@@ -318,7 +318,7 @@ export class FirestoreExtended {
             if (subDocId !== undefined) { /* not undefined so save it as a single doc under that docId */
 
               /* the pipe only matters for the return subCollectionValue not for writing the data */
-              const subWriter = this.add$(subCollectionValue, subCollectionRef, subSubCollectionWriters, isAddDates, subDocId).pipe(
+              const subWriter = this.add$(subCollectionValue, subCollectionRef, subSubCollectionWriters, subDocId).pipe(
                 map(item => {
                   // return {[key]: item};
                   return {key: subCollectionKey, value: item}; /* key and subCollectionValue as separate k,v properties */
@@ -330,7 +330,7 @@ export class FirestoreExtended {
               subCollectionValue.forEach((arrayValue: T) => {
 
                 /* the pipe only matters for the return subCollectionValue not for writing the data */
-                const subWriter = this.add$(arrayValue, subCollectionRef, subSubCollectionWriters, isAddDates).pipe(
+                const subWriter = this.add$(arrayValue, subCollectionRef, subSubCollectionWriters).pipe(
                   map((item) => {
                     // return {[key]: [item]};
                     /* key and subCollectionValue as separate k,v properties -- subCollectionValue in an array */
@@ -345,7 +345,7 @@ export class FirestoreExtended {
             subDocId = subDocId !== undefined ? subDocId : this.defaultDocId;
 
             /* the pipe only matters for the return subCollectionValue not for writing the data */
-            const subWriter = this.add$(subCollectionValue, subCollectionRef, subSubCollectionWriters, isAddDates, subDocId).pipe(
+            const subWriter = this.add$(subCollectionValue, subCollectionRef, subSubCollectionWriters, subDocId).pipe(
               map(item => {
                 // return {[key]: item};
                 return {key: subCollectionKey, value: item}; /* key and subCollectionValue as separate k,v properties */
@@ -483,7 +483,7 @@ export class FirestoreExtended {
       take(1),
       map((oldData: T) => this.cleanExtrasFromData(oldData, subCollectionWriters)),
       switchMap((oldData: T) => {
-        return this.add$<T>(oldData, collectionRef, subCollectionWriters, false, newId).pipe( /* add the data under id*/
+        return this.add$<T>(oldData, collectionRef, subCollectionWriters, newId).pipe( /* add the data under id*/
           mergeMap(newData => { /* delete the old doc */
             return this.delete$(docRef, subCollectionQueries).pipe(
               map(() => newData) /* keep the new data */
@@ -981,7 +981,7 @@ export class FirestoreExtended {
       }),
       map((data) => {
         if (data != null) {
-          return convertTimestampToDate(data as FireItem<T> & Partial<ItemWithDates>);
+          return convertTimestampToDate(data as FireItem<T>);
         } else {
           return data;
         }
@@ -1022,7 +1022,7 @@ export class FirestoreExtended {
         });
       }),
       map((datas: Array<FireItem<T>>) => datas.map((data) => {
-        return convertTimestampToDate(data as FireItem<T> & Partial<ItemWithDates>);
+        return convertTimestampToDate(data as FireItem<T>);
       }))
     ) as Observable<Array<FireItem<T>>>;
   }
@@ -1168,18 +1168,19 @@ export class FirestoreExtended {
    * @param isAddDates if true adds modifiedDate and createdDate to the data
    * @param id if given the added document will be given this id, otherwise a random unique id will be used.
    */
-  protected addSimple$<T extends DocumentData>(data: T, collectionRef: CollectionReference<T>, isAddDates: boolean = true, id?: string):
+  // protected addSimple$<T extends DocumentData>(data: T, collectionRef: CollectionReference<T>, isAddDates: boolean = true, id?: string):
+  protected addSimple$<T extends DocumentData>(data: T, collectionRef: CollectionReference<T>, id?: string):
     Observable<FireItem<T>> {
 
     // let dataToBeSaved: A = Object.assign({}, data);
 
     let res$: Observable<any>;
 
-    if (isAddDates) {
-      const date = new Date();
-      data = addCreatedDate(data, false, date);
-      data = addModifiedDate(data, false, date);
-    }
+    // if (isAddDates) {
+    const date = new Date();
+    data = addCreatedDate(data, false, date);
+    data = addModifiedDate(data, false, date);
+
 
     if (id !== undefined) {
       const docRef: DocumentReference = getDocRefWithId(collectionRef, id);
