@@ -9,6 +9,7 @@
 
 # dependencies
 /node_modules
+.cache
 
 # profiling files
 chrome-profiler-events*.json
@@ -44,7 +45,10 @@ testem.log
 .DS_Store
 Thumbs.db
 
-firebase-secure.ts
+*.secure.*
+
 # angular cache
 /.angular/
 /.firebase/
+
+*.log

@@ -52,7 +52,7 @@ It can be run locally if you provide your own firebaseConfig in the environment 
 > Steps to run locally:
 > <ol>
 >    <li>Clone this repo</li>
->    <li>Setup a firebase project and place the config 'firebaseConfig' here: projects/demo/src/environments/firebase-secure.ts and export it.</li>
+>    <li>Setup a firebase project and place the config 'firebaseConfig' here: projects/demo/src/environments/firebase.secure.ts and export it.</li>
 >    <li>Run the following commands:</li>
 > </ol>
 >
