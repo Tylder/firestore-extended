@@ -68,7 +68,7 @@ describe('Firestore Extended Delete', () => {
       testCollectionRef = collection(firestore, `${collectionName}_${createId()}`) as CollectionReference<RestaurantItem>;
       console.log('beforeEach inner, path:', testCollectionRef.path);
 
-      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true).pipe(
+      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters).pipe(
         tap((item) => testDocRef = item.firestoreMetadata.ref),
       ).subscribe(() => done());
 
@@ -114,7 +114,7 @@ describe('Firestore Extended Delete', () => {
       testCollectionRef = collection(firestore, `${collectionName}_${createId()}`) as CollectionReference<RestaurantItem>;
       console.log('beforeEach inner, path:', testCollectionRef.path);
 
-      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true).pipe(
+      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters).pipe(
         tap((item) => testDocRef = item.firestoreMetadata.ref),
       ).subscribe(() => done());
 
@@ -162,7 +162,7 @@ describe('Firestore Extended Delete', () => {
       const addObs$: Observable<any>[] = [];
 
       origData.forEach(data => {
-        const obs$ = fireExt.add$<RestaurantItem>(data, testCollectionRef, subCollectionWriters, true);
+        const obs$ = fireExt.add$<RestaurantItem>(data, testCollectionRef, subCollectionWriters);
         addObs$.push(obs$);
       });
 
@@ -214,7 +214,7 @@ describe('Firestore Extended Delete', () => {
       const addObs$: Observable<any>[] = [];
 
       origData.forEach(data => {
-        const obs$ = fireExt.add$<RestaurantItem>(data, testCollectionRef, subCollectionWriters, true);
+        const obs$ = fireExt.add$<RestaurantItem>(data, testCollectionRef, subCollectionWriters);
         addObs$.push(obs$);
       });
 
@@ -277,7 +277,7 @@ describe('Firestore Extended Delete', () => {
       const addObs$: Observable<any>[] = [];
 
       origData.forEach(data => {
-        const obs$ = fireExt.add$<RestaurantItem>(data, testCollectionRef, subCollectionWriters, true).pipe(
+        const obs$ = fireExt.add$<RestaurantItem>(data, testCollectionRef, subCollectionWriters).pipe(
           tap(d => docRefs.push(d.firestoreMetadata.ref))
         );
         addObs$.push(obs$);
@@ -339,7 +339,7 @@ describe('Firestore Extended Delete', () => {
       testCollectionRef = collection(firestore, `${collectionName}_${createId()}`) as CollectionReference<RestaurantItem>;
       console.log('beforeEach inner, path:', testCollectionRef.path);
 
-      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true).pipe(
+      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters).pipe(
         tap(d => docPath = d.firestoreMetadata.path)
       ).subscribe(() => done());
 
@@ -395,7 +395,7 @@ describe('Firestore Extended Delete', () => {
       testCollectionRef = collection(firestore, `${collectionName}_${createId()}`) as CollectionReference<RestaurantItem>;
       console.log('beforeEach inner, path:', testCollectionRef.path);
 
-      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true).pipe(
+      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters).pipe(
         tap((d) => item = d)
       ).subscribe(() => done());
 

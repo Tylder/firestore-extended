@@ -56,7 +56,7 @@ describe('Firestore Extended transferItemInIndexedDocs', () => {
     const addObs$: Observable<any>[] = [];
 
     origData.forEach(data => {
-      const obs$ = fireExt.add$<DragAndDropItem>(data, testCollectionRef, subCollectionWriters, true);
+      const obs$ = fireExt.add$<DragAndDropItem>(data, testCollectionRef, subCollectionWriters);
       addObs$.push(obs$);
     });
 

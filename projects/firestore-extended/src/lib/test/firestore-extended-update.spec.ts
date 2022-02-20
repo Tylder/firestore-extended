@@ -69,7 +69,7 @@ describe('Firestore Extended Update', () => {
       testCollectionRef = collection(firestore, `${collectionName}_${createId()}`) as CollectionReference<RestaurantItem>;
       console.log('beforeEach inner, path:', testCollectionRef.path);
 
-      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true).pipe(
+      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters).pipe(
         tap((item) => testDocRef = item.firestoreMetadata.ref),
       ).subscribe(() => done());
 
@@ -176,7 +176,7 @@ describe('Firestore Extended Update', () => {
       testCollectionRef = collection(firestore, `${collectionName}_${createId()}`) as CollectionReference<RestaurantItem>;
       console.log('beforeEach inner, path:', testCollectionRef.path);
 
-      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true).pipe(
+      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters).pipe(
         tap((item) => testDocRef = item.firestoreMetadata.ref),
       ).subscribe(() => done());
 

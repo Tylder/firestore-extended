@@ -73,7 +73,7 @@ export class RestaurantFsService {
    */
   addRestaurant$(restaurant: RestaurantItem): Observable<FireItem<RestaurantItem>> {
     return this.firestoreExt
-      .add$<RestaurantItem>(restaurant, this.restaurantCollectionRef, restaurantSubCollectionWriters, true, restaurant.name);
+      .add$<RestaurantItem>(restaurant, this.restaurantCollectionRef, restaurantSubCollectionWriters, restaurant.name);
   }
 
   /* DELETE */

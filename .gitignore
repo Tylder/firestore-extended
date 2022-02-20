@@ -46,6 +46,7 @@ testem.log
 Thumbs.db
 
 *.secure.*
+*.secure*
 
 # angular cache
 /.angular/

@@ -61,33 +61,9 @@ describe('Firestore Extended Add', () => {
       const origData: RestaurantItem = Object.assign({}, mockDeepItems[0]);
       const subCollectionWriters: SubCollectionWriter[] = [];
 
-      it('random id no date', (done: DoneFn) => {
-        // Testing add Deep with non deep data
-        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, false)
-          .pipe(
-            tap((d: FireItem<RestaurantItem>) => {
-              const foo = d.address?.firestoreMetadata?.ref;
-              expect(d).toBeTruthy();
-              expect(isDatesExists(d)).toBeFalse();
-              expect(isCompleteFirestoreMetadata(d.firestoreMetadata)).toBeTrue();
-
-              expect(d.reviews[0].firestoreMetadata).toBeFalsy();
-              expect(d.dishes[0].firestoreMetadata).toBeFalsy();
-              expect(d.dishes[0].images[0].firestoreMetadata).toBeFalsy();
-
-              const cleanData = fireExt.cleanExtrasFromData<RestaurantItem>(d, subCollectionWriters);
-              expect(cleanData).toEqual(origData);
-
-            }),
-            count(),
-            tap(_count => expect(_count).toEqual(1)), // add should only emit once
-          ).subscribe(() => {
-          }, error => {
-          }, () => done());
-      });
       it('random id', (done: DoneFn) => {
         // Testing add Deep with non deep data
-        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true)
+        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters)
           .pipe(
             tap(d => {
               expect(d).toBeTruthy();
@@ -111,7 +87,7 @@ describe('Firestore Extended Add', () => {
       it('fixed id', (done: DoneFn) => {
         // Testing add Deep with non deep data
 
-        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true, 'test')
+        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, 'test')
           .pipe(
             tap(d => {
               expect(d).toBeTruthy();
@@ -146,11 +122,10 @@ describe('Firestore Extended Add', () => {
           },
         ];
 
-        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, false)
+        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters)
           .pipe(
             tap((d: FireItem<RestaurantItem>) => {
               expect(d).toBeTruthy();
-              expect(isDatesExists(d)).toBeFalsy();
               expect(isCompleteFirestoreMetadata(d.firestoreMetadata)).toBeTrue();
               expect(d.reviews.length).toEqual(origData.reviews?.length);
 
@@ -159,8 +134,10 @@ describe('Firestore Extended Add', () => {
               expect(d.dishes[0].firestoreMetadata).toBeTruthy();
               expect(d.dishes[0].images[0].firestoreMetadata).toBeTruthy();
 
-              const cleanData = fireExt.cleanExtrasFromData<RestaurantItem>(d, subCollectionWriters, []);
-              expect(cleanData).toEqual(origData);
+              const cleanDataWDates = fireExt.cleanExtrasFromData<RestaurantItem>(d, subCollectionWriters, []);
+              expect(cleanDataWDates).not.toEqual(origData);  /* should not equal since it contains dates */
+              const cleanData = fireExt.cleanExtrasFromData<RestaurantItem>(d, subCollectionWriters, ['createdDate', 'modifiedDate']);
+              expect(cleanData).toEqual(origData);  /* should equal */
             }),
             count(),
             tap(_count => expect(_count).toEqual(1)), // add should only emit once
@@ -180,7 +157,7 @@ describe('Firestore Extended Add', () => {
           },
         ];
 
-        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true, 'test')
+        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, 'test')
           .pipe(
             tap((d: FireItem<RestaurantItem>) => {
               expect(isDatesExists(d)).toBeTrue();
@@ -249,7 +226,7 @@ describe('Firestore Extended Add', () => {
           }
         ];
 
-        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true, 'test')
+        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, 'test')
           .pipe(
             tap((d) => {
               expect(d).toBeTruthy();
@@ -286,7 +263,7 @@ describe('Firestore Extended Add', () => {
           }
         ];
 
-        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true, 'test')
+        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, 'test')
           .pipe(
             tap((d) => {
 
@@ -324,7 +301,7 @@ describe('Firestore Extended Add', () => {
           },
         ];
 
-        subscription = fireExt.add$(origData, testCollectionRef, subCollectionWriters, true, 'test')
+        subscription = fireExt.add$(origData, testCollectionRef, subCollectionWriters, 'test')
           .pipe(
             catchError((err: FirestoreError) => {
               expect(err.name).toEqual('firestoreExt/invalid-sub-collection-writers');
@@ -346,7 +323,7 @@ describe('Firestore Extended Add', () => {
           },
         ];
 
-        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true, 'test')
+        subscription = fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, 'test')
           .pipe(
             tap((d) => {
               expect(d).toBeTruthy();

@@ -77,7 +77,7 @@ describe('Firestore Extended Listen', () => {
       origData = Object.assign({}, mockDeepItems[0]);
       testCollectionRef = collection(firestore, `${collectionName}_${createId()}`) as CollectionReference<RestaurantItem>;
       console.log('beforeEach inner, path:', testCollectionRef.path);
-      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters, true).pipe(
+      fireExt.add$<RestaurantItem>(origData, testCollectionRef, subCollectionWriters).pipe(
         tap((item) => testDocRef = item.firestoreMetadata.ref),
         take(1)
       ).subscribe(() => done());
@@ -191,7 +191,7 @@ describe('Firestore Extended Listen', () => {
       const observableList: Observable<any>[] = [];
 
       origData.forEach(item => {
-        const obs = fireExt.add$<RestaurantItem>(item, testCollectionRef, subCollectionWriters, true, item.name);
+        const obs = fireExt.add$<RestaurantItem>(item, testCollectionRef, subCollectionWriters, item.name);
 
         observableList.push(obs);
       });
